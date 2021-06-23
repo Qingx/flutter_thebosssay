@@ -216,8 +216,10 @@ class _SquarePageState extends State<SquarePage>
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              R.assetsImgTestHead,
+              R.assetsImgTestPhoto,
+              width: 120,
               height: 80,
+              fit: BoxFit.cover,
             ),
           ).marginOn(left: 16),
         ],

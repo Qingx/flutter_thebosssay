@@ -533,7 +533,12 @@ class _FollowPageState extends State<FollowPage>
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(R.assetsImgTestHead),
+                  child: Image.asset(
+                    R.assetsImgTestHead,
+                    width: 120,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
                 ).marginOn(left: 16),
               ],
             ),
