@@ -28,6 +28,17 @@ class _FollowPageState extends State<FollowPage>
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  @override
+  void dispose() {
+    super.dispose();
+    controller?.dispose();
+    scrollController?.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -143,7 +154,7 @@ class _FollowPageState extends State<FollowPage>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          index % 2 == 0 ? "混子上单" : "暖床软辅",
+          index % 2 == 0 ? "混子上单" : "草食打野",
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),
@@ -587,7 +598,4 @@ class _FollowPageState extends State<FollowPage>
       loadData(false);
     });
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

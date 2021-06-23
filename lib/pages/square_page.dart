@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SquarePage extends StatefulWidget {
   const SquarePage({Key key}) : super(key: key);
@@ -14,27 +15,58 @@ class SquarePage extends StatefulWidget {
 }
 
 class _SquarePageState extends State<SquarePage>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, BasePageController {
   int mCurrentTab = 0;
   var builderFuture;
+
   ScrollController scrollController;
-  GlobalKey<_BodyWidgetState> bodyKey;
+  EasyRefreshController controller;
+  bool hasData = false;
 
   Future<bool> getData() {
     return Observable.just(true).delay(Duration(seconds: 2)).last;
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller?.dispose();
+    scrollController?.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
-    bodyKey = GlobalKey();
 
     builderFuture = getData();
+    // concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], false);
 
     scrollController = ScrollController();
-    scrollController.addListener(() {
-      bodyKey.currentState.canRefresh = scrollController.position.pixels ==
-          scrollController.position.minScrollExtent;
+    controller = EasyRefreshController();
+  }
+
+  @override
+  void loadData(bool loadMore) {
+    if (!loadMore) {
+      pageParam.reset();
+    }
+
+    // List<int> testData = [];
+    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
+      hasData = true;
+      concat(event, loadMore);
+      setState(() {});
+    }, onDone: () {
+      if (loadMore) {
+        controller.finishLoad();
+      } else {
+        controller.resetLoadState();
+        controller.finishRefresh();
+      }
     });
   }
 
@@ -59,56 +91,21 @@ class _SquarePageState extends State<SquarePage>
   }
 
   Widget contentWidget() {
-    return Container(
-      color: BaseColor.pageBg,
-      child: NestedScrollView(
-        physics: BouncingScrollPhysics(),
-        controller: scrollController,
-        headerSliverBuilder: (context, isScrolled) {
-          return <Widget>[
-            SliverAppBar(
-              pinned: false,
-              toolbarHeight: 227,
-              flexibleSpace: topWidget(),
-            ),
-          ];
-        },
-        body: BodyWidget([0, 1, 2, 3, 4, 5, 6, 7, 8], bodyKey),
-      ),
-    );
-  }
-
-  Widget testBodyWidget() {
-    return MediaQuery.removePadding(
-      removeTop: true,
-      removeBottom: true,
-      context: context,
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return Container(
-            height: 80,
-            color: Colors.primaries[index % Colors.primaries.length],
-            alignment: Alignment.center,
-            child: Text(
-              '$index',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          );
-        },
-        itemCount: 32,
-      ),
-    );
+    return BaseWidget.refreshWidgetPage(
+        slivers: [topWidget(), bodyWidget()],
+        controller: controller,
+        scrollController: scrollController,
+        hasData: hasData,
+        loadData: loadData);
   }
 
   Widget topWidget() {
-    return Container(
-      color: BaseColor.pageBg,
-      child: Column(
-        children: [
-          tabWidget(),
-          cardWidget(),
-          titleWidget(),
-        ],
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return tabWidget();
+        },
+        childCount: 1,
       ),
     );
   }
@@ -116,7 +113,7 @@ class _SquarePageState extends State<SquarePage>
   Widget tabWidget() {
     return Container(
       height: 28,
-      margin: EdgeInsets.only(top: 12),
+      margin: EdgeInsets.only(top: 12, bottom: 16),
       child: MediaQuery.removePadding(
         removeTop: true,
         removeBottom: true,
@@ -155,148 +152,283 @@ class _SquarePageState extends State<SquarePage>
     });
   }
 
-  Widget cardWidget() {
-    return Container(
-      height: 164,
-      child: MediaQuery.removePadding(
-        removeBottom: true,
-        removeTop: true,
-        context: context,
-        child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return cardItemWidget(index);
-          },
-          itemCount: 12,
-        ),
-      ),
-    );
+  Widget bodyWidget() {
+    return mData.isNullOrEmpty()
+        ? SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return emptyBodyWidget();
+              },
+              childCount: 1,
+            ),
+          )
+        : SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return index % 2 == 0
+                    ? bodyItemPhotoWidget(index)
+                    : bodyItemWidget(index);
+              },
+              childCount: mData.length,
+            ),
+          );
   }
 
-  Widget cardItemWidget(int index) {
-    double left = index == 0 ? 16 : 8;
-    double right = index == 15 ? 16 : 8;
-
+  Widget bodyItemWidget(int index) {
+    String title = index % 2 == 0
+        ? "搞什么副业可以月入过万"
+        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
+    String content = index % 2 == 0
+        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
+        : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
     return Container(
-      width: 100,
-      height: 140,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(8)),
-      ),
-      margin: EdgeInsets.only(left: left, right: right, top: 24),
-      child: Center(
-        child: Text("哈利路亚"),
-      ),
-    );
-  }
-
-  Widget titleWidget() {
-    return Container(
-      padding: EdgeInsets.only(bottom: 12, top: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(left: 14, right: 14),
+      height: 176,
+      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "最近更新",
+            title,
             style: TextStyle(
+                fontSize: 16,
                 color: BaseColor.textDark,
-                fontSize: 24,
                 fontWeight: FontWeight.bold),
-          ).marginOn(left: 16),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    head,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Text(
+                  "莉莉娅",
+                  style:
+                      TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 8),
+                Expanded(
+                  child: Text(
+                    "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(left: 8),
+                ),
+              ],
+            ),
+          ),
           Text(
-            "共25篇",
-            style: TextStyle(color: BaseColor.textDark, fontSize: 14),
-          ).marginOn(left: 16)
+            content,
+            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+            textAlign: TextAlign.start,
+            maxLines: 2,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "8.2k收藏·19.9w人围观",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "2020/03/02",
+                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
-}
+  Widget bodyItemPhotoWidget(int index) {
+    String title = index % 2 == 0
+        ? "搞什么副业可以月入过万"
+        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
+    String content = index % 2 == 0
+        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
+        : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
 
-class BodyWidget extends StatefulWidget {
-  List<int> initData;
-
-  BodyWidget(this.initData, Key key) : super(key: key);
-
-  @override
-  _BodyWidgetState createState() => _BodyWidgetState();
-}
-
-class _BodyWidgetState extends State<BodyWidget> with BasePageController<int> {
-  ScrollController scrollController;
-  bool canRefresh;
-
-  @override
-  Widget build(BuildContext context) {
-    return MediaQuery.removePadding(
-      removeTop: true,
-      removeBottom: true,
-      context: context,
-      child: ListView.builder(
-        controller: scrollController,
-        // physics: NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return itemWidget(index);
-        },
-        itemCount: mData.length,
-      ),
-    );
-  }
-
-  Widget itemWidget(int index) {
     return Container(
-      height: 80,
-      color: Colors.primaries[index % Colors.primaries.length],
-      alignment: Alignment.center,
-      child: Text(
-        '$index',
-        style: TextStyle(color: Colors.white, fontSize: 20),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(left: 14, right: 14),
+      height: 176,
+      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            height: 80,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 24,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipOval(
+                              child: Image.asset(
+                                head,
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Text(
+                              "莉莉娅",
+                              style: TextStyle(
+                                  fontSize: 14, color: BaseColor.textDarkLight),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ).marginOn(left: 8),
+                            Expanded(
+                              child: Text(
+                                "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
+                                style: TextStyle(
+                                    fontSize: 14, color: BaseColor.textGray),
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ).marginOn(left: 8),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        content,
+                        style: TextStyle(
+                            fontSize: 14, color: BaseColor.textDarkLight),
+                        textAlign: TextAlign.start,
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(R.assetsImgTestHead),
+                ).marginOn(left: 16),
+              ],
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "8.2k收藏·19.9w人围观",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "2020/03/02",
+                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    concat(widget.initData, false);
-
-    scrollController = ScrollController();
-    scrollController.addListener(() {
-      var current = scrollController.position.pixels;
-      var min = scrollController.position.minScrollExtent;
-      var max = scrollController.position.maxScrollExtent;
-
-      if (current == min && canRefresh) {
-        Fluttertoast.showToast(msg: "refresh");
-        // bodyKey.currentState.loadData(false);
-        loadData(false);
-      }
-
-      if (current == max) {
-        Fluttertoast.showToast(msg: "refresh");
-        // bodyKey.currentState.loadData(true);
-        loadData(true);
-      }
-    });
-  }
-
-  @override
-  void loadData(bool loadMore) {
-    if (!loadMore) {
-      pageParam.reset();
-    }
-
-    Observable.just([0, 1, 2, 3, 4, 5, 6])
-        .delay(Duration(seconds: 2))
-        .listen((event) {
-      concat(event, loadMore);
-      setState(() {});
+  Widget emptyBodyWidget() {
+    String path = R.assetsImgTestPhoto;
+    String content = "暂时还没有数据哦～";
+    double height = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        180;
+    return Container(
+      height: height,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(path, width: 160, height: 160),
+            Flexible(
+                child: Text(content,
+                        style:
+                            TextStyle(fontSize: 18, color: BaseColor.textGray),
+                        textAlign: TextAlign.center)
+                    .marginOn(top: 16))
+          ],
+        ),
+      ),
+    ).onClick(() {
+      controller.callRefresh();
+      loadData(false);
     });
   }
 }
