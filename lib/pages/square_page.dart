@@ -176,95 +176,35 @@ class _SquarePageState extends State<SquarePage>
 
   Widget bodyItemWidget(int index) {
     String title = index % 2 == 0
-        ? "搞什么副业可以月入过万"
-        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
-    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
-    String content = index % 2 == 0
-        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
-        : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
+        ? "2021年好消息！成都人可买三亚万科海景房，总价低到超乎想象！"
+        : "继法国之后，德国也宣布不承认中国疫苗，接种者或将被拒绝入境接种者或将被拒绝入境";
+
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.only(left: 14, right: 14),
-      height: 176,
+      height: 128,
       color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            title,
-            style: TextStyle(
-                fontSize: 16,
-                color: BaseColor.textDark,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
-            softWrap: true,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 24,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipOval(
-                  child: Image.asset(
-                    head,
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.cover,
-                  ),
-                ),
                 Text(
-                  "莉莉娅",
-                  style:
-                      TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                  title,
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: BaseColor.textDark,
+                      fontWeight: FontWeight.bold),
                   textAlign: TextAlign.start,
-                  maxLines: 1,
-                  softWrap: false,
+                  softWrap: true,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                ).marginOn(left: 8),
-                Expanded(
-                  child: Text(
-                    "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
-                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ).marginOn(left: 8),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            content,
-            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
-            textAlign: TextAlign.start,
-            maxLines: 2,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    "8.2k收藏·19.9w人围观",
-                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ),
                 ),
                 Text(
-                  "2020/03/02",
-                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  "烽火崛起·19.9w人围观·6小时前",
+                  style: TextStyle(fontSize: 12, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
                   softWrap: false,
@@ -272,34 +212,35 @@ class _SquarePageState extends State<SquarePage>
                 ),
               ],
             ),
-          )
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              R.assetsImgTestHead,
+              height: 80,
+            ),
+          ).marginOn(left: 16),
         ],
       ),
     );
   }
 
   Widget bodyItemPhotoWidget(int index) {
-    String title = index % 2 == 0
-        ? "搞什么副业可以月入过万"
-        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
-    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
-    String content = index % 2 == 0
-        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
-        : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
+    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.only(left: 14, right: 14),
-      height: 176,
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(left: 14, right: 14, top: 12, bottom: 12),
+      height: 192,
       color: Colors.white,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: TextStyle(
-                fontSize: 16,
+                fontSize: 20,
                 color: BaseColor.textDark,
                 fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
@@ -309,95 +250,39 @@ class _SquarePageState extends State<SquarePage>
           ),
           Container(
             height: 80,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 24,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ClipOval(
-                              child: Image.asset(
-                                head,
-                                width: 24,
-                                height: 24,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Text(
-                              "莉莉娅",
-                              style: TextStyle(
-                                  fontSize: 14, color: BaseColor.textDarkLight),
-                              textAlign: TextAlign.start,
-                              maxLines: 1,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ).marginOn(left: 8),
-                            Expanded(
-                              child: Text(
-                                "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
-                                style: TextStyle(
-                                    fontSize: 14, color: BaseColor.textGray),
-                                textAlign: TextAlign.start,
-                                maxLines: 1,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
-                              ).marginOn(left: 8),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        content,
-                        style: TextStyle(
-                            fontSize: 14, color: BaseColor.textDarkLight),
-                        textAlign: TextAlign.start,
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
+            child: MediaQuery.removePadding(
+              removeBottom: true,
+              removeTop: true,
+              context: context,
+              child: GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 3,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 0,
+                  crossAxisSpacing: 4,
+                  childAspectRatio: (MediaQuery.of(context).size.width-28-8)/3/80
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(R.assetsImgTestHead),
-                ).marginOn(left: 16),
-              ],
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      R.assetsImgTestHead,
+                      height: 80,
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    "8.2k收藏·19.9w人围观",
-                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  "2020/03/02",
-                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          )
+          Text(
+            "广告·海南万科",
+            style: TextStyle(fontSize: 12, color: BaseColor.textGray),
+            textAlign: TextAlign.start,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );
