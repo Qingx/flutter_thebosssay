@@ -30,7 +30,7 @@ class _TalkPageState extends State<TalkPage>
         children: [
           BaseWidget.statusBar(context, true),
           titleTabBar(),
-          Expanded(child: pageWidget()),
+          Flexible(child: pageWidget()),
         ],
       ),
     );
