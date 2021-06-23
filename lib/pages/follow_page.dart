@@ -21,7 +21,7 @@ class _FollowPageState extends State<FollowPage>
 
   ScrollController scrollController;
   EasyRefreshController controller;
-  bool hasData = true;
+  bool hasData = false;
 
   Future<bool> getData() {
     return Observable.just(true).delay(Duration(seconds: 2)).last;
@@ -45,7 +45,7 @@ class _FollowPageState extends State<FollowPage>
     }
 
     // List<int> testData = [];
-    List<int> testData=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
       hasData = true;
       concat(event, loadMore);
@@ -118,6 +118,7 @@ class _FollowPageState extends State<FollowPage>
         removeBottom: true,
         context: context,
         child: ListView.builder(
+          physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
@@ -142,7 +143,7 @@ class _FollowPageState extends State<FollowPage>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          index % 2 == 0 ? "全部" : "职业作者",
+          index % 2 == 0 ? "混子上单" : "暖床软辅",
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),
@@ -153,13 +154,14 @@ class _FollowPageState extends State<FollowPage>
 
   Widget cardWidget() {
     return Container(
-      height: 164,
-      padding: EdgeInsets.only(top: 24),
+      height: 188,
+      padding: EdgeInsets.only(top: 24, bottom: 24),
       child: MediaQuery.removePadding(
         removeBottom: true,
         removeTop: true,
         context: context,
         child: ListView.builder(
+          physics: BouncingScrollPhysics(),
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
@@ -167,6 +169,48 @@ class _FollowPageState extends State<FollowPage>
           },
           itemCount: 12,
         ),
+      ),
+    );
+  }
+
+  Widget emptyCardWidget() {
+    return Container(
+      padding: EdgeInsets.only(top: 24, bottom: 12),
+      height: 188,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Image.asset(
+            R.assetsImgTestHead,
+            width: 100,
+            height: 80,
+            fit: BoxFit.cover,
+          ),
+          Text(
+            "当前还没有追踪的老板！",
+            style: TextStyle(fontSize: 14, color: Color(0x80000000)),
+            textAlign: TextAlign.center,
+            softWrap: false,
+            maxLines: 1,
+          ),
+          Container(
+            height: 28,
+            width: 120,
+            decoration: BoxDecoration(
+                border: Border.all(color: BaseColor.accent, width: 1),
+                borderRadius: BorderRadius.all(Radius.circular(4))),
+            child: Center(
+              child: Text(
+                "立即添加",
+                style: TextStyle(fontSize: 16, color: BaseColor.accent),
+                textAlign: TextAlign.center,
+                softWrap: false,
+                maxLines: 1,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -183,8 +227,58 @@ class _FollowPageState extends State<FollowPage>
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       margin: EdgeInsets.only(left: left, right: right),
-      child: Center(
-        child: Text("哈利路亚"),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            child: Stack(
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                      index % 2 == 0
+                          ? R.assetsImgTestPhoto
+                          : R.assetsImgTestHead,
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.cover),
+                ),
+                Container(
+                  height: 14,
+                  padding: EdgeInsets.only(left: 6, right: 6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    color: Colors.red,
+                  ),
+                  child: Center(
+                    child: Text(
+                      index.toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 8),
+                    ),
+                  ),
+                ).positionOn(top: 0, right: 0)
+              ],
+            ),
+          ),
+          Text(
+            index % 2 == 0 ? "莉莉娅" : "神里凌华",
+            style: TextStyle(color: BaseColor.textDark, fontSize: 16),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            index % 2 == 0 ? "灵魂莲华" : "精神信仰",
+            style: TextStyle(color: BaseColor.textGray, fontSize: 12),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
       ),
     );
   }
@@ -192,7 +286,7 @@ class _FollowPageState extends State<FollowPage>
   Widget titleWidget() {
     return Container(
       color: BaseColor.pageBg,
-      height: 64,
+      height: 40,
       padding: EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -219,7 +313,7 @@ class _FollowPageState extends State<FollowPage>
         ? SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return emptyWidget();
+                return emptyBodyWidget();
               },
               childCount: 1,
             ),
@@ -227,7 +321,9 @@ class _FollowPageState extends State<FollowPage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return bodyItemWidget(index);
+                return index % 2 == 0
+                    ? bodyItemPhotoWidget(index)
+                    : bodyItemWidget(index);
               },
               childCount: mData.length,
             ),
@@ -235,23 +331,235 @@ class _FollowPageState extends State<FollowPage>
   }
 
   Widget bodyItemWidget(int index) {
-    return index < mData.length
-        ? Container(
-            height: 80,
-            color: Colors.primaries[index % Colors.primaries.length],
-            alignment: Alignment.center,
-            child: Text(
-              '$index',
-              style: TextStyle(color: Colors.white, fontSize: 20),
+    String title = index % 2 == 0
+        ? "搞什么副业可以月入过万"
+        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
+    String content = index % 2 == 0
+        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
+        : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(left: 14, right: 14),
+      height: 176,
+      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    head,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Text(
+                  "莉莉娅",
+                  style:
+                      TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 8),
+                Expanded(
+                  child: Text(
+                    "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(left: 8),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            content,
+            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+            textAlign: TextAlign.start,
+            maxLines: 2,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "8.2k收藏·19.9w人围观",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "2020/03/02",
+                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           )
-        : Container(
-            height: 32,
-            color: Colors.black,
-          );
+        ],
+      ),
+    );
   }
 
-  Widget emptyWidget() {
+  Widget bodyItemPhotoWidget(int index) {
+    String title = index % 2 == 0
+        ? "搞什么副业可以月入过万"
+        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
+    String content = index % 2 == 0
+        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
+        : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(left: 14, right: 14),
+      height: 176,
+      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            height: 80,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 24,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipOval(
+                              child: Image.asset(
+                                head,
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Text(
+                              "莉莉娅",
+                              style: TextStyle(
+                                  fontSize: 14, color: BaseColor.textDarkLight),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ).marginOn(left: 8),
+                            Expanded(
+                              child: Text(
+                                "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
+                                style: TextStyle(
+                                    fontSize: 14, color: BaseColor.textGray),
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ).marginOn(left: 8),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        content,
+                        style: TextStyle(
+                            fontSize: 14, color: BaseColor.textDarkLight),
+                        textAlign: TextAlign.start,
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(R.assetsImgTestHead),
+                ).marginOn(left: 16),
+              ],
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "8.2k收藏·19.9w人围观",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "2020/03/02",
+                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget emptyBodyWidget() {
     String path = R.assetsImgTestPhoto;
     String content = "暂时还没有数据哦～";
     double height = MediaQuery.of(context).size.height -
@@ -267,13 +575,17 @@ class _FollowPageState extends State<FollowPage>
             Image.asset(path, width: 160, height: 160),
             Flexible(
                 child: Text(content,
-                        style: TextStyle(fontSize: 18, color: BaseColor.line),
+                        style:
+                            TextStyle(fontSize: 18, color: BaseColor.textGray),
                         textAlign: TextAlign.center)
                     .marginOn(top: 16))
           ],
         ),
       ),
-    );
+    ).onClick(() {
+      controller.callRefresh();
+      loadData(false);
+    });
   }
 
   @override

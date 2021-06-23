@@ -89,3 +89,4 @@ flutter:
   # assets-generator-begin
   # assets/img/*
     - assets/img/testPhoto.png
+    - assets/img/testHead.png

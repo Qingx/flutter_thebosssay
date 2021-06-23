@@ -71,7 +71,7 @@ class BaseWidget {
       header: ClassicalHeader(
         enableInfiniteRefresh: false,
         bgColor: null,
-        infoColor: Colors.black87,
+        infoColor: BaseColor.textDark,
         float: false,
         enableHapticFeedback: true,
         refreshText: "下拉以刷新",
@@ -85,6 +85,7 @@ class BaseWidget {
       footer: ClassicalFooter(
         enableInfiniteLoad: true,
         enableHapticFeedback: true,
+        infoColor: BaseColor.textDark,
         loadText: "上拉以加载",
         loadReadyText: "释放以加载",
         loadingText: "正在加载",
