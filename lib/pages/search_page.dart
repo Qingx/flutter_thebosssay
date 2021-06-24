@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -95,6 +96,14 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
 
   void onEditChanged(text) {
     print('onEditChanged');
+  }
+
+  void onFollowChanged(bool isChanged) {
+    showFollowSuccessDialog(context, onConfirm: () {
+      Fluttertoast.showToast(msg: "onConfirm");
+    }, onDismiss: () {
+      Get.back();
+    });
   }
 
   @override
@@ -380,7 +389,9 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
           ),
         ],
       ),
-    );
+    ).onClick(() {
+      onFollowChanged(true);
+    });
   }
 
   Widget emptyBossWidget() {
@@ -539,7 +550,9 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
               width: 14,
               height: 14,
             ),
-          ),
+          ).onClick(() {
+            onFollowChanged(true);
+          }),
         ],
       ),
     );
