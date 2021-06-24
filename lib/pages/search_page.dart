@@ -102,6 +102,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
     showFollowSuccessDialog(context, onConfirm: () {
       Fluttertoast.showToast(msg: "onConfirm");
     }, onDismiss: () {
+      Fluttertoast.showToast(msg: "onDismiss");
       Get.back();
     });
   }
