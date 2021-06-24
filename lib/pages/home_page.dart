@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/pages/boss_page.dart';
 import 'package:flutter_boss_says/pages/mine_page.dart';
 import 'package:flutter_boss_says/pages/talk_page.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
@@ -16,7 +17,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int mCurrentIndex = 0;
   List<String> mTitles = ["言论", "老板", "我的"];
-  List<IconData> mIcons = [Icons.insert_chart, Icons.ac_unit, Icons.person];
+  List<List<String>> mIcons = [
+    [R.assetsImgTalkNormal, R.assetsImgTalkSelect],
+    [R.assetsImgBossNormal, R.assetsImgBossSelect],
+    [R.assetsImgMineNormal, R.assetsImgMineSelect]
+  ];
   List<Widget> mPages = [TalkPage(), BossPage(), MinePage()];
 
   PageController mPageController = PageController();
@@ -32,13 +37,12 @@ class _HomePageState extends State<HomePage> {
 
   Widget pageWidget() {
     return PageView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      controller: mPageController,
-      itemCount: mPages.length,
-      itemBuilder: (context, index) {
-        return mPages[index];
-      }
-    );
+        physics: NeverScrollableScrollPhysics(),
+        controller: mPageController,
+        itemCount: mPages.length,
+        itemBuilder: (context, index) {
+          return mPages[index];
+        });
   }
 
   Widget bottomWidget() {
@@ -60,7 +64,7 @@ class _HomePageState extends State<HomePage> {
   Widget bottomItemWidget(int index) {
     Color mCurrentColor =
         mCurrentIndex == index ? BaseColor.accent : BaseColor.textGray;
-    IconData mCurrentIcon = mIcons[index];
+    String mCurrentIcon = mIcons[index][mCurrentIndex == index ? 1 : 0];
 
     return Container(
       height: 84 - MediaQuery.of(context).padding.bottom,
@@ -71,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           itemLabelWidget(index),
-          itemIconWidget(mCurrentIcon, mCurrentColor),
+          itemIconWidget(mCurrentIcon),
           Text(
             mTitles[index],
             style: TextStyle(fontSize: 12, color: mCurrentColor),
@@ -100,11 +104,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget itemIconWidget(IconData icon, Color color) {
-    return Icon(
+  Widget itemIconWidget(String icon) {
+    return Image.asset(
       icon,
-      size: 28,
-      color: color,
+      width: 24,
+      height: 24,
     );
   }
 }

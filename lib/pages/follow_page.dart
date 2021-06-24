@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rxdart/rxdart.dart';
 
 class FollowPage extends StatefulWidget {
@@ -24,7 +25,7 @@ class _FollowPageState extends State<FollowPage>
   bool hasData = false;
 
   Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
+    return Observable.just(true).delay(Duration(seconds: 10)).last;
   }
 
   @override
@@ -87,7 +88,7 @@ class _FollowPageState extends State<FollowPage>
       } else
         return Container(color: Colors.red);
     } else {
-      return BaseWidget.loadingWidget();
+      return loadingWidget();
     }
   }
 
@@ -149,7 +150,7 @@ class _FollowPageState extends State<FollowPage>
     Color fontColor = mCurrentTab == index ? Colors.white : BaseColor.accent;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
-      padding: EdgeInsets.only(left: 16, right: 16),
+      padding: EdgeInsets.only(left: 12, right: 12),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
@@ -159,7 +160,11 @@ class _FollowPageState extends State<FollowPage>
         ),
       ),
     ).onClick(() {
-      setState(() {});
+      if (index != mCurrentTab) {
+        mCurrentTab = index;
+        builderFuture = getData();
+        setState(() {});
+      }
     });
   }
 
@@ -193,7 +198,7 @@ class _FollowPageState extends State<FollowPage>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Image.asset(
-            R.assetsImgTestHead,
+            R.assetsImgEmptyBoss,
             width: 100,
             height: 80,
             fit: BoxFit.cover,
@@ -602,5 +607,121 @@ class _FollowPageState extends State<FollowPage>
       controller.callRefresh();
       loadData(false);
     });
+  }
+
+  Widget loadingWidget() {
+    return Container(
+      color: BaseColor.pageBg,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          loadTabWidget(),
+          loadCardWidget(),
+          loadingItemWidget(0.7,24),
+          loadingItemWidget(0.3,8),
+          loadingItemWidget(1,16),
+          loadingItemWidget(1,8),
+          loadingItemWidget(1,8),
+          loadingItemWidget(0.4,8),
+          loadingItemWidget(0.6,8),
+          Container(
+            margin: EdgeInsets.only(top: 16,left: 16,right: 16),
+            height: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SpinKitFadingCircle(
+                  color: Color(0xff0e1e1e1),
+                  size: 48,
+                  duration: Duration(milliseconds: 2000),
+                ),
+              ],
+            )
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget loadTabWidget() {
+    return Container(
+      height: 40,
+      padding: EdgeInsets.only(top: 12),
+      child: MediaQuery.removePadding(
+        removeTop: true,
+        removeBottom: true,
+        context: context,
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return loadTabItemWidget(index);
+          },
+          itemCount: 4,
+        ),
+      ),
+    );
+  }
+
+  Widget loadTabItemWidget(int index) {
+    double left = index == 0 ? 16 : 8;
+    double right = index == 15 ? 16 : 8;
+    return Container(
+      width: 80,
+      margin: EdgeInsets.only(left: left, right: right),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          color: BaseColor.loadBg),
+    );
+  }
+
+  Widget loadCardWidget() {
+    return Container(
+      height: 188,
+      padding: EdgeInsets.only(top: 24, bottom: 24),
+      child: MediaQuery.removePadding(
+        removeBottom: true,
+        removeTop: true,
+        context: context,
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return loadCardItemWidget(index);
+          },
+          itemCount: 4,
+        ),
+      ),
+    );
+  }
+
+  Widget loadCardItemWidget(int index) {
+    double left = index == 0 ? 16 : 8;
+    double right = index == 15 ? 16 : 8;
+
+    return Container(
+      width: 100,
+      height: 140,
+      decoration: BoxDecoration(
+        color: BaseColor.loadBg,
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+      margin: EdgeInsets.only(left: left, right: right),
+    );
+  }
+
+  Widget loadingItemWidget(double width, double margin) {
+    return Container(
+      width: (MediaQuery.of(context).size.width - 32) * width,
+      height: 16,
+      margin: EdgeInsets.only(left: 16, right: 16, top: margin),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        color: BaseColor.loadBg,
+      ),
+    );
   }
 }

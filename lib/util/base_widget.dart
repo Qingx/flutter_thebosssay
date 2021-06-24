@@ -53,6 +53,18 @@ class BaseWidget {
     ));
   }
 
+  static Widget testItemWidget(int index) {
+    return Container(
+      height: 80,
+      color: Colors.primaries[index % Colors.primaries.length],
+      alignment: Alignment.center,
+      child: Text(
+        '$index',
+        style: TextStyle(color: Colors.white, fontSize: 20),
+      ),
+    );
+  }
+
   static EasyRefresh refreshWidgetPage(
       {List<Widget> slivers,
       EasyRefreshController controller,
@@ -106,6 +118,42 @@ class BaseWidget {
               });
             }
           : null,
+      slivers: slivers,
+    );
+  }
+
+  static EasyRefresh refreshWidget(
+      {List<Widget> slivers,
+        EasyRefreshController controller,
+        ScrollController scrollController,
+        Function loadData}) {
+    return EasyRefresh.custom(
+      enableControlFinishRefresh: true,
+      taskIndependence: false,
+      controller: controller,
+      scrollController: scrollController,
+      scrollDirection: Axis.vertical,
+      topBouncing: true,
+      bottomBouncing: true,
+      header: ClassicalHeader(
+        enableInfiniteRefresh: false,
+        bgColor: null,
+        infoColor: BaseColor.textDark,
+        float: false,
+        enableHapticFeedback: true,
+        refreshText: "下拉以刷新",
+        refreshReadyText: "释放以刷新",
+        refreshingText: "正在刷新",
+        refreshedText: "刷新完成",
+        refreshFailedText: "刷新失败",
+        noMoreText: "没有更多数据了",
+        infoText: "上次更新 %T",
+      ),
+      onRefresh: () async {
+        await Future.delayed(Duration(seconds: 0), () {
+          loadData();
+        });
+      },
       slivers: slivers,
     );
   }

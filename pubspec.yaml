@@ -88,5 +88,15 @@ flutter:
   assets:
   # assets-generator-begin
   # assets/img/*
+    - assets/img/emptyLine.png
+    - assets/img/bossSelect.png
     - assets/img/testPhoto.png
+    - assets/img/bossNormal.png
     - assets/img/testHead.png
+    - assets/img/search.png
+    - assets/img/emptyBoss.png
+    - assets/img/talkNormal.png
+    - assets/img/mineNormal.png
+    - assets/img/bossLabel.png
+    - assets/img/talkSelect.png
+    - assets/img/mineSelect.png

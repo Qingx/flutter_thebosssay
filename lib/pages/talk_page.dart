@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
@@ -20,6 +21,21 @@ class _TalkPageState extends State<TalkPage>
   List<Widget> mPages = [FollowPage(), SquarePage()];
 
   PageController mPageController = PageController();
+
+  @override
+  void dispose() {
+    print('TalkPage====>dispose');
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    print('TalkPage====>init');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +59,14 @@ class _TalkPageState extends State<TalkPage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          titleWidget(0).marginOn(left: 16),
-          titleWidget(1).marginOn(left: 28),
+          titleWidget(0).marginOn(left: 16,bottom: 2),
+          titleWidget(1).marginOn(left: 28,bottom: 2),
           Expanded(child: SizedBox()),
-          Icon(
-            Icons.search,
-            size: 28,
-            color: Colors.black,
-          ).onClick(onSearchClick).marginOn(right: 16)
+          Image.asset(
+            R.assetsImgSearch,
+            width: 20,
+            height: 20,
+          ).onClick(onSearchClick).marginOn(right: 16,bottom: 8)
         ],
       ),
     );
@@ -90,19 +106,4 @@ class _TalkPageState extends State<TalkPage>
   void onSearchClick() {
     BaseTool.toast("clickSearch");
   }
-
-  @override
-  void initState() {
-    super.initState();
-    print('TalkPage====>init');
-  }
-
-  @override
-  void dispose() {
-    print('TalkPage====>dispose');
-    super.dispose();
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }

@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SquarePage extends StatefulWidget {
@@ -86,7 +87,7 @@ class _SquarePageState extends State<SquarePage>
       } else
         return Container(color: Colors.red);
     } else {
-      return BaseWidget.loadingWidget();
+      return loadingWidget();
     }
   }
 
@@ -138,7 +139,7 @@ class _SquarePageState extends State<SquarePage>
     Color fontColor = mCurrentTab == index ? Colors.white : BaseColor.accent;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
-      padding: EdgeInsets.only(left: 16, right: 16),
+      padding: EdgeInsets.only(left: 12, right: 12),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
@@ -148,7 +149,11 @@ class _SquarePageState extends State<SquarePage>
         ),
       ),
     ).onClick(() {
-      setState(() {});
+      if (index != mCurrentTab) {
+        mCurrentTab = index;
+        builderFuture = getData();
+        setState(() {});
+      }
     });
   }
 
@@ -194,7 +199,7 @@ class _SquarePageState extends State<SquarePage>
                 Text(
                   title,
                   style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                       color: BaseColor.textDark,
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.start,
@@ -242,7 +247,7 @@ class _SquarePageState extends State<SquarePage>
           Text(
             title,
             style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 color: BaseColor.textDark,
                 fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
@@ -260,11 +265,11 @@ class _SquarePageState extends State<SquarePage>
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: 3,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 4,
-                  childAspectRatio: (MediaQuery.of(context).size.width-28-8)/3/80
-                ),
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 0,
+                    crossAxisSpacing: 4,
+                    childAspectRatio:
+                        (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80),
                 itemBuilder: (context, index) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -317,5 +322,86 @@ class _SquarePageState extends State<SquarePage>
       controller.callRefresh();
       loadData(false);
     });
+  }
+
+  Widget loadingWidget() {
+    return Container(
+      color: BaseColor.pageBg,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          loadTabWidget(),
+          loadingItemWidget(0.7, 24),
+          loadingItemWidget(0.3, 8),
+          loadingItemWidget(1, 16),
+          loadingItemWidget(1, 8),
+          loadingItemWidget(1, 8),
+          loadingItemWidget(0.4, 8),
+          loadingItemWidget(0.6, 8),
+          loadingItemWidget(1, 16),
+          loadingItemWidget(0.2, 8),
+          loadingItemWidget(0.6, 8),
+          Container(
+              margin: EdgeInsets.only(top: 16, left: 16, right: 16),
+              height: 48,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SpinKitFadingCircle(
+                    color: Color(0xff0e1e1e1),
+                    size: 48,
+                    duration: Duration(milliseconds: 2000),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget loadTabWidget() {
+    return Container(
+      height: 40,
+      padding: EdgeInsets.only(top: 12),
+      child: MediaQuery.removePadding(
+        removeTop: true,
+        removeBottom: true,
+        context: context,
+        child: ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return loadTabItemWidget(index);
+          },
+          itemCount: 4,
+        ),
+      ),
+    );
+  }
+
+  Widget loadTabItemWidget(int index) {
+    double left = index == 0 ? 16 : 8;
+    double right = index == 15 ? 16 : 8;
+    return Container(
+      width: 80,
+      margin: EdgeInsets.only(left: left, right: right),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          color: BaseColor.loadBg),
+    );
+  }
+
+  Widget loadingItemWidget(double width, double margin) {
+    return Container(
+      width: (MediaQuery.of(context).size.width - 32) * width,
+      height: 16,
+      margin: EdgeInsets.only(left: 16, right: 16, top: margin),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        color: BaseColor.loadBg,
+      ),
+    );
   }
 }
