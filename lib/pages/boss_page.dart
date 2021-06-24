@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/pages/search_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BossPage extends StatefulWidget {
@@ -193,7 +195,9 @@ class _BodyWidgetState extends State<BodyWidget>
         color: Colors.white,
         size: 24,
       ),
-    );
+    ).onClick(() {
+      Get.to(() => SearchPage());
+    });
   }
 
   Widget topWidget() {

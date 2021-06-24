@@ -25,7 +25,7 @@ class _FollowPageState extends State<FollowPage>
   bool hasData = false;
 
   Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 10)).last;
+    return Observable.just(true).delay(Duration(seconds: 2)).last;
   }
 
   @override
