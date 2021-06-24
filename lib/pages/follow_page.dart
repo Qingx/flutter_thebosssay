@@ -605,7 +605,6 @@ class _FollowPageState extends State<FollowPage>
       ),
     ).onClick(() {
       controller.callRefresh();
-      loadData(false);
     });
   }
 

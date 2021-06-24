@@ -265,11 +265,12 @@ class _SquarePageState extends State<SquarePage>
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: 3,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 0,
-                    crossAxisSpacing: 4,
-                    childAspectRatio:
-                        (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80),
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 0,
+                  crossAxisSpacing: 4,
+                  childAspectRatio:
+                      (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80,
+                ),
                 itemBuilder: (context, index) {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -320,7 +321,6 @@ class _SquarePageState extends State<SquarePage>
       ),
     ).onClick(() {
       controller.callRefresh();
-      loadData(false);
     });
   }
 
