@@ -81,7 +81,7 @@ class _BossPageState extends State<BossPage>
   }
 
   void onSearchClick() {
-    BaseTool.toast("clickSearch");
+    BaseTool.toast(msg: "clickSearch");
   }
 }
 

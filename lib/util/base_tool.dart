@@ -5,7 +5,7 @@ class BaseTool {
     return (num1 - num2).abs() <= 0.000005;
   }
 
-  static void toast(String msg) {
+  static void toast({String msg}) {
     Fluttertoast.showToast(msg: msg);
   }
 }

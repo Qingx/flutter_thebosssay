@@ -59,14 +59,14 @@ class _TalkPageState extends State<TalkPage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          titleWidget(0).marginOn(left: 16,bottom: 2),
-          titleWidget(1).marginOn(left: 28,bottom: 2),
+          titleWidget(0).marginOn(left: 16, bottom: 2),
+          titleWidget(1).marginOn(left: 28, bottom: 2),
           Expanded(child: SizedBox()),
           Image.asset(
             R.assetsImgSearch,
             width: 20,
             height: 20,
-          ).onClick(onSearchClick).marginOn(right: 16,bottom: 8)
+          ).onClick(onSearchClick).marginOn(right: 16, bottom: 8)
         ],
       ),
     );
@@ -104,6 +104,6 @@ class _TalkPageState extends State<TalkPage>
   }
 
   void onSearchClick() {
-    BaseTool.toast("clickSearch");
+    BaseTool.toast(msg: "clickSearch");
   }
 }

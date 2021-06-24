@@ -4,6 +4,7 @@ import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -100,9 +101,9 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
 
   void onFollowChanged(bool isChanged) {
     showFollowSuccessDialog(context, onConfirm: () {
-      Fluttertoast.showToast(msg: "onConfirm");
+      BaseTool.toast(msg: "onConfirm");
     }, onDismiss: () {
-      Fluttertoast.showToast(msg: "onDismiss");
+      BaseTool.toast(msg: "onDismiss");
       Get.back();
     });
   }
