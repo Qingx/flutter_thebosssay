@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -100,12 +101,19 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   }
 
   void onFollowChanged(bool isChanged) {
-    showFollowSuccessDialog(context, onConfirm: () {
-      BaseTool.toast(msg: "onConfirm");
-    }, onDismiss: () {
-      BaseTool.toast(msg: "onDismiss");
-      Get.back();
-    });
+    if(!isChanged){
+      showFollowCancelDialog(context, onDismiss: () {
+        BaseTool.toast(msg: "onDismiss");
+        Get.back();
+      });
+    }else{
+      showFollowSuccessDialog(context, onConfirm: () {
+        BaseTool.toast(msg: "onConfirm");
+      }, onDismiss: () {
+        BaseTool.toast(msg: "onDismiss");
+        Get.back();
+      });
+    }
   }
 
   @override
@@ -392,7 +400,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
         ],
       ),
     ).onClick(() {
-      onFollowChanged(true);
+      onFollowChanged(index%2==0);
     });
   }
 

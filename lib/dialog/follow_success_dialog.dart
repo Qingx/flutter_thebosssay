@@ -3,20 +3,21 @@ import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
-Future<dynamic> showFollowSuccessDialog(
-    BuildContext context, {Function onDismiss, Function onConfirm}) {
+Future<dynamic> showFollowSuccessDialog(BuildContext context,
+    {Function onDismiss, Function onConfirm}) {
   return showDialog(
     barrierDismissible: false,
     context: context,
     builder: (context) {
       return Center(
         child: Material(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.72,
+            width: 264,
+            height: 264,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
                   R.assetsImgBossSuccess,
@@ -40,15 +41,15 @@ Future<dynamic> showFollowSuccessDialog(
                   overflow: TextOverflow.ellipsis,
                 ).marginOn(top: 8),
                 Container(
-                  height: 32,
-                  margin: EdgeInsets.only(top: 16,bottom: 16),
+                  height: 36,
+                  margin: EdgeInsets.only(top: 16, bottom: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        height: 32,
-                        padding: EdgeInsets.only(left: 12,right: 12),
+                        height: 36,
+                        padding: EdgeInsets.only(left: 12, right: 12),
                         alignment: Alignment.center,
                         child: Text(
                           "暂不开启",
@@ -61,12 +62,12 @@ Future<dynamic> showFollowSuccessDialog(
                         ),
                       ).onClick(onDismiss),
                       Container(
-                        height: 32,
-                        padding: EdgeInsets.only(left: 12,right: 12),
+                        height: 36,
+                        padding: EdgeInsets.only(left: 12, right: 12),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: BaseColor.accent,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           "开启推送",

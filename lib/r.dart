@@ -15,6 +15,8 @@ class R {
   static final String assetsImgSearch = 'assets/img/search.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderNormal.png)
   static final String assetsImgBossOrderNormal = 'assets/img/bossOrderNormal.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/rightGreen.png)
+  static final String assetsImgRightGreen = 'assets/img/rightGreen.png';
   /// ![](http://127.0.0.1:11111111/assets/img/emptyBoss.png)
   static final String assetsImgEmptyBoss = 'assets/img/emptyBoss.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkNormal.png)

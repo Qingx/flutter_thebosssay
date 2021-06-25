@@ -297,8 +297,8 @@ class _SquarePageState extends State<SquarePage>
   }
 
   Widget emptyBodyWidget() {
-    String path = R.assetsImgTestPhoto;
-    String content = "暂时还没有数据哦～";
+    String path = R.assetsImgEmptyBoss;
+    String content = " 最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
         180;

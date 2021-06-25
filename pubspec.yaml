@@ -96,6 +96,7 @@ flutter:
     - assets/img/testHead.png
     - assets/img/search.png
     - assets/img/bossOrderNormal.png
+    - assets/img/rightGreen.png
     - assets/img/emptyBoss.png
     - assets/img/talkNormal.png
     - assets/img/mineNormal.png
