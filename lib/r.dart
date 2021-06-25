@@ -3,6 +3,8 @@ class R {
   static final String assetsImgEmptyLine = 'assets/img/emptyLine.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSelect.png)
   static final String assetsImgBossSelect = 'assets/img/bossSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/settingWhite.png)
+  static final String assetsImgSettingWhite = 'assets/img/settingWhite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/emptySearch.png)
   static final String assetsImgEmptySearch = 'assets/img/emptySearch.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testPhoto.png)
@@ -13,6 +15,8 @@ class R {
   static final String assetsImgTestHead = 'assets/img/testHead.png';
   /// ![](http://127.0.0.1:11111111/assets/img/search.png)
   static final String assetsImgSearch = 'assets/img/search.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/likeNormal.png)
+  static final String assetsImgLikeNormal = 'assets/img/likeNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderNormal.png)
   static final String assetsImgBossOrderNormal = 'assets/img/bossOrderNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/rightGreen.png)
@@ -27,10 +31,14 @@ class R {
   static final String assetsImgBossSuccess = 'assets/img/bossSuccess.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossLabel.png)
   static final String assetsImgBossLabel = 'assets/img/bossLabel.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/shareWhite.png)
+  static final String assetsImgShareWhite = 'assets/img/shareWhite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkSelect.png)
   static final String assetsImgTalkSelect = 'assets/img/talkSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/mineSelect.png)
   static final String assetsImgMineSelect = 'assets/img/mineSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/likeSelect.png)
+  static final String assetsImgLikeSelect = 'assets/img/likeSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testSplash.png)
   static final String assetsImgTestSplash = 'assets/img/testSplash.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderSelect.png)

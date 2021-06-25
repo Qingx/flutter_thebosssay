@@ -101,12 +101,12 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   }
 
   void onFollowChanged(bool isChanged) {
-    if(!isChanged){
+    if (!isChanged) {
       showFollowCancelDialog(context, onDismiss: () {
         BaseTool.toast(msg: "onDismiss");
         Get.back();
       });
-    }else{
+    } else {
       showFollowSuccessDialog(context, onConfirm: () {
         BaseTool.toast(msg: "onConfirm");
       }, onDismiss: () {
@@ -400,7 +400,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
         ],
       ),
     ).onClick(() {
-      onFollowChanged(index%2==0);
+      onFollowChanged(index % 2 == 0);
     });
   }
 
@@ -453,7 +453,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
       alignment: Alignment.centerLeft,
       height: 40,
       child: RichText(
-        text: new TextSpan(
+        text: TextSpan(
           text: "共找到",
           style: TextStyle(
               color: BaseColor.textDark,

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
+import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:get/get.dart';
 
 class TalkPage extends StatefulWidget {
   const TalkPage({Key key}) : super(key: key);
@@ -104,6 +106,7 @@ class _TalkPageState extends State<TalkPage>
   }
 
   void onSearchClick() {
-    BaseTool.toast(msg: "clickSearch");
+    // BaseTool.toast(msg: "clickSearch");
+    Get.to(() => TestPage());
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
 class FollowPage extends StatefulWidget {
@@ -296,7 +298,9 @@ class _FollowPageState extends State<FollowPage>
           )
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => BossHomePage());
+    });
   }
 
   Widget titleWidget() {
