@@ -31,6 +31,8 @@ class R {
   static final String assetsImgTalkSelect = 'assets/img/talkSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/mineSelect.png)
   static final String assetsImgMineSelect = 'assets/img/mineSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/testSplash.png)
+  static final String assetsImgTestSplash = 'assets/img/testSplash.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderSelect.png)
   static final String assetsImgBossOrderSelect = 'assets/img/bossOrderSelect.png';
 }

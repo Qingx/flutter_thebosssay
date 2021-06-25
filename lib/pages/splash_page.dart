@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -18,11 +19,34 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    double topMargin = MediaQuery.of(context).padding.top;
+    double rightMargin = 24;
+    Color timeBg = Color(0x4d000000);
+
     return Container(
-      child: Center(
-        child: Text(
-          "${currentTime}s",
-          style: TextStyle(color: Colors.black),
+      alignment: Alignment.topRight,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage(R.assetsImgTestSplash),
+            alignment: Alignment.center),
+      ),
+      child: Container(
+        margin: EdgeInsets.only(top: topMargin, right: rightMargin),
+        width: 48,
+        height: 24,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          color: timeBg,
+        ),
+        child: Center(
+          child: Text(
+            "${currentTime}s",
+            style: TextStyle(color: Colors.white, fontSize: 14),
+            textAlign: TextAlign.center,
+            softWrap: false,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
     );
