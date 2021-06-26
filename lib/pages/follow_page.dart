@@ -307,7 +307,7 @@ class _FollowPageState extends State<FollowPage>
     return Container(
       color: BaseColor.pageBg,
       height: 40,
-      padding: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,

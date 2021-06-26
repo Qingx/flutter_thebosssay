@@ -147,7 +147,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   void onWatchMore() {
-    BaseTool.toast(msg: "onWatchMore");
     Get.to(() => BossInfoPage());
   }
 
