@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:share/share.dart';
 
 class BossHomePage extends StatelessWidget {
   const BossHomePage({Key key}) : super(key: key);
@@ -35,11 +37,16 @@ class BossHomePage extends StatelessWidget {
   }
 
   void onShare() {
-    BaseTool.toast(msg: "onShare");
+    Share.share('https://cn.bing.com', subject: "必应");
   }
 
-  void onSetting() {
-    BaseTool.toast(msg: "onSetting");
+  void onSetting(BuildContext context) {
+    showBossSettingDialog(context, onDismiss: () {
+      Get.back();
+    }, onConfirm: () {
+      BaseTool.toast(msg: "开启推送");
+      Get.back();
+    });
   }
 
   Widget topBar(BuildContext context) {
@@ -59,7 +66,9 @@ class BossHomePage extends StatelessWidget {
               .onClick(onShare),
           Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
               .marginOn(right: 16)
-              .onClick(onSetting),
+              .onClick(() {
+            onSetting(context);
+          }),
         ],
       ),
     );
