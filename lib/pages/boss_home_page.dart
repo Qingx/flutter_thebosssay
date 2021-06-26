@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -138,6 +139,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   void onWatchMore() {
     BaseTool.toast(msg: "onWatchMore");
+    Get.to(() => BossInfoPage());
   }
 
   Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
