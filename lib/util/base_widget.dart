@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -124,9 +125,9 @@ class BaseWidget {
 
   static EasyRefresh refreshWidget(
       {List<Widget> slivers,
-        EasyRefreshController controller,
-        ScrollController scrollController,
-        Function loadData}) {
+      EasyRefreshController controller,
+      ScrollController scrollController,
+      Function loadData}) {
     return EasyRefresh.custom(
       enableControlFinishRefresh: true,
       taskIndependence: false,
@@ -155,6 +156,40 @@ class BaseWidget {
         });
       },
       slivers: slivers,
+    );
+  }
+
+  static Future<dynamic> showLoadingAlert(String notice, BuildContext context) {
+    return showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (context) {
+        return Center(
+          child: Material(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 80,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SpinKitFadingCircle(
+                    color: BaseColor.accent,
+                    size: 32,
+                    duration: Duration(milliseconds: 2000),
+                  ).marginOn(left: 16),
+                  Text(
+                    notice,
+                    style: TextStyle(color: BaseColor.textDark, fontSize: 16),
+                    textAlign: TextAlign.start,
+                  ).marginOn(left: 12)
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

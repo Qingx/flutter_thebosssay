@@ -23,29 +23,34 @@ class _SplashPageState extends State<SplashPage> {
     double rightMargin = 24;
     Color timeBg = Color(0x4d000000);
 
-    return Container(
-      alignment: Alignment.topRight,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage(R.assetsImgTestSplash),
-            alignment: Alignment.center),
-      ),
-      child: Container(
-        margin: EdgeInsets.only(top: topMargin, right: rightMargin),
-        width: 48,
-        height: 24,
+    return Scaffold(
+      resizeToAvoidBottomPadding: false,
+      body: Container(
+        alignment: Alignment.topRight,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          color: timeBg,
+          image: DecorationImage(
+            image: AssetImage(R.assetsImgSplash),
+            alignment: Alignment.center,
+            fit: BoxFit.cover,
+          ),
         ),
-        child: Center(
-          child: Text(
-            "${currentTime}s",
-            style: TextStyle(color: Colors.white, fontSize: 14),
-            textAlign: TextAlign.center,
-            softWrap: false,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        child: Container(
+          margin: EdgeInsets.only(top: topMargin, right: rightMargin),
+          width: 48,
+          height: 24,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            color: timeBg,
+          ),
+          child: Center(
+            child: Text(
+              "${currentTime}s",
+              style: TextStyle(color: Colors.white, fontSize: 14),
+              textAlign: TextAlign.center,
+              softWrap: false,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
       ),

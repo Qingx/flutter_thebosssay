@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/pages/boss_page.dart';
 import 'package:flutter_boss_says/pages/mine_page.dart';
 import 'package:flutter_boss_says/pages/talk_page.dart';
@@ -30,6 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("useApp=>>${UserConfig.getIns().firstUserApp}");
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.white,

@@ -34,10 +34,11 @@ class UserConfig extends BaseConfig {
   String get token => spInstance.getString(UserKeys.K_HTTP_TOKEN);
 
   /// 设置是否为第一次使用APP
-  set firstUseApp(bool used) => spInstance.putBool(UserKeys.K_FIRST_USE, used);
+  set firstUseApp(String used) => spInstance.putString(UserKeys.K_FIRST_USE, used);
 
   /// 检查是否为第一次使用APP
-  bool get firstUserApp => spInstance.getBool(UserKeys.K_FIRST_USE);
+  String get firstUserApp =>
+      spInstance.getString(UserKeys.K_FIRST_USE, defaultVal: "empty");
 }
 
 class UserKeys {
