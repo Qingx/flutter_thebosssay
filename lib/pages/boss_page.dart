@@ -334,7 +334,7 @@ class _BodyWidgetState extends State<BodyWidget>
                         ),
                       ),
                       Text(
-                        "最近1小时在线",
+                        "最近1小时更新",
                         style: TextStyle(
                             fontSize: 12, color: BaseColor.textDarkLight),
                         textAlign: TextAlign.end,
