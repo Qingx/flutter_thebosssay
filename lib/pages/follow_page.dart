@@ -360,11 +360,9 @@ class _FollowPageState extends State<FollowPage>
         : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
     return Container(
       margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.only(left: 14, right: 14),
-      height: 176,
+      padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -379,6 +377,7 @@ class _FollowPageState extends State<FollowPage>
             overflow: TextOverflow.ellipsis,
           ),
           Container(
+            margin: EdgeInsets.only(top: 8),
             width: MediaQuery.of(context).size.width,
             height: 24,
             child: Row(
@@ -421,8 +420,9 @@ class _FollowPageState extends State<FollowPage>
             maxLines: 2,
             softWrap: true,
             overflow: TextOverflow.ellipsis,
-          ),
+          ).marginOnly(top: 8),
           Container(
+            margin: EdgeInsets.only(top: 8),
             width: MediaQuery.of(context).size.width,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -431,7 +431,7 @@ class _FollowPageState extends State<FollowPage>
                 Expanded(
                   child: Text(
                     "8.2k收藏·19.9w人围观",
-                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
                     softWrap: false,
@@ -440,7 +440,7 @@ class _FollowPageState extends State<FollowPage>
                 ),
                 Text(
                   "2020/03/02",
-                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
                   softWrap: false,
@@ -448,7 +448,7 @@ class _FollowPageState extends State<FollowPage>
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -460,16 +460,14 @@ class _FollowPageState extends State<FollowPage>
         : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
     String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
     String content = index % 2 == 0
-        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
+        ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志"
         : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.only(left: 14, right: 14),
-      height: 176,
+      padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -484,12 +482,14 @@ class _FollowPageState extends State<FollowPage>
             overflow: TextOverflow.ellipsis,
           ),
           Container(
-            height: 80,
+            height: 72,
+            margin: EdgeInsets.only(top: 8),
             child: Row(
               children: [
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         width: MediaQuery.of(context).size.width,
@@ -541,11 +541,11 @@ class _FollowPageState extends State<FollowPage>
                   ),
                 ),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(6),
                   child: Image.asset(
                     R.assetsImgTestHead,
-                    width: 120,
-                    height: 80,
+                    width: 96,
+                    height: 64,
                     fit: BoxFit.cover,
                   ),
                 ).marginOn(left: 16),
@@ -553,6 +553,7 @@ class _FollowPageState extends State<FollowPage>
             ),
           ),
           Container(
+            margin: EdgeInsets.only(top: 8),
             width: MediaQuery.of(context).size.width,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -561,7 +562,7 @@ class _FollowPageState extends State<FollowPage>
                 Expanded(
                   child: Text(
                     "8.2k收藏·19.9w人围观",
-                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
                     softWrap: false,
@@ -570,7 +571,7 @@ class _FollowPageState extends State<FollowPage>
                 ),
                 Text(
                   "2020/03/02",
-                  style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
                   softWrap: false,

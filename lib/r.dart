@@ -3,6 +3,8 @@ class R {
   static final String assetsImgEmptyLine = 'assets/img/emptyLine.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSelect.png)
   static final String assetsImgBossSelect = 'assets/img/bossSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossTopHead.png)
+  static final String assetsImgBossTopHead = 'assets/img/bossTopHead.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingWhite.png)
   static final String assetsImgSettingWhite = 'assets/img/settingWhite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/emptySearch.png)
@@ -31,10 +33,14 @@ class R {
   static final String assetsImgMineNormal = 'assets/img/mineNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSuccess.png)
   static final String assetsImgBossSuccess = 'assets/img/bossSuccess.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossHandLeft.png)
+  static final String assetsImgBossHandLeft = 'assets/img/bossHandLeft.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossLabel.png)
   static final String assetsImgBossLabel = 'assets/img/bossLabel.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareWhite.png)
   static final String assetsImgShareWhite = 'assets/img/shareWhite.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossHandRight.png)
+  static final String assetsImgBossHandRight = 'assets/img/bossHandRight.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkSelect.png)
   static final String assetsImgTalkSelect = 'assets/img/talkSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/aim.png)

@@ -93,6 +93,7 @@ flutter:
   # assets/img/*
     - assets/img/emptyLine.png
     - assets/img/bossSelect.png
+    - assets/img/bossTopHead.png
     - assets/img/settingWhite.png
     - assets/img/emptySearch.png
     - assets/img/testPhoto.png
@@ -107,8 +108,10 @@ flutter:
     - assets/img/talkNormal.png
     - assets/img/mineNormal.png
     - assets/img/bossSuccess.png
+    - assets/img/bossHandLeft.png
     - assets/img/bossLabel.png
     - assets/img/shareWhite.png
+    - assets/img/bossHandRight.png
     - assets/img/talkSelect.png
     - assets/img/aim.png
     - assets/img/mineSelect.png

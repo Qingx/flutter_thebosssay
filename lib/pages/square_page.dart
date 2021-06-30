@@ -25,7 +25,10 @@ class _SquarePageState extends State<SquarePage>
   bool hasData = false;
 
   Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
+    return Observable
+        .just(true)
+        .delay(Duration(seconds: 2))
+        .last;
   }
 
   @override
@@ -103,7 +106,7 @@ class _SquarePageState extends State<SquarePage>
   Widget topWidget() {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-        (context, index) {
+            (context, index) {
           return tabWidget();
         },
         childCount: 1,
@@ -135,7 +138,7 @@ class _SquarePageState extends State<SquarePage>
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
     Color bgColor =
-        mCurrentTab == index ? BaseColor.accent : BaseColor.accentLight;
+    mCurrentTab == index ? BaseColor.accent : BaseColor.accentLight;
     Color fontColor = mCurrentTab == index ? Colors.white : BaseColor.accent;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
@@ -160,23 +163,23 @@ class _SquarePageState extends State<SquarePage>
   Widget bodyWidget() {
     return mData.isNullOrEmpty()
         ? SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return emptyBodyWidget();
-              },
-              childCount: 1,
-            ),
-          )
+      delegate: SliverChildBuilderDelegate(
+            (context, index) {
+          return emptyBodyWidget();
+        },
+        childCount: 1,
+      ),
+    )
         : SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return index % 2 == 0
-                    ? bodyItemPhotoWidget(index)
-                    : bodyItemWidget(index);
-              },
-              childCount: mData.length,
-            ),
-          );
+      delegate: SliverChildBuilderDelegate(
+            (context, index) {
+          return index % 2 == 0
+              ? bodyItemPhotoWidget(index)
+              : bodyItemWidget(index);
+        },
+        childCount: mData.length,
+      ),
+    );
   }
 
   Widget bodyItemWidget(int index) {
@@ -186,8 +189,7 @@ class _SquarePageState extends State<SquarePage>
 
     return Container(
       margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.only(left: 14, right: 14),
-      height: 128,
+      padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Row(
         children: [
@@ -209,21 +211,21 @@ class _SquarePageState extends State<SquarePage>
                 ),
                 Text(
                   "烽火崛起·19.9w人围观·6小时前",
-                  style: TextStyle(fontSize: 12, color: BaseColor.textGray),
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
                   softWrap: false,
                   overflow: TextOverflow.ellipsis,
-                ),
+                ).marginOn(top: 16),
               ],
             ),
           ),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(6),
             child: Image.asset(
               R.assetsImgTestPhoto,
-              width: 120,
-              height: 80,
+              width: 96,
+              height: 64,
               fit: BoxFit.cover,
             ),
           ).marginOn(left: 16),
@@ -237,8 +239,7 @@ class _SquarePageState extends State<SquarePage>
 
     return Container(
       margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.only(left: 14, right: 14, top: 12, bottom: 12),
-      height: 192,
+      padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -256,6 +257,7 @@ class _SquarePageState extends State<SquarePage>
             overflow: TextOverflow.ellipsis,
           ),
           Container(
+            margin: EdgeInsets.only(top: 16),
             height: 80,
             child: MediaQuery.removePadding(
               removeBottom: true,
@@ -269,11 +271,14 @@ class _SquarePageState extends State<SquarePage>
                   mainAxisSpacing: 0,
                   crossAxisSpacing: 4,
                   childAspectRatio:
-                      (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80,
+                  (MediaQuery
+                      .of(context)
+                      .size
+                      .width - 28 - 8) / 3 / 80,
                 ),
                 itemBuilder: (context, index) {
                   return ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                     child: Image.asset(
                       R.assetsImgTestHead,
                       height: 80,
@@ -285,12 +290,12 @@ class _SquarePageState extends State<SquarePage>
           ),
           Text(
             "广告·海南万科",
-            style: TextStyle(fontSize: 12, color: BaseColor.textGray),
+            style: TextStyle(fontSize: 13, color: BaseColor.textGray),
             textAlign: TextAlign.start,
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.ellipsis,
-          ),
+          ).marginOn(top: 16),
         ],
       ),
     );
@@ -299,8 +304,14 @@ class _SquarePageState extends State<SquarePage>
   Widget emptyBodyWidget() {
     String path = R.assetsImgEmptyBoss;
     String content = " 最近还没有更新哦～";
-    double height = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
+    double height = MediaQuery
+        .of(context)
+        .size
+        .height -
+        MediaQuery
+            .of(context)
+            .padding
+            .top -
         180;
     return Container(
       height: height,
@@ -312,9 +323,9 @@ class _SquarePageState extends State<SquarePage>
             Image.asset(path, width: 160, height: 160),
             Flexible(
                 child: Text(content,
-                        style:
-                            TextStyle(fontSize: 18, color: BaseColor.textGray),
-                        textAlign: TextAlign.center)
+                    style:
+                    TextStyle(fontSize: 18, color: BaseColor.textGray),
+                    textAlign: TextAlign.center)
                     .marginOn(top: 16))
           ],
         ),
@@ -395,7 +406,10 @@ class _SquarePageState extends State<SquarePage>
 
   Widget loadingItemWidget(double width, double margin) {
     return Container(
-      width: (MediaQuery.of(context).size.width - 32) * width,
+      width: (MediaQuery
+          .of(context)
+          .size
+          .width - 32) * width,
       height: 16,
       margin: EdgeInsets.only(left: 16, right: 16, top: margin),
       decoration: BoxDecoration(

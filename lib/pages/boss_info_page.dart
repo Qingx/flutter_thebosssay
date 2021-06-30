@@ -92,28 +92,25 @@ class BossInfoPage extends StatelessWidget {
             ),
           ),
           infoWidget().positionOn(left: 16, right: 16, bottom: 0),
-          Container(
-            alignment: Alignment.center,
-            child: Container(
-              width: 64,
-              height: 64,
-              color: Colors.red,
-            ),
+          Image.asset(
+            R.assetsImgBossTopHead,
+            width: 64,
+            height: 64,
           ).positionOn(
             left: 0,
             right: 0,
             top: MediaQuery.of(context).padding.top + 40,
           ),
-          Container(
+          Image.asset(
+            R.assetsImgBossHandLeft,
             width: 24,
             height: 24,
-            color: Colors.blue,
           ).positionOn(
               bottom: 92, left: MediaQuery.of(context).size.width / 2 - 80),
-          Container(
+          Image.asset(
+            R.assetsImgBossHandRight,
             width: 24,
             height: 24,
-            color: Colors.blue,
           ).positionOn(
               bottom: 92, right: MediaQuery.of(context).size.width / 2 - 80),
         ],
