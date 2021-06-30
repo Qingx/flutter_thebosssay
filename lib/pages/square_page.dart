@@ -188,7 +188,7 @@ class _SquarePageState extends State<SquarePage>
         : "继法国之后，德国也宣布不承认中国疫苗，接种者或将被拒绝入境接种者或将被拒绝入境";
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Row(
@@ -238,7 +238,7 @@ class _SquarePageState extends State<SquarePage>
     String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(

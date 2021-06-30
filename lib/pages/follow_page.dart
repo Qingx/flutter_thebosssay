@@ -359,7 +359,7 @@ class _FollowPageState extends State<FollowPage>
         ? "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…"
         : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(
@@ -464,7 +464,7 @@ class _FollowPageState extends State<FollowPage>
         : "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志";
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(
