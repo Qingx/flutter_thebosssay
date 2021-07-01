@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class BaseWidget {
   ///状态栏
@@ -190,6 +192,354 @@ class BaseWidget {
           ),
         );
       },
+    );
+  }
+
+  ///含正文 纯文字
+  static Widget onlyTextWithContent(int index, BuildContext context) {
+    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+    String head = R.assetsImgTestHead;
+    String content =
+        "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…";
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    head,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Text(
+                  "莉莉娅",
+                  style:
+                      TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 8),
+                Expanded(
+                  child: Text(
+                    "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(left: 8),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            content,
+            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+            textAlign: TextAlign.start,
+            maxLines: 2,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ).marginOn(top: 8),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "8.2k收藏·19.9w人围观",
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "2020/03/02",
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  ///含正文 单个图片文字
+  static Widget singleImgWithContent(int index, BuildContext context) {
+    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+    String head = R.assetsImgTestPhoto;
+    String content =
+        "领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原领效电提算场已将铁存它色置识种是量性传周么名光却次种中节志至或局会点再部技七条先位记建政原…";
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            height: 72,
+            margin: EdgeInsets.only(top: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 24,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipOval(
+                              child: Image.asset(
+                                head,
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Text(
+                              "莉莉娅",
+                              style: TextStyle(
+                                  fontSize: 14, color: BaseColor.textDarkLight),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ).marginOn(left: 8),
+                            Expanded(
+                              child: Text(
+                                "灵魂莲华灵魂莲华灵魂莲华灵魂莲华",
+                                style: TextStyle(
+                                    fontSize: 14, color: BaseColor.textGray),
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ).marginOn(left: 8),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        content,
+                        style: TextStyle(
+                            fontSize: 14, color: BaseColor.textDarkLight),
+                        textAlign: TextAlign.start,
+                        maxLines: 2,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.asset(
+                    R.assetsImgTestHead,
+                    width: 96,
+                    height: 64,
+                    fit: BoxFit.cover,
+                  ),
+                ).marginOn(left: 16),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "8.2k收藏·19.9w人围观",
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  "2020/03/02",
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  ///无正文 三个图片文字
+  static Widget adTriImgNoContent(int index, BuildContext context) {
+    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 16),
+            height: 80,
+            child: MediaQuery.removePadding(
+              removeBottom: true,
+              removeTop: true,
+              context: context,
+              child: GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 3,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 0,
+                  crossAxisSpacing: 4,
+                  childAspectRatio:
+                      (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80,
+                ),
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.asset(
+                      R.assetsImgTestHead,
+                      height: 80,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Text(
+            "广告·海南万科",
+            style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+            textAlign: TextAlign.start,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+          ).marginOn(top: 16),
+        ],
+      ),
+    );
+  }
+
+  ///无正文 单个图片文字
+  static Widget singleImgNoContent(int index, BuildContext context) {
+    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: BaseColor.textDark,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.start,
+                  softWrap: true,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  "烽火崛起·19.9w人围观·6小时前",
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(top: 16),
+              ],
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.asset(
+              R.assetsImgTestPhoto,
+              width: 96,
+              height: 64,
+              fit: BoxFit.cover,
+            ),
+          ).marginOn(left: 16),
+        ],
+      ),
     );
   }
 }
