@@ -29,7 +29,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("useApp=>>${UserConfig.getIns().firstUserApp}");
+    print("loginStatus ===>> ${UserConfig.getIns().loginStatus}");
+
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.white,

@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -116,6 +119,7 @@ class _topWidgetState extends State<topWidget> {
   void initState() {
     super.initState();
 
+    Global.user=Get.find<UserController>(tag: "user");
     countTime();
   }
 
@@ -183,7 +187,12 @@ class _topWidgetState extends State<topWidget> {
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-              ),
+              ).onClick(() {
+                if (countText == "跳过") {
+                  DataConfig.getIns().firstUseApp = "false";
+                  Get.off(() => HomePage());
+                }
+              }),
             ),
           ),
         ],
@@ -236,7 +245,7 @@ class _BodyWidgetState extends State<BodyWidget> {
     listSelect.addAll(mData);
     setState(() {});
 
-    UserConfig.getIns().firstUseApp = "false";
+    DataConfig.getIns().firstUseApp = "false";
     Get.off(() => HomePage());
   }
 

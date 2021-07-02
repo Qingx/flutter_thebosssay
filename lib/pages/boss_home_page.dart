@@ -62,7 +62,7 @@ class BossHomePage extends StatelessWidget {
               .onClick(onBack),
           Expanded(child: SizedBox()),
           Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
-              .marginOn(right: 12)
+              .marginOn(right: 20)
               .onClick(onShare),
           Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
               .marginOn(right: 16)

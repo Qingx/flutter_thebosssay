@@ -92,12 +92,17 @@ flutter:
   # assets-generator-begin
   # assets/img/*
     - assets/img/emptyLine.png
+    - assets/img/shareDark.png
     - assets/img/bossSelect.png
     - assets/img/bossTopHead.png
+    - assets/img/itemAbout.png
+    - assets/img/itemContact.png
     - assets/img/settingWhite.png
+    - assets/img/itemShare.png
     - assets/img/emptySearch.png
     - assets/img/testPhoto.png
     - assets/img/bossNormal.png
+    - assets/img/itemScore.png
     - assets/img/testHead.png
     - assets/img/search.png
     - assets/img/likeNormal.png
@@ -108,10 +113,14 @@ flutter:
     - assets/img/talkNormal.png
     - assets/img/mineNormal.png
     - assets/img/bossSuccess.png
+    - assets/img/itemClear.png
+    - assets/img/itemFavorite.png
     - assets/img/bossHandLeft.png
     - assets/img/bossLabel.png
     - assets/img/shareWhite.png
     - assets/img/bossHandRight.png
+    - assets/img/itemHistory.png
+    - assets/img/settingDark.png
     - assets/img/talkSelect.png
     - assets/img/aim.png
     - assets/img/mineSelect.png

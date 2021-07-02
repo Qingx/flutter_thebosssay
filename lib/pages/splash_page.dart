@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:get/get.dart';
@@ -60,6 +63,11 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+
+    if (UserConfig.getIns().loginStatus) {
+      Global.user = Get.find<UserController>(tag: "user");
+      Global.user.setUser(UserConfig.getIns().user);
+    }
 
     countTime();
   }

@@ -26,7 +26,6 @@ class _TalkPageState extends State<TalkPage>
 
   @override
   void dispose() {
-    print('TalkPage====>dispose');
     super.dispose();
   }
 
@@ -36,7 +35,6 @@ class _TalkPageState extends State<TalkPage>
   @override
   void initState() {
     super.initState();
-    print('TalkPage====>init');
   }
 
   @override

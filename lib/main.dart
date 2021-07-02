@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -23,14 +26,18 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     BaseSP.init();
 
-    UserConfig.getIns().doAfterCreated((sp) {
-      bool isFirstUseApp = UserConfig.getIns().firstUserApp == "empty";
+    DataConfig.getIns().doAfterCreated((sp) {
+      UserConfig.getIns().doAfterCreated((sp) {
+        Get.lazyPut(() => Global.user, tag: "user");
 
-      if (isFirstUseApp) {
-        Get.off(() => GuidePage());
-      } else {
-        Get.off(() => SplashPage());
-      }
+        bool isFirstUseApp = DataConfig.getIns().firstUserApp == "empty";
+
+        if (isFirstUseApp) {
+          Get.off(() => GuidePage());
+        } else {
+          Get.off(() => SplashPage());
+        }
+      });
     });
   }
 

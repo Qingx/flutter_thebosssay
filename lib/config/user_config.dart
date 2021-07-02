@@ -1,5 +1,6 @@
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
-import 'package:flutter_boss_says/util/base_sp.dart';
+
+import 'data_config.dart';
 
 /// 用户数据相关缓存
 class UserConfig extends BaseConfig {
@@ -32,32 +33,10 @@ class UserConfig extends BaseConfig {
 
   /// 获取用户token
   String get token => spInstance.getString(UserKeys.K_HTTP_TOKEN);
-
-  /// 设置是否为第一次使用APP
-  set firstUseApp(String used) => spInstance.putString(UserKeys.K_FIRST_USE, used);
-
-  /// 检查是否为第一次使用APP
-  String get firstUserApp =>
-      spInstance.getString(UserKeys.K_FIRST_USE, defaultVal: "empty");
 }
 
 class UserKeys {
   static const K_USER_DATA = "K_USER_DATA";
   static const K_HTTP_SIGN = "K_HTTP_SIGN";
   static const K_HTTP_TOKEN = "K_HTTP_TOKEN";
-  static const K_FIRST_USE = "K_FIRST_USE";
-}
-
-class BaseConfig {
-  BaseSP spInstance;
-
-  BaseConfig(String name) {
-    spInstance = BaseSP(name);
-  }
-
-  void doAfterCreated(doNext(BaseSP sp)) {
-    spInstance.event((_) => doNext(spInstance));
-  }
-
-  void clear() => spInstance.clear();
 }
