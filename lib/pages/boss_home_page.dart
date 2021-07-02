@@ -371,43 +371,15 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return MediaQuery.removePadding(
-                  removeTop: true,
-                  removeBottom: true,
-                  context: context,
-                  child: StaggeredGridView.countBuilder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    itemCount: mData.length,
-                    itemBuilder: itemBuilder,
-                    staggeredTileBuilder: tileBuilder,
-                  ),
-                );
+                return index % 5 == 0
+                    ? BaseWidget.adTriImgNoContent(index, context)
+                    : index % 2 == 0
+                        ? BaseWidget.singleImgWithContent(index, context)
+                        : BaseWidget.onlyTextWithContent(index, context);
               },
-              childCount: 1,
+              childCount: mData.length,
             ),
           );
-  }
-
-  Widget itemBuilder(context, index) {
-    return index <= 1
-        ? bodyItemWidget(index)
-        : index == 2
-            ? adWidget()
-            : index % 2 == 0
-                ? bodyItemWidget(index)
-                : bodyItemLargeWidget(index);
-  }
-
-  StaggeredTile tileBuilder(index) {
-    return index <= 1
-        ? StaggeredTile.fit(2)
-        : index == 2
-            ? StaggeredTile.fit(4)
-            : StaggeredTile.fit(2);
   }
 
   Widget adWidget() {
