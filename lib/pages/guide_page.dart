@@ -108,6 +108,8 @@ class topWidget extends StatefulWidget {
 
 class _topWidgetState extends State<topWidget> {
   int currentTime = 5;
+  String countText = "5s";
+
   StreamSubscription<int> mDispose;
 
   @override
@@ -132,15 +134,13 @@ class _topWidgetState extends State<topWidget> {
     mDispose = Observable.periodic(Duration(seconds: 1), (i) => i)
         .take(6)
         .listen((event) {
-      print(countTime);
       currentTime--;
+      countText = "${currentTime}s";
       if (currentTime < 0) {
-        UserConfig.getIns().firstUseApp = "false";
-        Get.off(() => HomePage());
+        countText = "跳过";
         mDispose?.cancel();
-      } else {
-        setState(() {});
       }
+      setState(() {});
     });
   }
 
@@ -177,7 +177,7 @@ class _topWidgetState extends State<topWidget> {
             ),
             child: Center(
               child: Text(
-                "${currentTime}s",
+                countText,
                 style: TextStyle(color: BaseColor.accent, fontSize: 14),
                 textAlign: TextAlign.center,
                 softWrap: false,
@@ -235,6 +235,9 @@ class _BodyWidgetState extends State<BodyWidget> {
     listSelect = [];
     listSelect.addAll(mData);
     setState(() {});
+
+    UserConfig.getIns().firstUseApp = "false";
+    Get.off(() => HomePage());
   }
 
   void removeAll() {

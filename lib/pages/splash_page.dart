@@ -29,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
         alignment: Alignment.topRight,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(R.assetsImgSplash),
+            image: AssetImage(R.assetsImgTestSplash),
             alignment: Alignment.center,
             fit: BoxFit.cover,
           ),

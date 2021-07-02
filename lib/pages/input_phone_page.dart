@@ -251,7 +251,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
       alignment: Alignment.center,
       margin: EdgeInsets.only(top: 48, left: 16, right: 16),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8)), color: color),
+          borderRadius: BorderRadius.all(Radius.circular(4)), color: color),
       child: Text(
         "发送验证码",
         style: TextStyle(
