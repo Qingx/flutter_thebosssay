@@ -31,6 +31,10 @@ extension FunString on String {
   bool isNullOrEmpty() {
     return this == null || this.isEmpty;
   }
+
+  String hidePhoneNumber(){
+    return this.replaceRange(3, 7, "****");
+  }
 }
 
 extension WidgetClick on Widget {

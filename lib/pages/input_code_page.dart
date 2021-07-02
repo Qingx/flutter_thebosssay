@@ -40,6 +40,7 @@ class _InputCodePageState extends State<InputCodePage> {
       Observable.just(1).delay(Duration(milliseconds: 2000)).listen((event) {
         UserEntity user = UserEntity()
           ..id = "123456789"
+          ..telephone="17796405329"
           ..wechatName = "清和";
 
         UserConfig.getIns().user = user;

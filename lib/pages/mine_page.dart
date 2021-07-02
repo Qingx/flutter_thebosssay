@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
+import 'package:flutter_boss_says/pages/change_info_page.dart';
+import 'package:flutter_boss_says/pages/favorites_page.dart';
 import 'package:flutter_boss_says/pages/input_phone_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -73,13 +74,12 @@ class _MinePageState extends State<MinePage>
 
   void onClickUser() {
     if (UserConfig.getIns().loginStatus) {
-      // UserConfig.getIns().clear();
-      // Global.user.setUser(BaseEmpty.emptyUser);
+      Get.to(() => ChangeInfoPage());
 
       // UserEntity user = UserEntity()
       //   ..id = "0101010101"
       //   ..wechatName = "花束爱山毛榉";
-      //
+
       // UserConfig.getIns().user = user;
       // Global.user.setUser(user);
     } else {
@@ -89,7 +89,17 @@ class _MinePageState extends State<MinePage>
   }
 
   void onClickInfo(index) {
-    BaseTool.toast(msg: infoNames[index]);
+    switch (index) {
+      case 0:
+        BaseTool.toast(msg: infoNames[index]);
+        break;
+      case 1:
+        Get.to(() => FavoritesPage());
+        break;
+      case 2:
+        BaseTool.toast(msg: infoNames[index]);
+        break;
+    }
   }
 
   void onClickItem(index) {
@@ -284,8 +294,6 @@ class _MinePageState extends State<MinePage>
       removeTop: true,
       context: context,
       child: ListView.builder(
-        shrinkWrap: true,
-        physics: AlwaysScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
           if (index == 3) {
