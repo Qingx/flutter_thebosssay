@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -26,6 +28,31 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   Future<bool> getData() {
     return Observable.just(true).delay(Duration(seconds: 2)).last;
+  }
+
+  ///展开/收起
+  void onTitleClick(index) {
+    if (mSelectId.contains(mData[index].code)) {
+      mSelectId.removeWhere((element) => element == mData[index].code);
+    } else {
+      mSelectId.add(mData[index].code);
+    }
+    setState(() {});
+  }
+
+  void onArticleClick(data) {
+    BaseTool.toast(msg: data);
+  }
+
+  ///添加收藏夹
+  void addFolder(name) {
+    Get.back();
+    mData.add(FavoriteModel(4, [1]));
+    numbers = 0;
+    mData.forEach((e) {
+      numbers = numbers + e.data.length;
+    });
+    setState(() {});
   }
 
   @override
@@ -196,7 +223,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 Expanded(
                   child: Text(
                     index == 0 ? "默认收藏夹" : "收藏夹$index",
-                    style: TextStyle(fontSize: 14, color: BaseColor.textDark),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: BaseColor.textDark,
+                      fontWeight: FontWeight.bold,
+                    ),
                     softWrap: false,
                     maxLines: 1,
                     textAlign: TextAlign.start,
@@ -213,7 +244,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 ),
               ],
             ),
-          ),
+          ).onClick(() {
+            onTitleClick(index);
+          }),
           Visibility(
             visible: hasSelect,
             child: Container(
@@ -226,14 +259,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ),
         ],
       ),
-    ).onClick(() {
-      if (mSelectId.contains(mData[index].code)) {
-        mSelectId.removeWhere((element) => element == mData[index].code);
-      } else {
-        mSelectId.add(mData[index].code);
-      }
-      setState(() {});
-    });
+    );
   }
 
   Widget articleWidget(index) {
@@ -253,8 +279,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Widget articleItemWidget(index) {
+    bool hasIndex = index % 2 == 0;
+    String title = hasIndex
+        ? "搞什么副业可以月入过万搞什么副业可以月入过万"
+        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业";
+    String head = hasIndex ? R.assetsImgTestPhoto : R.assetsImgTestHead;
+    String name = hasIndex ? "莉莉娅" : "神里凌华";
     return Container(
-      height: 45,
       child: Column(
         children: [
           Container(
@@ -263,21 +294,62 @@ class _FavoritesPageState extends State<FavoritesPage> {
             margin: EdgeInsets.only(left: 16, right: 16),
           ),
           Container(
-            height: 44,
-            padding: EdgeInsets.only(left: 16, right: 16),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              index % 2 == 0 ? "今天是个好日子" : "唱支山歌给党听",
-              style: TextStyle(fontSize: 13, color: BaseColor.textGray),
-              softWrap: false,
-              maxLines: 1,
-              textAlign: TextAlign.start,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+              padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+              alignment: Alignment.centerLeft,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 14, color: BaseColor.textDark),
+                    softWrap: true,
+                    maxLines: 2,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          head,
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Text(
+                        name,
+                        style:
+                            TextStyle(fontSize: 14, color: BaseColor.textGray),
+                        softWrap: false,
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ).marginOn(left: 8),
+                      Expanded(child: SizedBox()),
+                      Text(
+                        "2021/07/04",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: BaseColor.textGray,
+                        ),
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ).marginOn(top: 8),
+                ],
+              )),
         ],
       ),
-    );
+    ).onClick(() {
+      onArticleClick(name);
+    });
   }
 
   Widget floatWidget() {
@@ -303,7 +375,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
         size: 24,
       ),
     ).onClick(() {
-      BaseTool.toast(msg: "添加收藏夹");
+      showNewFolder(context, onDismiss: () {
+        Get.back();
+      }, onConfirm: addFolder);
     });
   }
 }

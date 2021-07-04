@@ -43,6 +43,8 @@ class R {
   static final String assetsImgTalkNormal = 'assets/img/talkNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/mineNormal.png)
   static final String assetsImgMineNormal = 'assets/img/mineNormal.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/logo.png)
+  static final String assetsImgLogo = 'assets/img/logo.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSuccess.png)
   static final String assetsImgBossSuccess = 'assets/img/bossSuccess.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemClear.png)
@@ -55,12 +57,18 @@ class R {
   static final String assetsImgBossLabel = 'assets/img/bossLabel.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareWhite.png)
   static final String assetsImgShareWhite = 'assets/img/shareWhite.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/contact1.png)
+  static final String assetsImgContact1 = 'assets/img/contact1.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossHandRight.png)
   static final String assetsImgBossHandRight = 'assets/img/bossHandRight.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemHistory.png)
   static final String assetsImgItemHistory = 'assets/img/itemHistory.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/contact2.png)
+  static final String assetsImgContact2 = 'assets/img/contact2.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingDark.png)
   static final String assetsImgSettingDark = 'assets/img/settingDark.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/contact3.png)
+  static final String assetsImgContact3 = 'assets/img/contact3.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkSelect.png)
   static final String assetsImgTalkSelect = 'assets/img/talkSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/aim.png)
@@ -69,6 +77,8 @@ class R {
   static final String assetsImgMineSelect = 'assets/img/mineSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/likeSelect.png)
   static final String assetsImgLikeSelect = 'assets/img/likeSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/contact4.png)
+  static final String assetsImgContact4 = 'assets/img/contact4.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testSplash.png)
   static final String assetsImgTestSplash = 'assets/img/testSplash.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderSelect.png)

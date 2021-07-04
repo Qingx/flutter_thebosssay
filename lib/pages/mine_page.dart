@@ -3,14 +3,19 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/change_info_page.dart';
+import 'package:flutter_boss_says/pages/contact_us_page.dart';
 import 'package:flutter_boss_says/pages/favorites_page.dart';
+import 'package:flutter_boss_says/pages/history_page.dart';
 import 'package:flutter_boss_says/pages/input_phone_page.dart';
+import 'package:flutter_boss_says/pages/today_history_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
 
 class MinePage extends StatefulWidget {
@@ -65,45 +70,88 @@ class _MinePageState extends State<MinePage>
   }
 
   void onShare() {
-    Share.share('https://cn.bing.com', subject: "必应");
+    Share.share('https://www.bilibili.com/');
   }
 
-  void onSetting(BuildContext context) {
+  void onSetting() {
     BaseTool.toast(msg: "账号设置");
   }
 
   void onClickUser() {
     if (UserConfig.getIns().loginStatus) {
       Get.to(() => ChangeInfoPage());
-
-      // UserEntity user = UserEntity()
-      //   ..id = "0101010101"
-      //   ..wechatName = "花束爱山毛榉";
-
-      // UserConfig.getIns().user = user;
-      // Global.user.setUser(user);
     } else {
       BaseTool.toast(msg: "请先登录！");
       Get.to(() => InputPhonePage());
     }
   }
 
+  ///点击收藏/收藏数
+  void onClickFavorite() {
+    if (UserConfig.getIns().loginStatus) {
+      Get.to(() => FavoritesPage());
+    } else {
+      BaseTool.toast(msg: "请先登录！");
+      Get.to(() => InputPhonePage());
+    }
+  }
+
+  ///点击阅读记录
+  void onClickHistory() {
+    if (UserConfig.getIns().loginStatus) {
+      Get.to(() => HistoryPage());
+    } else {
+      BaseTool.toast(msg: "请先登录！");
+      Get.to(() => InputPhonePage());
+    }
+  }
+
+  ///点击今日阅读量
+  void onClickTodayHistory() {
+    Get.to(() => TodayHistoryPage());
+  }
+
   void onClickInfo(index) {
     switch (index) {
-      case 0:
-        BaseTool.toast(msg: infoNames[index]);
-        break;
-      case 1:
-        Get.to(() => FavoritesPage());
-        break;
       case 2:
+        onClickTodayHistory();
+        break;
+      default:
         BaseTool.toast(msg: infoNames[index]);
         break;
     }
   }
 
+  ///清除缓存
+  void onClickClear() {
+    BaseWidget.showLoadingAlert("正在清除缓存...", context);
+    Observable.just(true).delay(Duration(milliseconds: 1600)).listen((event) {
+      BaseTool.toast(msg: "清除成功");
+      Get.back();
+    });
+  }
+
   void onClickItem(index) {
-    BaseTool.toast(msg: itemNames[index]);
+    switch (index) {
+      case 0:
+        onClickFavorite();
+        break;
+      case 1:
+        onClickHistory();
+        break;
+      case 2:
+        onShare();
+        break;
+      case 5:
+        Get.to(() => ContactUsPage());
+        break;
+      case 7:
+        onClickClear();
+        break;
+      default:
+        BaseTool.toast(msg: itemNames[index]);
+        break;
+    }
   }
 
   @override
@@ -129,9 +177,7 @@ class _MinePageState extends State<MinePage>
         children: [
           Image.asset(R.assetsImgSettingDark, width: 24, height: 24)
               .marginOn(right: 20)
-              .onClick(() {
-            onSetting(context);
-          }),
+              .onClick(onClickUser),
           Image.asset(R.assetsImgShareDark, width: 24, height: 24)
               .marginOn(right: 16)
               .onClick(onShare),

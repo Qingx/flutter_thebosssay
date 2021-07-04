@@ -113,18 +113,23 @@ flutter:
     - assets/img/emptyBoss.png
     - assets/img/talkNormal.png
     - assets/img/mineNormal.png
+    - assets/img/logo.png
     - assets/img/bossSuccess.png
     - assets/img/itemClear.png
     - assets/img/itemFavorite.png
     - assets/img/bossHandLeft.png
     - assets/img/bossLabel.png
     - assets/img/shareWhite.png
+    - assets/img/contact1.png
     - assets/img/bossHandRight.png
     - assets/img/itemHistory.png
+    - assets/img/contact2.png
     - assets/img/settingDark.png
+    - assets/img/contact3.png
     - assets/img/talkSelect.png
     - assets/img/aim.png
     - assets/img/mineSelect.png
     - assets/img/likeSelect.png
+    - assets/img/contact4.png
     - assets/img/testSplash.png
     - assets/img/bossOrderSelect.png

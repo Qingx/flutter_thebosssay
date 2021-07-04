@@ -37,7 +37,7 @@ class BossHomePage extends StatelessWidget {
   }
 
   void onShare() {
-    Share.share('https://cn.bing.com', subject: "必应");
+    Share.share('https://www.bilibili.com/');
   }
 
   void onSetting(BuildContext context) {

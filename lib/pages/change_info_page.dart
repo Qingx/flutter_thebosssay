@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:get/get.dart';
@@ -106,27 +109,14 @@ class ChangeInfoPage extends StatelessWidget {
       removeBottom: true,
       child: ListView.builder(
         itemBuilder: (context, index) {
-          return listItemWidget(index);
+          return listItemWidget(index, context);
         },
         itemCount: 3,
       ),
     );
   }
 
-  Widget listItemWidget(index) {
-    String content;
-    switch (index) {
-      case 0:
-        content = Global.user.user.value.wechatName;
-        break;
-      case 1:
-        content = Global.user.user.value.id;
-        break;
-      case 2:
-        content = Global.user.user.value.telephone.hidePhoneNumber();
-        break;
-    }
-
+  Widget listItemWidget(index, context) {
     return Container(
       height: 57,
       child: Column(
@@ -177,6 +167,28 @@ class ChangeInfoPage extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ).onClick(() {
+      onClickItem(index, context);
+    });
+  }
+
+  void onClickItem(index, context) {
+    if (index == 0) {
+      showChangeName(context, onDismiss: () {
+        Get.back();
+      }, onConfirm: tryChangeName);
+    }
+  }
+
+  void tryChangeName(name) {
+    UserEntity entity = Global.user.user.value;
+
+    if (entity.wechatName != name) {
+      entity.wechatName = name;
+      Global.user.setUser(entity);
+      Get.back();
+    } else {
+      BaseTool.toast(msg: "昵称重复，修改失败");
+    }
   }
 }
