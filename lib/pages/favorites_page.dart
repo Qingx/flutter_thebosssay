@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -213,44 +214,60 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return Container(
       child: Column(
         children: [
-          Container(
-            height: 56,
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    index == 0 ? "默认收藏夹" : "收藏夹$index",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: BaseColor.textDark,
-                      fontWeight: FontWeight.bold,
+          Slidable(
+            child: Container(
+              height: 56,
+              padding: EdgeInsets.only(left: 16, right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      index == 0 ? "默认收藏夹" : "收藏夹$index",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: BaseColor.textDark,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      softWrap: false,
+                      maxLines: 1,
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                  ),
+                  Text(
+                    "${mData[index].data.length}篇言论",
+                    style: TextStyle(color: BaseColor.accent, fontSize: 14),
                     softWrap: false,
                     maxLines: 1,
-                    textAlign: TextAlign.start,
+                    textAlign: TextAlign.end,
                     overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Text(
-                  "${mData[index].data.length}篇言论",
-                  style: TextStyle(color: BaseColor.accent, fontSize: 14),
-                  softWrap: false,
-                  maxLines: 1,
-                  textAlign: TextAlign.end,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ).onClick(() {
-            onTitleClick(index);
-          }),
+                ],
+              ),
+            ).onClick(() {
+              onTitleClick(index);
+            }),
+            actionPane: SlidableScrollActionPane(),
+            key: Key(mData[index].code.toString()),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: '删除',
+                color: Colors.red,
+                icon: Icons.delete,
+                closeOnTap: false,
+                onTap: () {
+                  mData.removeAt(index);
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
           Visibility(
             visible: hasSelect,
             child: Container(
-              child: articleWidget(index),
+              child: articleWidget(mData[index]),
             ),
           ),
           Container(
@@ -262,7 +279,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  Widget articleWidget(index) {
+  Widget articleWidget(FavoriteModel data) {
     return MediaQuery.removePadding(
       context: context,
       removeBottom: true,
@@ -271,20 +288,20 @@ class _FavoritesPageState extends State<FavoritesPage> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return articleItemWidget(index);
+          return articleItemWidget(data.code, data.data[index], index);
         },
-        itemCount: mData[index].data.length,
+        itemCount: data.data.length,
       ),
     );
   }
 
-  Widget articleItemWidget(index) {
+  Widget articleItemWidget(int code, int data, int index) {
     bool hasIndex = index % 2 == 0;
     String title = hasIndex
         ? "搞什么副业可以月入过万搞什么副业可以月入过万"
         : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业";
     String head = hasIndex ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-    String name = hasIndex ? "莉莉娅" : "神里凌华";
+    String name = hasIndex ? "莉莉娅$data" : "神里凌华$data";
     return Container(
       child: Column(
         children: [
@@ -293,58 +310,79 @@ class _FavoritesPageState extends State<FavoritesPage> {
             color: BaseColor.line,
             margin: EdgeInsets.only(left: 16, right: 16),
           ),
-          Container(
-              padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-              alignment: Alignment.centerLeft,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(fontSize: 14, color: BaseColor.textDark),
-                    softWrap: true,
-                    maxLines: 2,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ClipOval(
-                        child: Image.asset(
-                          head,
-                          width: 24,
-                          height: 24,
-                          fit: BoxFit.cover,
+          Slidable(
+            child: Container(
+                padding:
+                    EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(fontSize: 14, color: BaseColor.textDark),
+                      softWrap: true,
+                      maxLines: 2,
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ClipOval(
+                          child: Image.asset(
+                            head,
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      Text(
-                        name,
-                        style:
-                            TextStyle(fontSize: 14, color: BaseColor.textGray),
-                        softWrap: false,
-                        textAlign: TextAlign.start,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ).marginOn(left: 8),
-                      Expanded(child: SizedBox()),
-                      Text(
-                        "2021/07/04",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: BaseColor.textGray,
+                        Text(
+                          name,
+                          style: TextStyle(
+                              fontSize: 14, color: BaseColor.textGray),
+                          softWrap: false,
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ).marginOn(left: 8),
+                        Expanded(child: SizedBox()),
+                        Text(
+                          "2021/07/04",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: BaseColor.textGray,
+                          ),
+                          textAlign: TextAlign.end,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        textAlign: TextAlign.end,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ).marginOn(top: 8),
-                ],
-              )),
+                      ],
+                    ).marginOn(top: 8),
+                  ],
+                )),
+            actionPane: SlidableScrollActionPane(),
+            actionExtentRatio: 0.25,
+            key: Key(data.toString()),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: '取消收藏',
+                color: Colors.red,
+                icon: Icons.delete,
+                closeOnTap: false,
+                onTap: () {
+                  mData
+                      .firstWhere((element) => element.code == code)
+                      .data
+                      .remove(data);
+                  setState(() {});
+                },
+              ),
+            ],
+          ),
         ],
       ),
     ).onClick(() {

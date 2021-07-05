@@ -4,6 +4,7 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -174,57 +175,74 @@ class _TodayHistoryPageState extends State<TodayHistoryPage> {
     return Container(
       child: Column(
         children: [
-          Container(
-            padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-            alignment: Alignment.centerLeft,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(fontSize: 14, color: BaseColor.textDark),
-                  softWrap: true,
-                  maxLines: 2,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ClipOval(
-                      child: Image.asset(
-                        head,
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.cover,
+          Slidable(
+            child: Container(
+              padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+              alignment: Alignment.centerLeft,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 14, color: BaseColor.textDark),
+                    softWrap: true,
+                    maxLines: 2,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          head,
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    Text(
-                      name,
-                      style: TextStyle(fontSize: 14, color: BaseColor.textGray),
-                      softWrap: false,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ).marginOn(left: 8),
-                    Expanded(child: SizedBox()),
-                    Text(
-                      "23:23",
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: BaseColor.textGray,
+                      Text(
+                        name,
+                        style:
+                            TextStyle(fontSize: 14, color: BaseColor.textGray),
+                        softWrap: false,
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ).marginOn(left: 8),
+                      Expanded(child: SizedBox()),
+                      Text(
+                        "23:23",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: BaseColor.textGray,
+                        ),
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      textAlign: TextAlign.end,
-                      maxLines: 1,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ).marginOn(top: 8),
-              ],
+                    ],
+                  ).marginOn(top: 8),
+                ],
+              ),
             ),
+            actionPane: SlidableScrollActionPane(),
+            key: Key(mData[index].toString()),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: '删除',
+                color: Colors.red,
+                icon: Icons.delete,
+                closeOnTap: false,
+                onTap: () {
+                  mData.removeAt(index);
+                  setState(() {});
+                },
+              ),
+            ],
           ),
           Visibility(
             child: Container(
