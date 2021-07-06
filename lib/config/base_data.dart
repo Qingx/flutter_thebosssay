@@ -39,7 +39,7 @@ class BaseData<T> extends DataSource {
       if(data == null) {
         return;
       }
-      data = JsonConvert.fromJsonAsT(data);
+      this.data = JsonConvert.fromJsonAsT<T>(data);
     }
   }
 

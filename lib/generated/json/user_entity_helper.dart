@@ -4,46 +4,41 @@ userEntityFromJson(UserEntity data, Map<String, dynamic> json) {
 	if (json['avatar'] != null) {
 		data.avatar = json['avatar'].toString();
 	}
-	if (json['balance'] != null) {
-		data.balance = json['balance'] is String
-				? int.tryParse(json['balance'])
-				: json['balance'].toInt();
-	}
-	if (json['birthday'] != null) {
-		data.birthday = json['birthday'] is String
-				? int.tryParse(json['birthday'])
-				: json['birthday'].toInt();
-	}
-	if (json['city'] != null) {
-		data.city = json['city'].toString();
-	}
-	if (json['createTime'] != null) {
-		data.createTime = json['createTime'] is String
-				? int.tryParse(json['createTime'])
-				: json['createTime'].toInt();
-	}
-	if (json['gender'] != null) {
-		data.gender = json['gender'].toString();
+	if (json['deviceId'] != null) {
+		data.deviceId = json['deviceId'].toString();
 	}
 	if (json['id'] != null) {
 		data.id = json['id'].toString();
 	}
-	if (json['nickname'] != null) {
-		data.nickname = json['nickname'].toString();
+	if (json['nickName'] != null) {
+		data.nickName = json['nickName'].toString();
 	}
-	if (json['recentlySpent'] != null) {
-		data.recentlySpent = json['recentlySpent'] is String
-				? int.tryParse(json['recentlySpent'])
-				: json['recentlySpent'].toInt();
+	if (json['phone'] != null) {
+		data.phone = json['phone'].toString();
 	}
-	if (json['telephone'] != null) {
-		data.telephone = json['telephone'].toString();
+	if (json['collectNum'] != null) {
+		data.collectNum = json['collectNum'] is String
+				? int.tryParse(json['collectNum'])
+				: json['collectNum'].toInt();
 	}
-	if (json['token'] != null) {
-		data.token = json['token'].toString();
+	if (json['readNum'] != null) {
+		data.readNum = json['readNum'] is String
+				? int.tryParse(json['readNum'])
+				: json['readNum'].toInt();
 	}
-	if (json['wechatName'] != null) {
-		data.wechatName = json['wechatName'].toString();
+	if (json['traceNum'] != null) {
+		data.traceNum = json['traceNum'] is String
+				? int.tryParse(json['traceNum'])
+				: json['traceNum'].toInt();
+	}
+	if (json['type'] != null) {
+		data.type = json['type'].toString();
+	}
+	if (json['wxHead'] != null) {
+		data.wxHead = json['wxHead'].toString();
+	}
+	if (json['wxName'] != null) {
+		data.wxName = json['wxName'].toString();
 	}
 	return data;
 }
@@ -51,16 +46,15 @@ userEntityFromJson(UserEntity data, Map<String, dynamic> json) {
 Map<String, dynamic> userEntityToJson(UserEntity entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['avatar'] = entity.avatar;
-	data['balance'] = entity.balance;
-	data['birthday'] = entity.birthday;
-	data['city'] = entity.city;
-	data['createTime'] = entity.createTime;
-	data['gender'] = entity.gender;
+	data['deviceId'] = entity.deviceId;
 	data['id'] = entity.id;
-	data['nickname'] = entity.nickname;
-	data['recentlySpent'] = entity.recentlySpent;
-	data['telephone'] = entity.telephone;
-	data['token'] = entity.token;
-	data['wechatName'] = entity.wechatName;
+	data['nickName'] = entity.nickName;
+	data['phone'] = entity.phone;
+	data['collectNum'] = entity.collectNum;
+	data['readNum'] = entity.readNum;
+	data['traceNum'] = entity.traceNum;
+	data['type'] = entity.type;
+	data['wxHead'] = entity.wxHead;
+	data['wxName'] = entity.wxName;
 	return data;
 }

@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -9,7 +16,6 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class FollowPage extends StatefulWidget {
   const FollowPage({Key key}) : super(key: key);
@@ -19,17 +25,16 @@ class FollowPage extends StatefulWidget {
 }
 
 class _FollowPageState extends State<FollowPage>
-    with AutomaticKeepAliveClientMixin, BasePageController {
+    with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
   int mCurrentTab = 0;
   var builderFuture;
 
   ScrollController scrollController;
   EasyRefreshController controller;
   bool hasData = false;
+  int totalArticleNumber = 0;
 
-  Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
+  List<BossInfoEntity> bossList = []; //boss card列表数据
 
   @override
   bool get wantKeepAlive => true;
@@ -46,28 +51,50 @@ class _FollowPageState extends State<FollowPage>
   void initState() {
     super.initState();
 
-    builderFuture = getData();
-    // concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], false);
+    builderFuture = loadInitData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
 
-    print('uuid====>${DataConfig.getIns().tempId}');
+    tempSign();
   }
 
+  ///退出登录 重新使用设备id注册
+  void tempSign() {
+    if (UserConfig.getIns().token == "empty_token") {
+      UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
+        UserConfig.getIns().token = event.token;
+      });
+    }
+  }
+
+  ///初始化获取数据
+  Future<WlPage.Page<ArticleEntity>> loadInitData() {
+    return BossApi.ins().obtainLatestBoss().flatMap((value) {
+      bossList = value;
+      return BossApi.ins().obtainFollowArticle(pageParam);
+    }).doOnData((event) {
+      totalArticleNumber = event.total;
+      hasData = event.hasData;
+      concat(event.records, false);
+    }).doOnError((e) {
+      print(e);
+    }).last;
+  }
+
+  ///获取文章数据 分页
   @override
   void loadData(bool loadMore) {
     if (!loadMore) {
       pageParam.reset();
     }
 
-    // List<int> testData = [];
-    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
-      hasData = true;
-      concat(event, loadMore);
+    BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
+      totalArticleNumber = event.total;
+      hasData = event.hasData;
+      concat(event.records, loadMore);
       setState(() {});
-    }, onDone: () {
+    }).onDone(() {
       if (loadMore) {
         controller.finishLoad();
       } else {
@@ -77,15 +104,24 @@ class _FollowPageState extends State<FollowPage>
     });
   }
 
+  ///刷新boss card列表数据
+  void loadBossData() {
+    bossList.clear();
+    BossApi.ins().obtainLatestBoss().listen((event) {
+      bossList = event;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+    return FutureBuilder<WlPage.Page<ArticleEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  Widget builderWidget(BuildContext context,
+      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       print('data:${snapshot.data}');
       if (snapshot.hasData) {
@@ -116,7 +152,10 @@ class _FollowPageState extends State<FollowPage>
           if (index == 0) {
             return tabWidget();
           } else if (index == 1) {
-            return cardWidget();
+            if (bossList.isNullOrEmpty()) {
+              return emptyCardWidget();
+            } else
+              return cardWidget();
           } else {
             return titleWidget();
           }
@@ -167,8 +206,8 @@ class _FollowPageState extends State<FollowPage>
     ).onClick(() {
       if (index != mCurrentTab) {
         mCurrentTab = index;
-        builderFuture = getData();
-        setState(() {});
+        loadBossData();
+        controller.callRefresh();
       }
     });
   }
@@ -186,9 +225,9 @@ class _FollowPageState extends State<FollowPage>
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
-            return cardItemWidget(index);
+            return cardItemWidget(bossList[index], index);
           },
-          itemCount: 12,
+          itemCount: bossList.length,
         ),
       ),
     );
@@ -230,13 +269,13 @@ class _FollowPageState extends State<FollowPage>
                 maxLines: 1,
               ),
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget cardItemWidget(int index) {
+  Widget cardItemWidget(BossInfoEntity entity, int index) {
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
 
@@ -258,13 +297,22 @@ class _FollowPageState extends State<FollowPage>
             child: Stack(
               children: [
                 ClipOval(
-                  child: Image.asset(
-                      index % 2 == 0
-                          ? R.assetsImgTestPhoto
-                          : R.assetsImgTestHead,
-                      width: 64,
-                      height: 64,
-                      fit: BoxFit.cover),
+                  child: Image.network(
+                    HttpConfig.fullUrl(entity.head),
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        index % 2 == 0
+                            ? R.assetsImgTestPhoto
+                            : R.assetsImgTestHead,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
                 ),
                 Container(
                   height: 14,
@@ -275,16 +323,16 @@ class _FollowPageState extends State<FollowPage>
                   ),
                   child: Center(
                     child: Text(
-                      index.toString(),
+                      entity.updateCount.toString(),
                       style: TextStyle(color: Colors.white, fontSize: 8),
                     ),
                   ),
-                ).positionOn(top: 0, right: 0)
+                ).positionOn(top: 0, right: 0),
               ],
             ),
           ),
           Text(
-            index % 2 == 0 ? "莉莉娅" : "神里凌华",
+            entity.name,
             style: TextStyle(color: BaseColor.textDark, fontSize: 16),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -292,13 +340,13 @@ class _FollowPageState extends State<FollowPage>
             overflow: TextOverflow.ellipsis,
           ),
           Text(
-            index % 2 == 0 ? "灵魂莲华" : "精神信仰",
+            entity.role,
             style: TextStyle(color: BaseColor.textGray, fontSize: 12),
             textAlign: TextAlign.center,
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.ellipsis,
-          )
+          ),
         ],
       ),
     ).onClick(() {
@@ -325,7 +373,7 @@ class _FollowPageState extends State<FollowPage>
           Text(
             "共25篇",
             style: TextStyle(color: BaseColor.textDark, fontSize: 14),
-          ).marginOn(left: 16)
+          ).marginOn(left: 16),
         ],
       ),
     );
@@ -344,11 +392,7 @@ class _FollowPageState extends State<FollowPage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return index % 5 == 0
-                    ? BaseWidget.adTriImgNoContent(index, context)
-                    : index % 2 == 0
-                        ? BaseWidget.singleImgWithContent(index, context)
-                        : BaseWidget.onlyTextWithContent(index, context);
+                return BaseWidget.followItem(mData[index], index, context);
               },
               childCount: mData.length,
             ),
@@ -370,11 +414,12 @@ class _FollowPageState extends State<FollowPage>
           children: [
             Image.asset(path, width: 160, height: 160),
             Flexible(
-                child: Text(content,
-                        style:
-                            TextStyle(fontSize: 18, color: BaseColor.textGray),
-                        textAlign: TextAlign.center)
-                    .marginOn(top: 16))
+              child: Text(
+                content,
+                style: TextStyle(fontSize: 18, color: BaseColor.textGray),
+                textAlign: TextAlign.center,
+              ).marginOn(top: 16),
+            ),
           ],
         ),
       ),
@@ -400,18 +445,19 @@ class _FollowPageState extends State<FollowPage>
           loadingItemWidget(0.4, 8),
           loadingItemWidget(0.6, 8),
           Container(
-              margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-              height: 48,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SpinKitFadingCircle(
-                    color: Color(0xff0e1e1e1),
-                    size: 48,
-                    duration: Duration(milliseconds: 2000),
-                  ),
-                ],
-              )),
+            margin: EdgeInsets.only(top: 16, left: 16, right: 16),
+            height: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SpinKitFadingCircle(
+                  color: Color(0xff0e1e1e1),
+                  size: 48,
+                  duration: Duration(milliseconds: 2000),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -445,8 +491,9 @@ class _FollowPageState extends State<FollowPage>
       width: 80,
       margin: EdgeInsets.only(left: left, right: right),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
-          color: BaseColor.loadBg),
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        color: BaseColor.loadBg,
+      ),
     );
   }
 

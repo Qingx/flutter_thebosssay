@@ -151,8 +151,7 @@ class _SquarePageState extends State<SquarePage>
     ).onClick(() {
       if (index != mCurrentTab) {
         mCurrentTab = index;
-        builderFuture = getData();
-        setState(() {});
+        controller.callRefresh();
       }
     });
   }

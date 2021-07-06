@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -17,7 +19,8 @@ class ChangeInfoPage extends StatelessWidget {
 
   List<String> names = ["账号昵称", "账号ID", "登录手机号"];
 
-  void tryLogOut() {
+  void tryLogout() {
+    DataConfig.getIns().setTempId = BaseTool.createTempId();
     UserConfig.getIns().clear();
     Global.user.setUser(BaseEmpty.emptyUser);
     Get.offAll(() => HomePage());
@@ -95,7 +98,7 @@ class ChangeInfoPage extends StatelessWidget {
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.ellipsis,
               ),
-            ).onClick(tryLogOut),
+            ).onClick(tryLogout),
           ],
         ),
       ),
@@ -141,11 +144,17 @@ class ChangeInfoPage extends StatelessWidget {
                   child: Obx(
                     () => Text(
                       index == 0
-                          ? Global.user.user.value.wechatName
+                          ? Global.user.user.value == BaseEmpty.emptyUser
+                              ? "请先登录！"
+                              : Global.user.user.value.nickName
                           : index == 1
-                              ? Global.user.user.value.id
-                              : Global.user.user.value.telephone
-                                  .hidePhoneNumber(),
+                              ? Global.user.user.value == BaseEmpty.emptyUser
+                                  ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
+                                  : Global.user.user.value.id
+                              : Global.user.user.value == BaseEmpty.emptyUser
+                                  ? "ID：${Global.user.user.value.id}"
+                                  : Global.user.user.value.phone
+                                      .hidePhoneNumber(),
                       style: TextStyle(fontSize: 14, color: BaseColor.accent),
                       softWrap: false,
                       textAlign: TextAlign.end,
@@ -176,18 +185,26 @@ class ChangeInfoPage extends StatelessWidget {
     if (index == 0) {
       showChangeName(context, onDismiss: () {
         Get.back();
-      }, onConfirm: tryChangeName);
+      }, onConfirm: (name) {
+        tryChangeName(name, context);
+      });
     }
   }
 
-  void tryChangeName(name) {
+  void tryChangeName(name, context) {
     UserEntity entity = Global.user.user.value;
 
-    if (entity.wechatName != name) {
-      entity.wechatName = name;
-      Global.user.setUser(entity);
-      Get.back();
+    if (entity.nickName != name) {
+      BaseWidget.showLoadingAlert("正在更新...", context);
+      UserApi.ins().obtainUpdateUser(nickName: name).listen((event) {
+        entity.nickName = name;
+        Global.user.setUser(entity);
+        Get.back();
+        Get.back();
+        BaseTool.toast(msg: "更新成功");
+      });
     } else {
+      Get.back();
       BaseTool.toast(msg: "昵称重复，修改失败");
     }
   }

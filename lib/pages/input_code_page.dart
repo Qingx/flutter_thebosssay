@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
-import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -27,6 +27,7 @@ class _InputCodePageState extends State<InputCodePage> {
   String countText = "30s";
   String codeNumber = "";
   StreamSubscription<int> mDispose;
+  String phoneNumber = Get.arguments as String;
 
   void onBack() {
     Get.back();
@@ -34,20 +35,21 @@ class _InputCodePageState extends State<InputCodePage> {
 
   void onSubmitted(content) {
     codeNumber = content;
+
     if (isInputAvailable(true)) {
       BaseWidget.showLoadingAlert("正在尝试登录...", context);
 
-      Observable.just(1).delay(Duration(milliseconds: 2000)).listen((event) {
-        UserEntity user = UserEntity()
-          ..id = "123456789"
-          ..telephone="17796405329"
-          ..wechatName = "清和";
-
-        UserConfig.getIns().user = user;
-        Global.user.setUser(user);
+      UserApi.ins().obtainSignPhone(phoneNumber, codeNumber).listen((event) {
+        UserConfig.getIns().token = event.token;
+        UserConfig.getIns().user = event.userInfo;
+        Global.user.setUser(event.userInfo);
 
         BaseTool.toast(msg: "登录成功");
         Get.offAll(() => HomePage());
+      }, onError: (res) {
+        Get.back();
+        print(res);
+        BaseTool.toast(msg: "登录失败,${res.msg}");
       });
     }
   }

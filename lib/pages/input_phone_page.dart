@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/input_code_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -39,12 +40,16 @@ class _InputPhonePageState extends State<InputPhonePage> {
     setState(() {});
   }
 
-  void onConfirm() {
+  void trySendCode() {
     if (isInputAvailable(true)) {
       BaseWidget.showLoadingAlert("正在发送验证码...", context);
 
-      Observable.just(1).delay(Duration(milliseconds: 2000)).listen((event) {
-        Get.off(() => InputCodePage());
+      UserApi.ins().obtainSendCode(phoneNumber).listen((event) {
+        Get.off(() => InputCodePage(), arguments: phoneNumber);
+      }, onError: (res) {
+        Get.back();
+        print(res);
+        BaseTool.toast(msg: "验证码发送失败，${res.msg}");
       });
     }
   }
@@ -261,6 +266,6 @@ class _InputPhonePageState extends State<InputPhonePage> {
         softWrap: false,
         overflow: TextOverflow.ellipsis,
       ),
-    ).onClick(onConfirm);
+    ).onClick(trySendCode);
   }
 }

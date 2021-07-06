@@ -32,7 +32,7 @@ class UserConfig extends BaseConfig {
   set token(String token) => spInstance.putString(UserKeys.K_HTTP_TOKEN, token);
 
   /// 获取用户token
-  String get token => spInstance.getString(UserKeys.K_HTTP_TOKEN);
+  String get token => spInstance.getString(UserKeys.K_HTTP_TOKEN,defaultVal: "empty_token");
 }
 
 class UserKeys {

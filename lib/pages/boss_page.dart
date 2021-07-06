@@ -252,8 +252,7 @@ class _BodyWidgetState extends State<BodyWidget>
     ).onClick(() {
       if (index != mCurrentTab) {
         mCurrentTab = index;
-        builderFuture = getData();
-        setState(() {});
+        controller.callRefresh();
       }
     });
   }

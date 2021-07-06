@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:get/get.dart';
@@ -67,6 +69,12 @@ class _SplashPageState extends State<SplashPage> {
     if (UserConfig.getIns().loginStatus) {
       Global.user = Get.find<UserController>(tag: "user");
       Global.user.setUser(UserConfig.getIns().user);
+    }
+
+    if (UserConfig.getIns().token == "empty_token") {
+      UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
+        UserConfig.getIns().token = event.token;
+      });
     }
 
     countTime();

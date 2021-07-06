@@ -37,14 +37,13 @@ class _MyAppState extends State<MyApp> {
           DataConfig.getIns().setTempId = BaseTool.createTempId();
         }
 
-        Get.off(() => GuidePage());
+        print('tempId====>${DataConfig.getIns().tempId}');
 
-        // if (isFirstUseApp) {
-        //   Get.off(() => GuidePage());
-        // } else {
-        //   Get.off(() => SplashPage());
-        // }
-
+        if (isFirstUseApp) {
+          Get.off(() => GuidePage());
+        } else {
+          Get.off(() => SplashPage());
+        }
       });
     });
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/change_info_page.dart';
@@ -232,7 +233,7 @@ class _MinePageState extends State<MinePage>
                   () => Text(
                     controller.user.value == BaseEmpty.emptyUser
                         ? "请先登录！"
-                        : controller.user.value.wechatName,
+                        : controller.user.value.nickName,
                     style: TextStyle(
                         fontSize: 28,
                         color: BaseColor.textDark,
@@ -246,13 +247,12 @@ class _MinePageState extends State<MinePage>
                 Obx(
                   () => Text(
                     controller.user.value == BaseEmpty.emptyUser
-                        ? "游客：123123123"
+                        ? "游客：${DataConfig.getIns().tempId.substring(0,12)}..."
                         : "ID：${controller.user.value.id}",
                     style: TextStyle(fontSize: 16, color: BaseColor.textGray),
                     softWrap: false,
                     maxLines: 1,
                     textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

@@ -56,13 +56,13 @@ class BaseApi {
   Observable<BaseData<T>> get<T>(String pathOrUrl,
           {Map<String, dynamic> queryParameters}) =>
       Observable.fromFuture(
-          _http(pathOrUrl, HttpConfig.Get, queryParameters: queryParameters));
+          _http<T>(pathOrUrl, HttpConfig.Get, queryParameters: queryParameters));
 
   /// 发起Post请求
   Observable<BaseData<T>> post<T>(String pathOrUrl,
           {Map<String, dynamic> queryParameters,
           Map<String, dynamic> requestBody}) =>
-      Observable.fromFuture(_http(pathOrUrl, HttpConfig.Post,
+      Observable.fromFuture(_http<T>(pathOrUrl, HttpConfig.Post,
           queryParameters: queryParameters, requestBody: requestBody));
 
   /// 发起网络请求
@@ -79,7 +79,7 @@ class BaseApi {
             queryParameters: queryParameters ?? {}, data: requestBody ?? {});
       }
 
-      BaseData<T> data = json2WLData(response.data);
+      BaseData<T> data = json2WLData<T>(response.data);
 
       return data;
     } catch (error) {
@@ -196,7 +196,7 @@ class HttpInterceptor extends Interceptor {
   @override
   onRequest(RequestOptions options) async {
     options.headers['sign'] = UserConfig.getIns().sign;
-    options.headers['token'] = UserConfig.getIns().token;
+    options.headers['Authorization'] = UserConfig.getIns().token;
     return super.onRequest(options);
   }
 }

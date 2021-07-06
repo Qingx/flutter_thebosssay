@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -284,6 +287,113 @@ class BaseWidget {
                 ),
                 Text(
                   "2020/03/02",
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget followItem(
+      ArticleEntity entity, int index, BuildContext context) {
+    String head = index % 2 == 0 ? R.assetsImgTestHead : R.assetsImgTestPhoto;
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            entity.title,
+            style: TextStyle(
+                fontSize: 16,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipOval(
+                    child: Image.network(
+                  HttpConfig.fullUrl(entity.bossVO.head),
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      head,
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                )),
+                Text(
+                  entity.bossVO.name,
+                  style:
+                      TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 8),
+                Expanded(
+                  child: Text(
+                    entity.bossVO.role,
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(left: 8),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            "entity.content",
+            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+            textAlign: TextAlign.start,
+            maxLines: 2,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ).marginOn(top: 8),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "${entity.collect}k收藏·${entity.point}w人围观",
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  DateFormat.getYYYYMMDD(entity.createTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,

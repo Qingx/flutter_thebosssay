@@ -29,7 +29,7 @@ class Page<T> {
     pages = json['pages'];
     total = json['total'];
     current = json['current'];
-    records = JsonConvert.fromJsonAsT(json['records']);
+    records = JsonConvert.fromJsonAsT<List<T>>(json['records']);
   }
 
   Map<String, dynamic> toJson() {

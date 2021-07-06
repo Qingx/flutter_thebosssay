@@ -2,7 +2,7 @@ import 'package:date_format/date_format.dart';
 
 class DateFormat {
   static const List<String> mmddhhnn = [mm, '月', dd, '日 ', HH, ':', nn];
-  static const List<String> yyyymmdd = [yyyy, '-', mm, '-', dd];
+  static const List<String> yyyymmdd = [yyyy, '/', mm, '/', dd];
   static const List<String> nnss = [nn,':',ss];
   ///12月12日 12:12
   static String getNNSS(int time) {
@@ -20,7 +20,7 @@ class DateFormat {
     return formatDate(dateTime, mmddhhnn);
   }
 
-  ///2012-12-12
+  ///2012/12/12
   static String getYYYYMMDD(int time) {
     if (time == null || time < 1000) return "";
 
