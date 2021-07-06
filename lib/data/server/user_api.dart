@@ -2,7 +2,7 @@ import 'package:flutter_boss_says/config/base_api.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
-class UserApi extends BaseApi{
+class UserApi extends BaseApi {
   UserApi._();
 
   static UserApi _mIns;
@@ -19,5 +19,11 @@ class UserApi extends BaseApi{
     var data = {'phone': phone, 'code': code};
     return post<UserEntity>("/apk/account/sign-in-phone", requestBody: data)
         .rebase();
+  }
+
+  /// 游客登录
+  Observable<String> obtainTempLogin(String tempId) {
+    var data = {"deviceId": tempId};
+    return post<String>("/api/account/sign-device", requestBody: data).rebase();
   }
 }

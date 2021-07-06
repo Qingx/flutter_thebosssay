@@ -42,6 +42,7 @@ dependencies:
   share: ^0.6.5+4
   flutter_verification_box: ^1.0.4
   flutter_slidable: ^0.5。7
+  uuid: ^2.2.2
 
 dev_dependencies:
   flutter_test:
@@ -90,8 +91,8 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
   assets:
-  # assets-generator-begin
-  # assets/img/*
+    # assets-generator-begin
+    # assets/img/*
     - assets/img/emptyLine.png
     - assets/img/shareDark.png
     - assets/img/bossSelect.png

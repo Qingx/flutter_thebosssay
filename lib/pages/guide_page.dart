@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
-import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -14,6 +13,7 @@ import 'package:rxdart/rxdart.dart';
 
 class GuidePage extends StatelessWidget {
   GlobalKey<_BodyWidgetState> bodyKey = GlobalKey();
+  GlobalKey<_TopWidgetState> topKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,9 @@ class GuidePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            topWidget(),
+            TopWidget(
+              key: topKey,
+            ),
             Text(
               "为你挑选出追踪人数最多的老板",
               style: TextStyle(color: BaseColor.textGray, fontSize: 14),
@@ -33,7 +35,10 @@ class GuidePage extends StatelessWidget {
               textAlign: TextAlign.start,
               overflow: TextOverflow.ellipsis,
             ).marginOn(left: 15),
-            BodyWidget(key: bodyKey),
+            BodyWidget(
+              key: bodyKey,
+              topKey: topKey,
+            ),
             addAllWidget(),
             removeAllWidget(),
           ],
@@ -102,14 +107,14 @@ class GuidePage extends StatelessWidget {
   }
 }
 
-class topWidget extends StatefulWidget {
-  const topWidget({Key key}) : super(key: key);
+class TopWidget extends StatefulWidget {
+  TopWidget({Key key}) : super(key: key);
 
   @override
-  _topWidgetState createState() => _topWidgetState();
+  _TopWidgetState createState() => _TopWidgetState();
 }
 
-class _topWidgetState extends State<topWidget> {
+class _TopWidgetState extends State<TopWidget> {
   int currentTime = 5;
   String countText = "5s";
 
@@ -118,9 +123,6 @@ class _topWidgetState extends State<topWidget> {
   @override
   void initState() {
     super.initState();
-
-    Global.user=Get.find<UserController>(tag: "user");
-    countTime();
   }
 
   @override
@@ -202,7 +204,9 @@ class _topWidgetState extends State<topWidget> {
 }
 
 class BodyWidget extends StatefulWidget {
-  BodyWidget({Key key}) : super(key: key);
+  GlobalKey<_TopWidgetState> topKey;
+
+  BodyWidget({Key key, this.topKey}) : super(key: key);
 
   @override
   _BodyWidgetState createState() => _BodyWidgetState();
@@ -212,7 +216,7 @@ class _BodyWidgetState extends State<BodyWidget> {
   double indicatorWidth = 0;
   ScrollController controller;
   List<int> listSelect = [];
-  List<int> mData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  List<int> mData = [];
 
   @override
   void initState() {
@@ -232,6 +236,22 @@ class _BodyWidgetState extends State<BodyWidget> {
         setState(() {});
       }
     });
+
+    loadData();
+  }
+
+  void loadData() {
+    builderFuture = getData();
+  }
+
+  var builderFuture;
+
+  Future<bool> getData() {
+    return Observable.just(true).delay(Duration(seconds: 2)).doOnData((event) {
+      mData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+      Global.user = Get.find<UserController>(tag: "user");
+      widget.topKey.currentState.countTime();
+    }).last;
   }
 
   @override
@@ -241,67 +261,94 @@ class _BodyWidgetState extends State<BodyWidget> {
   }
 
   void addAll() {
-    listSelect = [];
-    listSelect.addAll(mData);
-    setState(() {});
+    if (!mData.isNullOrEmpty()) {
+      listSelect = [];
+      listSelect.addAll(mData);
+      setState(() {});
 
-    DataConfig.getIns().firstUseApp = "false";
-    Get.off(() => HomePage());
+      DataConfig.getIns().firstUseApp = "false";
+      Get.off(() => HomePage());
+    }
   }
 
   void removeAll() {
-    listSelect = [];
-    setState(() {});
+    if (!mData.isNullOrEmpty()) {
+      listSelect = [];
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 360,
-      child: Column(
-        children: [
-          Container(
-            height: 352,
-            padding: EdgeInsets.only(top: 24, bottom: 24),
-            child: MediaQuery.removePadding(
-              removeTop: true,
-              removeBottom: true,
-              context: context,
-              child: GridView.builder(
-                controller: controller,
-                scrollDirection: Axis.horizontal,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  childAspectRatio:
-                      144 / (MediaQuery.of(context).size.width - 24) * 3,
-                ),
-                itemBuilder: (context, index) {
-                  return itemWidget(index);
-                },
-                itemCount: mData.length,
+      child: futureWidget(),
+    );
+  }
+
+  Widget futureWidget() {
+    return FutureBuilder<bool>(
+      builder: builderWidget,
+      future: builderFuture,
+    );
+  }
+
+  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+    if (snapshot.connectionState == ConnectionState.done) {
+      print('data:${snapshot.data}');
+      if (snapshot.hasData) {
+        return contentWidget();
+      } else
+        return Container(color: Colors.red);
+    } else {
+      return loadingWidget();
+    }
+  }
+
+  Widget contentWidget() {
+    return Column(
+      children: [
+        Container(
+          height: 352,
+          padding: EdgeInsets.only(top: 24, bottom: 24),
+          child: MediaQuery.removePadding(
+            removeTop: true,
+            removeBottom: true,
+            context: context,
+            child: GridView.builder(
+              controller: controller,
+              scrollDirection: Axis.horizontal,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                childAspectRatio:
+                    144 / (MediaQuery.of(context).size.width - 24) * 3,
               ),
+              itemBuilder: (context, index) {
+                return itemWidget(index);
+              },
+              itemCount: mData.length,
             ),
           ),
-          Container(
+        ),
+        Container(
+          height: 4,
+          width: 100,
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            color: BaseColor.loadBg,
+          ),
+          child: Container(
             height: 4,
-            width: 100,
-            alignment: Alignment.centerLeft,
+            width: indicatorWidth,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(4)),
-              color: BaseColor.loadBg,
-            ),
-            child: Container(
-              height: 4,
-              width: indicatorWidth,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-                color: BaseColor.accent,
-              ),
+              color: BaseColor.accent,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -386,5 +433,58 @@ class _BodyWidgetState extends State<BodyWidget> {
       }
       setState(() {});
     });
+  }
+
+  Widget loadingWidget() {
+    return Column(
+      children: [
+        Container(
+          height: 352,
+          padding: EdgeInsets.only(top: 24, bottom: 24),
+          child: MediaQuery.removePadding(
+            removeTop: true,
+            removeBottom: true,
+            context: context,
+            child: GridView.builder(
+              controller: controller,
+              scrollDirection: Axis.horizontal,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                childAspectRatio:
+                    144 / (MediaQuery.of(context).size.width - 24) * 3,
+              ),
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: EdgeInsets.only(left: 8, right: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    color: BaseColor.loadBg,
+                  ),
+                );
+              },
+              itemCount: 8,
+            ),
+          ),
+        ),
+        Container(
+          height: 4,
+          width: 100,
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            color: BaseColor.loadBg,
+          ),
+          child: Container(
+            height: 4,
+            width: indicatorWidth,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              color: BaseColor.accent,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

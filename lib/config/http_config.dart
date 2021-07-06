@@ -41,8 +41,7 @@ class DevEnv extends IEnv {
 
   @override
   String get baseUrl {
-    return "http://192.168.1.88:8072/";
-    // return "http://imwork.tpddns.cn:8072/";
+    return "http://192.168.1.106:8086/";
   }
 
   @override

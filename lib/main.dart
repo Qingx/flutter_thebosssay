@@ -7,6 +7,7 @@ import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
 
 void main() {
@@ -32,11 +33,18 @@ class _MyAppState extends State<MyApp> {
 
         bool isFirstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
-        if (isFirstUseApp) {
-          Get.off(() => GuidePage());
-        } else {
-          Get.off(() => SplashPage());
+        if (DataConfig.getIns().tempId == "empty") {
+          DataConfig.getIns().setTempId = BaseTool.createTempId();
         }
+
+        Get.off(() => GuidePage());
+
+        // if (isFirstUseApp) {
+        //   Get.off(() => GuidePage());
+        // } else {
+        //   Get.off(() => SplashPage());
+        // }
+
       });
     });
   }

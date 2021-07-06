@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -50,6 +51,8 @@ class _FollowPageState extends State<FollowPage>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+
+    print('uuid====>${DataConfig.getIns().tempId}');
   }
 
   @override

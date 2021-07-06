@@ -1,4 +1,5 @@
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:uuid/uuid.dart';
 
 class BaseTool {
   static bool eq(double num1, double num2) {
@@ -7,5 +8,12 @@ class BaseTool {
 
   static void toast({String msg}) {
     Fluttertoast.showToast(msg: msg);
+  }
+
+  static final _uuid = Uuid();
+
+  static String createTempId() {
+    String uuid = _uuid.v4().replaceAll(RegExp(r'-'), "");
+    return "temp$uuid";
   }
 }

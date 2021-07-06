@@ -11,15 +11,23 @@ class DataConfig extends BaseConfig {
   }
 
   /// 设置是否为第一次使用APP
-  set firstUseApp(String used) => spInstance.putString(UserKeys.K_FIRST_USE, used);
+  set firstUseApp(String used) =>
+      spInstance.putString(DataKeys.K_FIRST_USE, used);
 
   /// 检查是否为第一次使用APP
   String get firstUserApp =>
-      spInstance.getString(UserKeys.K_FIRST_USE, defaultVal: "empty");
+      spInstance.getString(DataKeys.K_FIRST_USE, defaultVal: "empty");
+
+  set setTempId(String tempId) => spInstance.putString(DataKeys.K_TEMP_ID, tempId);
+
+  /// 获取tempId
+  String get tempId =>
+      spInstance.getString(DataKeys.K_TEMP_ID, defaultVal: "empty");
 }
 
-class UserKeys {
+class DataKeys {
   static const K_FIRST_USE = "K_FIRST_USE";
+  static const K_TEMP_ID = "K_YK_ID";
 }
 
 class BaseConfig {
