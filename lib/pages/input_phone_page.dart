@@ -8,7 +8,6 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class InputPhonePage extends StatefulWidget {
   const InputPhonePage({Key key}) : super(key: key);
@@ -203,7 +202,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
             ),
           ),
           Image.asset(
-            R.assetsImgTestPhoto,
+            R.assetsImgLoginLabel,
             width: 56,
             height: 56,
             fit: BoxFit.cover,

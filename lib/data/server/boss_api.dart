@@ -38,8 +38,13 @@ class BossApi extends BaseApi {
   }
 
   ///已关注的最近更新的boss列表
-  Observable<List<BossInfoEntity>> obtainLatestBoss() {
+  Observable<List<BossInfoEntity>> obtainFollowUpdateBoss() {
     return get<List<BossInfoEntity>>("/api/boss/nearby-update").rebase();
+  }
+
+  ///已追踪的boss列表
+  Observable<List<BossInfoEntity>> obtainFollowBossList() {
+    return get<List<BossInfoEntity>>("/api/boss/collected").rebase();
   }
 
   ///获取追踪 最近更新文章

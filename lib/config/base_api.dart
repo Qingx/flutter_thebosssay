@@ -225,10 +225,6 @@ extension ObservableData<T> on Observable<BaseData<T>> {
   Observable<T> rebase() {
     return this.map((event) {
       if (event.success) {
-        if (event.isDataEmpty) {
-          throw EmptyMiss();
-        }
-
         return event.data;
       }
 
@@ -253,10 +249,6 @@ extension ObservablePage<T> on Observable<BasePage<T>> {
   Observable<Page<T>> rebase({PageParam pageParam}) {
     return this.map((event) {
       if (event.success) {
-        if (event.isDataEmpty) {
-          throw EmptyMiss();
-        }
-
         if (pageParam != null) {
           if (event.data is Page) {
             final page = event.data;

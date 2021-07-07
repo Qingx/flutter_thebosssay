@@ -192,7 +192,7 @@ class _MinePageState extends State<MinePage>
       height: 176 + MediaQuery.of(context).padding.top,
       decoration: ShapeDecoration(
         image: DecorationImage(
-          image: AssetImage(R.assetsImgTestSplash),
+          image: AssetImage(R.assetsImgMineTopBg),
           fit: BoxFit.cover,
         ),
         shape: RoundedRectangleBorder(

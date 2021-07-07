@@ -41,8 +41,10 @@ dependencies:
   flutter_staggered_grid_view: ^0.3.4
   share: ^0.6.5+4
   flutter_verification_box: ^1.0.4
-  flutter_slidable: ^0.5。7
+  flutter_slidable: ^0.5.7
   uuid: ^2.2.2
+  json_serializable: ^3.5.1
+  event_bus: ^1.1.1
 
 dev_dependencies:
   flutter_test:
@@ -105,6 +107,7 @@ flutter:
     - assets/img/testPhoto.png
     - assets/img/bossNormal.png
     - assets/img/itemScore.png
+    - assets/img/bossTopBg.png
     - assets/img/testHead.png
     - assets/img/search.png
     - assets/img/changeInfo.png
@@ -112,9 +115,11 @@ flutter:
     - assets/img/bossOrderNormal.png
     - assets/img/splash.png
     - assets/img/rightGreen.png
+    - assets/img/mineTopBg.png
     - assets/img/emptyBoss.png
     - assets/img/talkNormal.png
     - assets/img/mineNormal.png
+    - assets/img/loginLabel.png
     - assets/img/logo.png
     - assets/img/bossSuccess.png
     - assets/img/itemClear.png

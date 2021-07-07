@@ -1,7 +1,6 @@
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
 
 class Page<T> {
-
   int size;
   int pages;
   int total;
@@ -47,5 +46,3 @@ class Page<T> {
     return 'Page{size: $size, pages: $pages, total: $total, current: $current, searchCount: $searchCount, records: $records}';
   }
 }
-
-

@@ -81,7 +81,7 @@ class BossInfoPage extends StatelessWidget {
             height: height - 60,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: AssetImage(R.assetsImgTestSplash),
+                image: AssetImage(R.assetsImgMineTopBg),
                 fit: BoxFit.cover,
               ),
               shape: RoundedRectangleBorder(

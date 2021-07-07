@@ -23,6 +23,8 @@ class R {
   static final String assetsImgBossNormal = 'assets/img/bossNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemScore.png)
   static final String assetsImgItemScore = 'assets/img/itemScore.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossTopBg.png)
+  static final String assetsImgBossTopBg = 'assets/img/bossTopBg.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testHead.png)
   static final String assetsImgTestHead = 'assets/img/testHead.png';
   /// ![](http://127.0.0.1:11111111/assets/img/search.png)
@@ -37,12 +39,16 @@ class R {
   static final String assetsImgSplash = 'assets/img/splash.png';
   /// ![](http://127.0.0.1:11111111/assets/img/rightGreen.png)
   static final String assetsImgRightGreen = 'assets/img/rightGreen.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/mineTopBg.png)
+  static final String assetsImgMineTopBg = 'assets/img/mineTopBg.png';
   /// ![](http://127.0.0.1:11111111/assets/img/emptyBoss.png)
   static final String assetsImgEmptyBoss = 'assets/img/emptyBoss.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkNormal.png)
   static final String assetsImgTalkNormal = 'assets/img/talkNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/mineNormal.png)
   static final String assetsImgMineNormal = 'assets/img/mineNormal.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/loginLabel.png)
+  static final String assetsImgLoginLabel = 'assets/img/loginLabel.png';
   /// ![](http://127.0.0.1:11111111/assets/img/logo.png)
   static final String assetsImgLogo = 'assets/img/logo.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSuccess.png)

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/pages/search_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -100,12 +102,7 @@ class _BodyWidgetState extends State<BodyWidget>
   ScrollController scrollController;
   EasyRefreshController controller;
 
-  List<int> mData = [];
-
-  Future<bool> getData() {
-    // mData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
+  List<BossInfoEntity> mData = [];
 
   @override
   bool get wantKeepAlive => true;
@@ -121,31 +118,40 @@ class _BodyWidgetState extends State<BodyWidget>
   void initState() {
     super.initState();
 
-    builderFuture = getData();
+    builderFuture = loadInitData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
   }
 
+  ///初始化获取数据
+  Future<List<BossInfoEntity>> loadInitData() {
+    return BossApi.ins().obtainFollowBossList().doOnData((event) {
+      mData = event;
+    }).last;
+  }
+
   void loadData() {
-    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
+    BossApi.ins().obtainFollowBossList().listen((event) {
       mData = event;
       setState(() {});
     }, onDone: () {
       controller.finishRefresh();
+    }, onError: (res) {
+      print(res.msg);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+    return FutureBuilder<List<BossInfoEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  Widget builderWidget(
+      BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       print('data:${snapshot.data}');
       if (snapshot.hasData) {
@@ -270,17 +276,15 @@ class _BodyWidgetState extends State<BodyWidget>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return bodyItemWidget(index);
+                return bodyItemWidget(mData[index], index);
               },
               childCount: mData.length,
             ),
           );
   }
 
-  Widget bodyItemWidget(int index) {
+  Widget bodyItemWidget(BossInfoEntity entity, int index) {
     String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-    String name = index % 2 == 0 ? "莉莉娅" : "神里凌华神里凌华";
-    String content = index % 2 == 0 ? "灵魂莲华" : "精神信仰";
 
     return Container(
       padding: EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
@@ -289,11 +293,19 @@ class _BodyWidgetState extends State<BodyWidget>
       child: Row(
         children: [
           ClipOval(
-            child: Image.asset(
-              head,
+            child: Image.network(
+              entity.head,
               width: 56,
               height: 56,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  head,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           Expanded(
@@ -313,7 +325,7 @@ class _BodyWidgetState extends State<BodyWidget>
                           children: [
                             Flexible(
                               child: Text(
-                                name,
+                                entity.name,
                                 style: TextStyle(
                                     color: BaseColor.textDark,
                                     fontSize: 16,
@@ -344,7 +356,7 @@ class _BodyWidgetState extends State<BodyWidget>
                   ),
                 ),
                 Text(
-                  content,
+                  entity.role,
                   style:
                       TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
                   softWrap: false,

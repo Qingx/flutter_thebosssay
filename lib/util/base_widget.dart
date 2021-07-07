@@ -42,6 +42,19 @@ class BaseWidget {
     );
   }
 
+  static Widget errorWidget(Function retry) {
+    return Container(
+      alignment: Alignment.center,
+      child: Text(
+        "很遗憾，数据加载失败了\n请点击重试",
+        style: TextStyle(color: BaseColor.textGray, fontSize: 16),
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        softWrap: true,
+      ),
+    ).onClick(retry);
+  }
+
   static Widget loadingWidget() {
     return Center(
         child: Column(
@@ -368,7 +381,7 @@ class BaseWidget {
             ),
           ),
           Text(
-            "entity.content",
+            entity.descContent,
             style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
             textAlign: TextAlign.start,
             maxLines: 2,

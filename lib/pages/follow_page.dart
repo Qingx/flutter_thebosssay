@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
@@ -8,9 +11,12 @@ import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
+import 'package:flutter_boss_says/pages/search_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -36,6 +42,8 @@ class _FollowPageState extends State<FollowPage>
 
   List<BossInfoEntity> bossList = []; //boss card列表数据
 
+  StreamSubscription<BaseEvent> eventDispose;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -45,6 +53,8 @@ class _FollowPageState extends State<FollowPage>
     super.dispose();
     controller?.dispose();
     scrollController?.dispose();
+
+    eventDispose?.cancel();
   }
 
   @override
@@ -57,6 +67,19 @@ class _FollowPageState extends State<FollowPage>
     controller = EasyRefreshController();
 
     tempSign();
+
+    eventBus();
+  }
+
+  ///eventBus
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      if (event.obj == RefreshFollowEvent()) {
+        ///添加追踪boss后刷新
+        loadBossData();
+        controller.callRefresh();
+      }
+    });
   }
 
   ///退出登录 重新使用设备id注册
@@ -70,16 +93,16 @@ class _FollowPageState extends State<FollowPage>
 
   ///初始化获取数据
   Future<WlPage.Page<ArticleEntity>> loadInitData() {
-    return BossApi.ins().obtainLatestBoss().flatMap((value) {
-      bossList = value;
-      return BossApi.ins().obtainFollowArticle(pageParam);
-    }).doOnData((event) {
-      totalArticleNumber = event.total;
-      hasData = event.hasData;
-      concat(event.records, false);
-    }).doOnError((e) {
-      print(e);
-    }).last;
+    return BossApi.ins()
+        .obtainFollowUpdateBoss()
+        .flatMap((value) {
+          return BossApi.ins().obtainFollowArticle(pageParam);
+        })
+        .doOnData((event) {})
+        .doOnError((e) {
+          print(e);
+        })
+        .last;
   }
 
   ///获取文章数据 分页
@@ -107,7 +130,7 @@ class _FollowPageState extends State<FollowPage>
   ///刷新boss card列表数据
   void loadBossData() {
     bossList.clear();
-    BossApi.ins().obtainLatestBoss().listen((event) {
+    BossApi.ins().obtainFollowUpdateBoss().listen((event) {
       bossList = event;
     });
   }
@@ -122,12 +145,15 @@ class _FollowPageState extends State<FollowPage>
 
   Widget builderWidget(BuildContext context,
       AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
+    print("snapshot===>${snapshot.data}");
     if (snapshot.connectionState == ConnectionState.done) {
-      print('data:${snapshot.data}');
       if (snapshot.hasData) {
         return contentWidget();
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          builderFuture = loadInitData();
+          setState(() {});
+        });
     } else {
       return loadingWidget();
     }
@@ -269,7 +295,9 @@ class _FollowPageState extends State<FollowPage>
                 maxLines: 1,
               ),
             ),
-          ),
+          ).onClick(() {
+            Get.to(() => SearchPage());
+          }),
         ],
       ),
     );
@@ -371,7 +399,7 @@ class _FollowPageState extends State<FollowPage>
                 fontWeight: FontWeight.bold),
           ).marginOn(left: 16),
           Text(
-            "共25篇",
+            "共$totalArticleNumber篇",
             style: TextStyle(color: BaseColor.textDark, fontSize: 14),
           ).marginOn(left: 16),
         ],

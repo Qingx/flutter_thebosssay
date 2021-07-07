@@ -1,9 +1,13 @@
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
+import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -108,7 +112,10 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
       });
     } else {
       showFollowSuccessDialog(context, onConfirm: () {
+        Global.eventBus.fire(BaseEvent(RefreshFollowEvent()));
+
         BaseTool.toast(msg: "onConfirm");
+        Get.back();
       }, onDismiss: () {
         BaseTool.toast(msg: "onDismiss");
         Get.back();

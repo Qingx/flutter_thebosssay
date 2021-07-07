@@ -174,7 +174,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 40),
       decoration: ShapeDecoration(
         image: DecorationImage(
-          image: AssetImage(R.assetsImgTestPhoto),
+          image: AssetImage(R.assetsImgBossTopBg),
           fit: BoxFit.cover,
         ),
         shape: RoundedRectangleBorder(
