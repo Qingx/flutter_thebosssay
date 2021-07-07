@@ -35,7 +35,16 @@ class BaseData<T> extends DataSource {
     } else if (type == (String).toString()) {
       data = json['data'];
     } else {
-      data = JsonConvert.fromJsonAsT<T>(json['data']);
+      var data = json['data'];
+
+      if(data == null) {
+        if (T.toString().startsWith("List")) {
+          this.data = JsonConvert.fromJsonAsT<T>([]);
+        }
+        return;
+      }
+
+      this.data = JsonConvert.fromJsonAsT<T>(data);
     }
   }
 

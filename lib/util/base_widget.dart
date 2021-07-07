@@ -44,13 +44,35 @@ class BaseWidget {
 
   static Widget errorWidget(Function retry) {
     return Container(
-      alignment: Alignment.center,
-      child: Text(
-        "很遗憾，数据加载失败了\n请点击重试",
-        style: TextStyle(color: BaseColor.textGray, fontSize: 16),
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        softWrap: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 160,
+            height: 120,
+            color: Colors.red,
+          ),
+          Text(
+            "应用出错了",
+            style: TextStyle(
+                fontSize: 18,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            maxLines: 1,
+            softWrap: false,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ).marginOn(top: 32),
+          Text(
+            "请点击尝试重新加载",
+            style: TextStyle(fontSize: 16, color: BaseColor.textGray),
+            maxLines: 1,
+            softWrap: false,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          )
+        ],
       ),
     ).onClick(retry);
   }
