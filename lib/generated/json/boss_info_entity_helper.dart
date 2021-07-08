@@ -47,6 +47,21 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['updateCount'])
 				: json['updateCount'].toInt();
 	}
+	if (json['readCount'] != null) {
+		data.readCount = json['readCount'] is String
+				? int.tryParse(json['readCount'])
+				: json['readCount'].toInt();
+	}
+	if (json['updateTime'] != null) {
+		data.updateTime = json['updateTime'] is String
+				? int.tryParse(json['updateTime'])
+				: json['updateTime'].toInt();
+	}
+	if (json['totalCount'] != null) {
+		data.totalCount = json['totalCount'] is String
+				? int.tryParse(json['totalCount'])
+				: json['totalCount'].toInt();
+	}
 	return data;
 }
 
@@ -64,5 +79,8 @@ Map<String, dynamic> bossInfoEntityToJson(BossInfoEntity entity) {
 	data['point'] = entity.point;
 	data['role'] = entity.role;
 	data['updateCount'] = entity.updateCount;
+	data['readCount'] = entity.readCount;
+	data['updateTime'] = entity.updateTime;
+	data['totalCount'] = entity.totalCount;
 	return data;
 }

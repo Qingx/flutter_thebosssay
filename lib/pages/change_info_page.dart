@@ -19,11 +19,50 @@ class ChangeInfoPage extends StatelessWidget {
 
   List<String> names = ["账号昵称", "账号ID", "登录手机号"];
 
-  void tryLogout() {
+  ///尝试退出登录
+  void tryLogout(context) {
     DataConfig.getIns().setTempId = BaseTool.createTempId();
     UserConfig.getIns().clear();
     Global.user.setUser(BaseEmpty.emptyUser);
-    Get.offAll(() => HomePage());
+
+    BaseWidget.showLoadingAlert("正在清理数据...", context);
+
+    UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
+      UserConfig.getIns().token = event.token;
+      UserConfig.getIns().user = event.userInfo;
+      Global.user.setUser(event.userInfo);
+
+      BaseTool.toast(msg: "退出成功");
+      Get.offAll(() => HomePage());
+    });
+  }
+
+  void onClickItem(index, context) {
+    if (index == 0) {
+      showChangeName(context, onDismiss: () {
+        Get.back();
+      }, onConfirm: (name) {
+        tryChangeName(name, context);
+      });
+    }
+  }
+
+  void tryChangeName(name, context) {
+    UserEntity entity = Global.user.user.value;
+
+    if (entity.nickName != name) {
+      BaseWidget.showLoadingAlert("正在更新...", context);
+      UserApi.ins().obtainUpdateUser(nickName: name).listen((event) {
+        entity.nickName = name;
+        Global.user.setUser(entity);
+        Get.back();
+        Get.back();
+        BaseTool.toast(msg: "更新成功");
+      });
+    } else {
+      Get.back();
+      BaseTool.toast(msg: "昵称重复，修改失败");
+    }
   }
 
   @override
@@ -98,7 +137,9 @@ class ChangeInfoPage extends StatelessWidget {
                 textAlign: TextAlign.start,
                 overflow: TextOverflow.ellipsis,
               ),
-            ).onClick(tryLogout),
+            ).onClick(() {
+              tryLogout(context);
+            }),
           ],
         ),
       ),
@@ -179,33 +220,5 @@ class ChangeInfoPage extends StatelessWidget {
     ).onClick(() {
       onClickItem(index, context);
     });
-  }
-
-  void onClickItem(index, context) {
-    if (index == 0) {
-      showChangeName(context, onDismiss: () {
-        Get.back();
-      }, onConfirm: (name) {
-        tryChangeName(name, context);
-      });
-    }
-  }
-
-  void tryChangeName(name, context) {
-    UserEntity entity = Global.user.user.value;
-
-    if (entity.nickName != name) {
-      BaseWidget.showLoadingAlert("正在更新...", context);
-      UserApi.ins().obtainUpdateUser(nickName: name).listen((event) {
-        entity.nickName = name;
-        Global.user.setUser(entity);
-        Get.back();
-        Get.back();
-        BaseTool.toast(msg: "更新成功");
-      });
-    } else {
-      Get.back();
-      BaseTool.toast(msg: "昵称重复，修改失败");
-    }
   }
 }

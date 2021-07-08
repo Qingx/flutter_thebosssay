@@ -3,6 +3,7 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/change_info_page.dart';
 import 'package:flutter_boss_says/pages/contact_us_page.dart';
 import 'package:flutter_boss_says/pages/favorites_page.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_boss_says/pages/today_history_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -114,6 +116,9 @@ class _MinePageState extends State<MinePage>
 
   void onClickInfo(index) {
     switch (index) {
+      case 0:
+        Global.eventBus.fire(BaseEvent(JumpBossEvent));
+        break;
       case 2:
         onClickTodayHistory();
         break;
@@ -247,7 +252,7 @@ class _MinePageState extends State<MinePage>
                 Obx(
                   () => Text(
                     controller.user.value == BaseEmpty.emptyUser
-                        ? "游客：${DataConfig.getIns().tempId.substring(0,12)}..."
+                        ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
                         : "ID：${controller.user.value.id}",
                     style: TextStyle(fontSize: 16, color: BaseColor.textGray),
                     softWrap: false,
@@ -308,16 +313,22 @@ class _MinePageState extends State<MinePage>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            index.toString(),
-            style: TextStyle(
-                fontSize: 18,
-                color: BaseColor.textDark,
-                fontWeight: FontWeight.bold),
-            softWrap: false,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
+          Obx(
+            () => Text(
+              index == 0
+                  ? Global.user.user.value.traceNum.toString()
+                  : index == 1
+                      ? Global.user.user.value.collectNum.toString()
+                      : Global.user.user.value.readNum.toString(),
+              style: TextStyle(
+                  fontSize: 18,
+                  color: BaseColor.textDark,
+                  fontWeight: FontWeight.bold),
+              softWrap: false,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           Text(
             infoNames[index],

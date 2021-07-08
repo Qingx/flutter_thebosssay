@@ -9,6 +9,7 @@ import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/search_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -32,13 +34,14 @@ class FollowPage extends StatefulWidget {
 
 class _FollowPageState extends State<FollowPage>
     with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
-  int mCurrentTab = 0;
-  var builderFuture;
-
   ScrollController scrollController;
   EasyRefreshController controller;
+
+  var builderFuture;
+
   bool hasData = false;
-  int totalArticleNumber = 0;
+  int totalArticleNumber;
+  String mCurrentTab;
 
   List<BossInfoEntity> bossList = []; //boss card列表数据
 
@@ -60,7 +63,6 @@ class _FollowPageState extends State<FollowPage>
   @override
   void initState() {
     super.initState();
-
     builderFuture = loadInitData();
 
     scrollController = ScrollController();
@@ -74,9 +76,8 @@ class _FollowPageState extends State<FollowPage>
   ///eventBus
   void eventBus() {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      if (event.obj == RefreshFollowEvent()) {
+      if (event.obj == RefreshFollowEvent) {
         ///添加追踪boss后刷新
-        loadBossData();
         controller.callRefresh();
       }
     });
@@ -87,52 +88,86 @@ class _FollowPageState extends State<FollowPage>
     if (UserConfig.getIns().token == "empty_token") {
       UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
         UserConfig.getIns().token = event.token;
+        UserConfig.getIns().user = event.userInfo;
+        Global.user.setUser(event.userInfo);
       });
     }
   }
 
   ///初始化获取数据
   Future<WlPage.Page<ArticleEntity>> loadInitData() {
-    return BossApi.ins()
-        .obtainFollowUpdateBoss()
-        .flatMap((value) {
-          return BossApi.ins().obtainFollowArticle(pageParam);
-        })
-        .doOnData((event) {})
-        .doOnError((e) {
-          print(e);
-        })
-        .last;
+    if (Global.labelList.isNullOrEmpty()) {
+      return BossApi.ins().obtainBossLabels().flatMap((value) {
+        Global.labelList = [BaseEmpty.emptyLabel, ...value];
+        mCurrentTab = Global.labelList[0].id;
+
+        return BossApi.ins().obtainFollowBossList(mCurrentTab, true);
+      }).flatMap((value) {
+        bossList = value;
+
+        return BossApi.ins().obtainFollowArticle(pageParam);
+      }).doOnData((event) {
+        totalArticleNumber = event.total;
+        hasData = event.hasData;
+        concat(event.records, false);
+      }).doOnError((e) {
+        print(e);
+      }).last;
+    } else {
+      return BossApi.ins()
+          .obtainFollowBossList(mCurrentTab, true)
+          .flatMap((value) {
+        bossList = value;
+        mCurrentTab = Global.labelList[0].id;
+
+        return BossApi.ins().obtainFollowArticle(pageParam);
+      }).doOnData((event) {
+        totalArticleNumber = event.total;
+        hasData = event.hasData;
+        concat(event.records, false);
+      }).doOnError((e) {
+        print(e);
+      }).last;
+    }
   }
 
-  ///获取文章数据 分页
+  ///刷新boss列表 获取文章数据(分页)
   @override
   void loadData(bool loadMore) {
     if (!loadMore) {
       pageParam.reset();
+
+      BossApi.ins().obtainFollowBossList(mCurrentTab, true).flatMap((value) {
+        bossList = value;
+
+        return BossApi.ins().obtainFollowArticle(pageParam);
+      }).listen((event) {
+        totalArticleNumber = event.total;
+        hasData = event.hasData;
+        concat(event.records, loadMore);
+        setState(() {});
+      }).onDone(() {
+        if (loadMore) {
+          controller.finishLoad();
+        } else {
+          controller.resetLoadState();
+          controller.finishRefresh();
+        }
+      });
+    } else {
+      BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
+        hasData = event.hasData;
+        concat(event.records, loadMore);
+        setState(() {});
+      }).onDone(() {
+        if (loadMore) {
+          controller.finishLoad();
+        } else {
+          controller.resetLoadState();
+          controller.finishRefresh();
+        }
+      });
     }
-
-    BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
-      totalArticleNumber = event.total;
-      hasData = event.hasData;
-      concat(event.records, loadMore);
-      setState(() {});
-    }).onDone(() {
-      if (loadMore) {
-        controller.finishLoad();
-      } else {
-        controller.resetLoadState();
-        controller.finishRefresh();
-      }
-    });
-  }
-
-  ///刷新boss card列表数据
-  void loadBossData() {
-    bossList.clear();
-    BossApi.ins().obtainFollowUpdateBoss().listen((event) {
-      bossList = event;
-    });
   }
 
   @override
@@ -145,7 +180,7 @@ class _FollowPageState extends State<FollowPage>
 
   Widget builderWidget(BuildContext context,
       AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
-    print("snapshot===>${snapshot.data}");
+    print("snapshot:${snapshot.data}");
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
@@ -204,20 +239,24 @@ class _FollowPageState extends State<FollowPage>
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return tabItemWidget(index);
+            return tabItemWidget(Global.labelList[index], index);
           },
-          itemCount: 16,
+          itemCount: Global.labelList.length,
         ),
       ),
     );
   }
 
-  Widget tabItemWidget(int index) {
+  Widget tabItemWidget(BossLabelEntity entity, int index) {
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
-    Color bgColor =
-        mCurrentTab == index ? BaseColor.accent : BaseColor.accentLight;
-    Color fontColor = mCurrentTab == index ? Colors.white : BaseColor.accent;
+
+    bool hasSelect = mCurrentTab == entity.id;
+
+    Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
+    Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
+
+    String name = BaseEmpty.emptyLabel == entity ? "全部" : entity.name;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
       padding: EdgeInsets.only(left: 12, right: 12),
@@ -225,14 +264,13 @@ class _FollowPageState extends State<FollowPage>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          index % 2 == 0 ? "混子上单" : "草食打野",
+          name,
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),
     ).onClick(() {
-      if (index != mCurrentTab) {
-        mCurrentTab = index;
-        loadBossData();
+      if (entity.id != mCurrentTab) {
+        mCurrentTab = entity.id;
         controller.callRefresh();
       }
     });
@@ -378,7 +416,7 @@ class _FollowPageState extends State<FollowPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage());
+      Get.to(() => BossHomePage(), arguments: entity);
     });
   }
 
@@ -399,7 +437,7 @@ class _FollowPageState extends State<FollowPage>
                 fontWeight: FontWeight.bold),
           ).marginOn(left: 16),
           Text(
-            "共$totalArticleNumber篇",
+            "共${totalArticleNumber ?? 0}篇",
             style: TextStyle(color: BaseColor.textDark, fontSize: 14),
           ).marginOn(left: 16),
         ],

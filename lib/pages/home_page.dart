@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/boss_page.dart';
 import 'package:flutter_boss_says/pages/mine_page.dart';
 import 'package:flutter_boss_says/pages/talk_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,16 +21,47 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int mCurrentIndex = 0;
-  List<String> mTitles = ["言论", "老板", "我的"];
-  List<List<String>> mIcons = [
-    [R.assetsImgTalkNormal, R.assetsImgTalkSelect],
-    [R.assetsImgBossNormal, R.assetsImgBossSelect],
-    [R.assetsImgMineNormal, R.assetsImgMineSelect]
-  ];
-  List<Widget> mPages = [TalkPage(), BossPage(), MinePage()];
+  int mCurrentIndex;
+  List<String> mTitles;
+  List<List<String>> mIcons;
+  List<Widget> mPages;
 
-  PageController mPageController = PageController();
+  PageController mPageController;
+  StreamSubscription<BaseEvent> eventDispose;
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    eventDispose.cancel();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    mCurrentIndex = 0;
+    mTitles = ["言论", "老板", "我的"];
+    mIcons = [
+      [R.assetsImgTalkNormal, R.assetsImgTalkSelect],
+      [R.assetsImgBossNormal, R.assetsImgBossSelect],
+      [R.assetsImgMineNormal, R.assetsImgMineSelect]
+    ];
+    mPages = [TalkPage(), BossPage(), MinePage()];
+
+    mPageController = PageController();
+
+    eventBus();
+  }
+
+  ///eventBus
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      if (event.obj == JumpBossEvent) {
+        mPageController.animateToPage(1,
+            duration: Duration(milliseconds: 240), curve: Curves.easeInOutExpo);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +78,10 @@ class _HomePageState extends State<HomePage> {
   Widget pageWidget() {
     return PageView.builder(
         physics: NeverScrollableScrollPhysics(),
+        onPageChanged: (int) {
+          mCurrentIndex = int;
+          setState(() {});
+        },
         controller: mPageController,
         itemCount: mPages.length,
         itemBuilder: (context, index) {
@@ -89,7 +129,7 @@ class _HomePageState extends State<HomePage> {
       ),
     ).onClick(() {
       mCurrentIndex = index;
-      mPageController.jumpToPage(index);
+      mPageController.jumpToPage(mCurrentIndex);
       setState(() {});
     });
   }

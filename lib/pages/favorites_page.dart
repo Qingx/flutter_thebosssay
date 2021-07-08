@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({Key key}) : super(key: key);
@@ -23,57 +27,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
   ScrollController scrollController;
   EasyRefreshController controller;
 
-  List<FavoriteModel> mData = [];
-  List<int> mSelectId = [];
+  List<FavoriteEntity> mData = [];
+  List<String> mSelectId = [];
   int numbers = 0;
-
-  Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
-
-  ///展开/收起
-  void onTitleClick(index) {
-    if (mSelectId.contains(mData[index].code)) {
-      mSelectId.removeWhere((element) => element == mData[index].code);
-    } else {
-      mSelectId.add(mData[index].code);
-    }
-    setState(() {});
-  }
-
-  void onArticleClick(data) {
-    BaseTool.toast(msg: data);
-  }
-
-  ///添加收藏夹
-  void addFolder(name) {
-    Get.back();
-    mData.add(FavoriteModel(4, [1]));
-    numbers = 0;
-    mData.forEach((e) {
-      numbers = numbers + e.data.length;
-    });
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    builderFuture = getData();
-    mData = [
-      FavoriteModel(0, [0, 1, 2, 3, 4, 5]),
-      FavoriteModel(1, [0, 1, 2, 3]),
-      FavoriteModel(2, [0, 1]),
-      FavoriteModel(3, [0, 1, 2, 3, 4, 5, 6, 7])
-    ];
-    scrollController = ScrollController();
-    controller = EasyRefreshController();
-
-    mData.forEach((e) {
-      numbers = numbers + e.data.length;
-    });
-  }
 
   @override
   void dispose() {
@@ -83,27 +39,111 @@ class _FavoritesPageState extends State<FavoritesPage> {
     scrollController?.dispose();
   }
 
-  void loadData() {
-    List<FavoriteModel> testData = [
-      FavoriteModel(0, [0, 1, 2, 3, 4, 5]),
-      FavoriteModel(1, [0, 1, 2, 3]),
-      FavoriteModel(2, [0, 1]),
-      FavoriteModel(3, [0, 1, 2, 3, 4, 5, 6, 7]),
-      FavoriteModel(4, [0, 1]),
-    ];
+  @override
+  void initState() {
+    super.initState();
 
-    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
+    builderFuture = loadInitData();
+
+    scrollController = ScrollController();
+    controller = EasyRefreshController();
+  }
+
+  ///初始化数据
+  Future<List<FavoriteEntity>> loadInitData() {
+    return UserApi.ins().obtainFavoriteList().doOnData((event) {
+      mData = event;
+      mData.forEach((e) {
+        numbers = numbers + e.list.length;
+      });
+    }).last;
+  }
+
+  ///刷新数据
+  void loadData() {
+    UserApi.ins().obtainFavoriteList().listen((event) {
       mData = event;
       mSelectId.clear();
 
       numbers = 0;
       mData.forEach((e) {
-        numbers = numbers + e.data.length;
+        numbers = numbers + e.list.length;
       });
 
       setState(() {});
+    }, onError: (res) {
+      print(res.msg);
     }, onDone: () {
       controller.finishRefresh();
+    });
+  }
+
+  ///删除收藏夹
+  void onRemoveFavorite(FavoriteEntity entity) {
+    BaseWidget.showLoadingAlert("尝试删除...", context);
+    UserApi.ins().obtainRemoveFavorite(entity.id).listen((event) {
+      mData.remove(entity);
+
+      BaseTool.toast(msg: "删除成功");
+      Get.back();
+      setState(() {});
+    }, onError: (res) {
+      Get.back();
+      print(res.msg);
+      BaseTool.toast(msg: "删除失败，${res.msg}");
+    });
+  }
+
+  ///取消收藏文章
+  void onRemoveArticle(String favoriteId, ArticleEntity entity) {
+    FavoriteEntity favoriteEntity =
+        mData.firstWhere((element) => element.id == favoriteId);
+    favoriteEntity.list.remove(entity);
+    setState(() {});
+  }
+
+  ///展开/收起
+  void onTitleClick(FavoriteEntity entity) {
+    if (!entity.list.isNullOrEmpty()) {
+      if (mSelectId.contains(entity.id)) {
+        mSelectId.remove(entity.id);
+      } else {
+        mSelectId.add(entity.id);
+      }
+      setState(() {});
+    }
+  }
+
+  ///点击文章
+  void onArticleClick(ArticleEntity entity) {
+    BaseTool.toast(msg: entity.title);
+  }
+
+  ///添加收藏夹
+  void showAddFolder() {
+    showNewFolder(context, onDismiss: () {
+      Get.back();
+    }, onConfirm: onAddFolder);
+  }
+
+  ///添加收藏夹
+  void onAddFolder(name) {
+    BaseWidget.showLoadingAlert("尝试新建...", context);
+    UserApi.ins().obtainCreateFavorite(name).listen((event) {
+      mData.add(event);
+      numbers = 0;
+      mData.forEach((e) {
+        numbers = numbers + e.list.length;
+      });
+
+      Get.back();
+      Get.back();
+      BaseTool.toast(msg: "新建成功");
+      setState(() {});
+    }, onError: (res) {
+      Get.back();
+      print(res.msg);
+      BaseTool.toast(msg: "新建失败，${res.msg}");
     });
   }
 
@@ -160,15 +200,16 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Widget bodyWidget() {
-    return FutureBuilder<bool>(
+    return FutureBuilder<List<FavoriteEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  Widget builderWidget(
+      BuildContext context, AsyncSnapshot<List<FavoriteEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print('data:${snapshot.data}');
+      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
         return Stack(
           children: [
@@ -178,7 +219,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ],
         );
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          loadData();
+        });
     } else {
       return BaseWidget.loadingWidget();
     }
@@ -201,15 +244,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          return listItemWidget(index);
+          return listItemWidget(mData[index], index);
         },
         childCount: mData.length,
       ),
     );
   }
 
-  Widget listItemWidget(index) {
-    bool hasSelect = mSelectId.contains(mData[index].code);
+  Widget listItemWidget(FavoriteEntity entity, index) {
+    bool hasSelect = mSelectId.contains(mData[index].id);
 
     return Container(
       child: Column(
@@ -224,7 +267,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 children: [
                   Expanded(
                     child: Text(
-                      index == 0 ? "默认收藏夹" : "收藏夹$index",
+                      entity.name,
                       style: TextStyle(
                         fontSize: 14,
                         color: BaseColor.textDark,
@@ -237,7 +280,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     ),
                   ),
                   Text(
-                    "${mData[index].data.length}篇言论",
+                    "${entity.list?.length ?? 0}篇言论",
                     style: TextStyle(color: BaseColor.accent, fontSize: 14),
                     softWrap: false,
                     maxLines: 1,
@@ -247,10 +290,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 ],
               ),
             ).onClick(() {
-              onTitleClick(index);
+              onTitleClick(entity);
             }),
             actionPane: SlidableScrollActionPane(),
-            key: Key(mData[index].code.toString()),
+            key: Key(entity.id),
             secondaryActions: <Widget>[
               IconSlideAction(
                 caption: '删除',
@@ -258,8 +301,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 icon: Icons.delete,
                 closeOnTap: false,
                 onTap: () {
-                  mData.removeAt(index);
-                  setState(() {});
+                  onRemoveFavorite(entity);
                 },
               ),
             ],
@@ -267,7 +309,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           Visibility(
             visible: hasSelect,
             child: Container(
-              child: articleWidget(mData[index]),
+              child: articleWidget(entity),
             ),
           ),
           Container(
@@ -279,7 +321,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  Widget articleWidget(FavoriteModel data) {
+  Widget articleWidget(FavoriteEntity entity) {
     return MediaQuery.removePadding(
       context: context,
       removeBottom: true,
@@ -288,20 +330,16 @@ class _FavoritesPageState extends State<FavoritesPage> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return articleItemWidget(data.code, data.data[index], index);
+          return articleItemWidget(entity.id, entity.list[index], index);
         },
-        itemCount: data.data.length,
+        itemCount: entity.list?.length ?? 0,
       ),
     );
   }
 
-  Widget articleItemWidget(int code, int data, int index) {
+  Widget articleItemWidget(String favoriteId, ArticleEntity entity, int index) {
     bool hasIndex = index % 2 == 0;
-    String title = hasIndex
-        ? "搞什么副业可以月入过万搞什么副业可以月入过万"
-        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业";
     String head = hasIndex ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-    String name = hasIndex ? "莉莉娅$data" : "神里凌华$data";
     return Container(
       child: Column(
         children: [
@@ -320,7 +358,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      entity.title,
                       style: TextStyle(fontSize: 14, color: BaseColor.textDark),
                       softWrap: true,
                       maxLines: 2,
@@ -332,15 +370,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ClipOval(
-                          child: Image.asset(
-                            head,
+                          child: Image.network(
+                            HttpConfig.fullUrl(entity.bossVO.head),
                             width: 24,
                             height: 24,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                head,
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
                         ),
                         Text(
-                          name,
+                          entity.bossVO.name,
                           style: TextStyle(
                               fontSize: 14, color: BaseColor.textGray),
                           softWrap: false,
@@ -350,7 +396,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         ).marginOn(left: 8),
                         Expanded(child: SizedBox()),
                         Text(
-                          "2021/07/04",
+                          DateFormat.getYYYYMMDD(entity.createTime),
                           style: TextStyle(
                             fontSize: 13,
                             color: BaseColor.textGray,
@@ -366,7 +412,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 )),
             actionPane: SlidableScrollActionPane(),
             actionExtentRatio: 0.25,
-            key: Key(data.toString()),
+            key: Key(entity.id),
             secondaryActions: <Widget>[
               IconSlideAction(
                 caption: '取消收藏',
@@ -374,11 +420,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 icon: Icons.delete,
                 closeOnTap: false,
                 onTap: () {
-                  mData
-                      .firstWhere((element) => element.code == code)
-                      .data
-                      .remove(data);
-                  setState(() {});
+                  onRemoveArticle(favoriteId, entity);
                 },
               ),
             ],
@@ -386,7 +428,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ],
       ),
     ).onClick(() {
-      onArticleClick(name);
+      onArticleClick(entity);
     });
   }
 
@@ -412,17 +454,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
         color: BaseColor.textDark,
         size: 24,
       ),
-    ).onClick(() {
-      showNewFolder(context, onDismiss: () {
-        Get.back();
-      }, onConfirm: addFolder);
-    });
+    ).onClick(showAddFolder);
   }
-}
-
-class FavoriteModel {
-  int code;
-  List<int> data;
-
-  FavoriteModel(this.code, this.data);
 }

@@ -73,12 +73,16 @@ class _GuidePageState extends State<GuidePage> {
     String tempId = DataConfig.getIns().tempId;
 
     return UserApi.ins().obtainTempLogin(tempId).flatMap((value) {
+      Global.user = Get.find<UserController>(tag: "user");
+
       UserConfig.getIns().token = value.token;
+      UserConfig.getIns().user = value.userInfo;
+      Global.user.setUser(value.userInfo);
       return BossApi.ins().obtainGuideBoss();
     }).doOnData((event) {
       mData = event.records;
       listSelect = mData.map((e) => e.id).toList();
-      Global.user = Get.find<UserController>(tag: "user");
+
       countTime();
     }).doOnError((res) {
       print(res.msg);

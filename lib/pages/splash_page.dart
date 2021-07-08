@@ -65,15 +65,17 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    Global.user = Get.find<UserController>(tag: "user");
 
     if (UserConfig.getIns().loginStatus) {
-      Global.user = Get.find<UserController>(tag: "user");
       Global.user.setUser(UserConfig.getIns().user);
     }
 
     if (UserConfig.getIns().token == "empty_token") {
       UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
         UserConfig.getIns().token = event.token;
+        UserConfig.getIns().user = event.userInfo;
+        Global.user.setUser(event.userInfo);
       });
     }
 

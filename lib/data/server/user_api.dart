@@ -1,7 +1,7 @@
 import 'package:flutter_boss_says/config/base_api.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserApi extends BaseApi {
@@ -44,5 +44,24 @@ class UserApi extends BaseApi {
   ///刷新用户信息
   Observable<TokenEntity> obtainRefreshUser() {
     return get<TokenEntity>("/api/account/refresh").rebase();
+  }
+
+  ///获取用户收藏夹列表
+  Observable<List<FavoriteEntity>> obtainFavoriteList() {
+    return get<List<FavoriteEntity>>("/api/collect/list").rebase();
+  }
+
+  ///创建收藏夹
+  Observable<FavoriteEntity> obtainCreateFavorite(String name) {
+    var data = {"name": name};
+    return post<FavoriteEntity>("/api/collect/commit", requestBody: data)
+        .rebase();
+  }
+
+  ///删除收藏夹
+  Observable<bool> obtainRemoveFavorite(String id) {
+    var data = {"id": id};
+    return post<FavoriteEntity>("/api/collect/delete", requestBody: data)
+        .success();
   }
 }

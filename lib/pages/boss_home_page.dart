@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
+import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 
 class BossHomePage extends StatelessWidget {
-  const BossHomePage({Key key}) : super(key: key);
+  BossHomePage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +97,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   ScrollController scrollController;
   EasyRefreshController controller;
 
-  Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
+  BossInfoEntity entity;
 
   @override
   void dispose() {
@@ -103,25 +109,40 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   @override
   void initState() {
     super.initState();
-
-    // concat([0, 1, 2, 3, 4, 5, 6], false);
-    builderFuture = getData();
+    entity = Get.arguments as BossInfoEntity;
+    print(entity.toString());
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+
+    builderFuture = loadInitData();
   }
 
+  ///初始化获取数据
+  Future<WlPage.Page<ArticleEntity>> loadInitData() {
+    return BossApi.ins()
+        .obtainBossArticleList(pageParam, entity.id)
+        .doOnData((event) {
+      hasData = event.hasData;
+      concat(event.records, false);
+    }).doOnError((res) {
+      print(res.msg);
+    }).last;
+  }
+
+  ///获取boss文章列表
   @override
   void loadData(bool loadMore) {
     if (!loadMore) {
       pageParam.reset();
     }
 
-    Observable.just([0, 1, 2, 3, 4]).delay(Duration(seconds: 2)).listen(
-        (event) {
-      hasData = true;
-      concat(event, loadMore);
+    BossApi.ins().obtainBossArticleList(pageParam, entity.id).listen((event) {
+      hasData = event.hasData;
+      concat(event.records, loadMore);
       setState(() {});
+    }, onError: (res) {
+      print(res.msg);
     }, onDone: () {
       if (loadMore) {
         controller.finishLoad();
@@ -134,35 +155,85 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      builder: builderWidget,
-      future: builderFuture,
+    return Container(
+      child: Column(
+        children: [
+          topWidget(),
+          numberWidget(),
+          Expanded(
+            child: FutureBuilder<WlPage.Page<ArticleEntity>>(
+              builder: builderWidget,
+              future: builderFuture,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  void onFollow(bool status) {
-    if (!status) {
-      BaseTool.toast(msg: "追踪");
+  void onFollowChange() {
+    if (entity.isCollect) {
+      cancelFollow(entity);
+    } else {
+      doFollow(entity);
     }
   }
 
-  void onWatchMore() {
-    Get.to(() => BossInfoPage());
+  void cancelFollow(BossInfoEntity entity) {
+    BaseWidget.showLoadingAlert("尝试取消...", context);
+    BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+      Get.back();
+
+      entity.isCollect = false;
+      setState(() {});
+
+      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+
+      showFollowCancelDialog(context, onDismiss: () {
+        Get.back();
+      });
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: " 取消失败，${res.msg}");
+    });
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  void doFollow(BossInfoEntity entity) {
+    BaseWidget.showLoadingAlert("尝试追踪...", context);
+    BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
+      Get.back();
+
+      entity.isCollect = true;
+      setState(() {});
+
+      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+
+      showFollowSuccessDialog(context, onConfirm: () {
+        Get.back();
+      }, onDismiss: () {
+        Get.back();
+      });
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: " 追踪失败，${res.msg}");
+    });
+  }
+
+  void onWatchMore() {
+    Get.to(() => BossInfoPage(), arguments: entity);
+  }
+
+  Widget builderWidget(BuildContext context,
+      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print('data:${snapshot.data}');
+      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
-        return Column(
-          children: [
-            topWidget(),
-            numberWidget(),
-            Expanded(child: contentWidget()),
-          ],
-        );
+        return contentWidget();
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          builderFuture = loadInitData();
+          setState(() {});
+        });
     } else {
       return BaseWidget.loadingWidget();
     }
@@ -201,11 +272,19 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ClipOval(
-            child: Image.asset(
-              R.assetsImgTestHead,
+            child: Image.network(
+              HttpConfig.fullUrl(entity.head),
               width: 64,
               height: 64,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  R.assetsImgTestPhoto,
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           Expanded(
@@ -213,45 +292,19 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Container(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          "神里凌华",
-                          style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                          softWrap: false,
-                          textAlign: TextAlign.start,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Container(
-                        height: 20,
-                        padding: EdgeInsets.only(left: 8, right: 8),
-                        margin: EdgeInsets.only(left: 12),
-                        decoration: BoxDecoration(
-                          color: Color(0x80000000),
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "精神信仰",
-                          style: TextStyle(fontSize: 12, color: Colors.white),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
+                Text(
+                  entity.name,
+                  style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
                 Text(
-                  "19.9万阅读·185篇言论",
+                  "${entity.point ?? 0}万阅读·${entity.totalCount ?? 0}篇言论",
                   style: TextStyle(fontSize: 12, color: Colors.white),
                   softWrap: false,
                   maxLines: 1,
@@ -267,7 +320,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   Widget bossInfoBottomWidget() {
-    bool hasFollow = false;
+    bool hasFollow = entity.isCollect;
     Color followColor = hasFollow ? Color(0x80efefef) : Colors.red;
 
     return Container(
@@ -291,24 +344,50 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
             ),
-          ).onClick(() {
-            onFollow(hasFollow);
-          }),
+          ).onClick(onFollowChange),
           Expanded(
-            child: Text(
-              "个人简介：府人都少物白类活从第有见易西世济社外断入府人都少物白类活从第有见易西世济社外断入府人都少物白类活从第有府人都少物白类活从第有见易西世济社外断入府人都少物白类活从第有见易西世济社外断入府人都少物白类活从第有",
-              style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w300),
-              softWrap: true,
-              maxLines: 3,
-              textAlign: TextAlign.start,
-              overflow: TextOverflow.ellipsis,
-            ).marginOn(left: 16).onClick(() {
-              onWatchMore();
-            }),
-          )
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding:
+                          EdgeInsets.only(left: 8, right: 8, top: 1, bottom: 1),
+                      margin: EdgeInsets.only(left: 8, right: 16),
+                      decoration: BoxDecoration(
+                        color: Color(0x80000000),
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        entity.role,
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  "个人简介：${entity.info}",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300),
+                  softWrap: true,
+                  maxLines: 2,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 16, top: 8).onClick(() {
+                  onWatchMore();
+                }),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -333,7 +412,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
             overflow: TextOverflow.ellipsis,
           ),
           Text(
-            "共25篇",
+            "共${entity.totalCount ?? 0}篇",
             style: TextStyle(fontSize: 14, color: BaseColor.textDark),
             textAlign: TextAlign.start,
             maxLines: 1,
@@ -371,11 +450,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return index % 5 == 0
-                    ? BaseWidget.adTriImgNoContent(index, context)
-                    : index % 2 == 0
-                        ? BaseWidget.singleImgWithContent(index, context)
-                        : BaseWidget.onlyTextWithContent(index, context);
+                return BaseWidget.followItem(mData[index], index, context);
               },
               childCount: mData.length,
             ),

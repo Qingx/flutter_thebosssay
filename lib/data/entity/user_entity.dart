@@ -6,10 +6,10 @@ class UserEntity with JsonConvert<UserEntity> {
   String id; //id
   String nickName; //账号
   String phone; //手机号
-  int collectNum; //收藏数
-  int readNum; //今日阅读数
-  int traceNum; //追踪数量
-  String type;
+  int collectNum = 0; //收藏数
+  int readNum = 0; //今日阅读数
+  int traceNum = 0; //追踪数量
+  String type; //0->游客 1->正式
   String wxHead;
   String wxName;
 

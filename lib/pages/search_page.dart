@@ -1,12 +1,17 @@
-import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
@@ -14,6 +19,7 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:rxdart/rxdart.dart';
 
 class SearchPage extends StatefulWidget {
@@ -32,15 +38,10 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   EasyRefreshController controller;
   bool hasData = false;
 
-  List<int> typeList = [0, 1, 2, 3, 4, 5, 6, 7];
-  int mCurrentType = 0;
+  String mCurrentTab;
 
   //0:首页界面 1:搜索结果页面 2:搜索结果空界面
   int widgetStatus = 0;
-
-  Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
 
   @override
   void dispose() {
@@ -56,11 +57,23 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
 
     editingController = TextEditingController();
 
-    // concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], false);
-    builderFuture = getData();
+    builderFuture = loadInitData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+  }
+
+  Future<WlPage.Page<BossInfoEntity>> loadInitData() {
+    return BossApi.ins()
+        .obtainAllBossList(pageParam, mCurrentTab)
+        .doOnData((event) {
+      mCurrentTab = Global.labelList[0].id;
+
+      hasData = event.hasData;
+      concat(event.records, false);
+    }).doOnError((e) {
+      print(e);
+    }).last;
   }
 
   @override
@@ -69,10 +82,9 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
       pageParam.reset();
     }
 
-    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
+    BossApi.ins().obtainAllBossList(pageParam, mCurrentTab).listen((event) {
       hasData = true;
-      concat(event, loadMore);
+      concat(event.records, loadMore);
       setState(() {});
     }, onDone: () {
       if (loadMore) {
@@ -88,14 +100,14 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
     if (!editingController.text.isNullOrEmpty()) {
       editingController.clear();
       widgetStatus = 0;
-      builderFuture = getData();
+      builderFuture = loadInitData();
       setState(() {});
     }
   }
 
   void onEditSubmitted(text) {
     widgetStatus = 1;
-    builderFuture = getData();
+    builderFuture = loadInitData();
     Fluttertoast.showToast(msg: text);
     setState(() {});
   }
@@ -104,23 +116,52 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
     print('onEditChanged');
   }
 
-  void onFollowChanged(bool isChanged) {
-    if (!isChanged) {
+  void onFollowChanged(BossInfoEntity entity) {
+    if (entity.isCollect) {
+      cancelFollow(entity);
+    } else {
+      doFollow(entity);
+    }
+  }
+
+  void cancelFollow(BossInfoEntity entity) {
+    BaseWidget.showLoadingAlert("尝试取消...", context);
+    BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+      Get.back();
+
+      entity.isCollect = false;
+      setState(() {});
+
+      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+
       showFollowCancelDialog(context, onDismiss: () {
-        BaseTool.toast(msg: "onDismiss");
         Get.back();
       });
-    } else {
-      showFollowSuccessDialog(context, onConfirm: () {
-        Global.eventBus.fire(BaseEvent(RefreshFollowEvent()));
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: " 取消失败，${res.msg}");
+    });
+  }
 
-        BaseTool.toast(msg: "onConfirm");
+  void doFollow(BossInfoEntity entity) {
+    BaseWidget.showLoadingAlert("尝试追踪...", context);
+    BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
+      Get.back();
+
+      entity.isCollect = true;
+      setState(() {});
+
+      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+
+      showFollowSuccessDialog(context, onConfirm: () {
         Get.back();
       }, onDismiss: () {
-        BaseTool.toast(msg: "onDismiss");
         Get.back();
       });
-    }
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: " 追踪失败，${res.msg}");
+    });
   }
 
   @override
@@ -194,13 +235,14 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   }
 
   Widget bodyWidget() {
-    return FutureBuilder<bool>(
+    return FutureBuilder<WlPage.Page<BossInfoEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  Widget builderWidget(BuildContext context,
+      AsyncSnapshot<WlPage.Page<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       print('data:${snapshot.data}');
       if (snapshot.hasData) {
@@ -212,7 +254,9 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
           return searchEmptyWidget();
         }
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          loadData(false);
+        });
     } else {
       return BaseWidget.loadingWidget();
     }
@@ -247,26 +291,24 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
         context: context,
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return typeItemWidget(index).onClick(() {
-              mCurrentType = index;
+            return typeItemWidget(Global.labelList[index], index).onClick(() {
+              mCurrentTab = Global.labelList[index].id;
               controller.callRefresh();
               setState(() {});
             });
           },
-          itemCount: typeList.length,
+          itemCount: Global.labelList.length,
         ),
       ),
     );
   }
 
-  Widget typeItemWidget(int index) {
-    Color color = index == mCurrentType ? BaseColor.pageBg : BaseColor.loadBg;
-    String text = index == 0
-        ? "为你推荐"
-        : index % 2 == 0
-            ? "混子上单"
-            : "草食打野";
-    return index == mCurrentType
+  Widget typeItemWidget(BossLabelEntity entity, int index) {
+    bool hasSelect = mCurrentTab == entity.id;
+    Color color = hasSelect ? BaseColor.pageBg : BaseColor.loadBg;
+    String name = entity == BaseEmpty.emptyLabel ? "为你推荐" : entity.name;
+
+    return hasSelect
         ? Container(
             width: 96,
             height: 64,
@@ -280,7 +322,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
                   color: BaseColor.accent,
                   borderRadius: BorderRadius.all(Radius.circular(16))),
               child: Text(
-                text,
+                name,
                 style: TextStyle(color: Colors.white, fontSize: 14),
                 softWrap: false,
                 maxLines: 1,
@@ -295,7 +337,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
             alignment: Alignment.center,
             color: color,
             child: Text(
-              text,
+              name,
               style: TextStyle(
                 color: BaseColor.textGray,
                 fontSize: 14,
@@ -336,7 +378,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
         : SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return bossItemWidget(index);
+                return bossItemWidget(mData[index], index);
               },
               childCount: mData.length,
             ),
@@ -348,14 +390,11 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
           );
   }
 
-  Widget bossItemWidget(int index) {
-    String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-    String name = index % 2 == 0 ? "莉莉娅" : "神里凌华";
-    String content = index % 2 == 0 ? "灵魂莲华" : "精神信仰";
-    Color labelColor = index % 2 == 0 ? BaseColor.accent : BaseColor.loadBg;
-    String label = index % 2 == 0
-        ? R.assetsImgBossOrderNormal
-        : R.assetsImgBossOrderSelect;
+  Widget bossItemWidget(BossInfoEntity entity, int index) {
+    Color labelColor = entity.isCollect ? BaseColor.loadBg : BaseColor.accent;
+    String label = entity.isCollect
+        ? R.assetsImgBossOrderSelect
+        : R.assetsImgBossOrderNormal;
 
     return Container(
       child: Column(
@@ -363,15 +402,23 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ClipOval(
-            child: Image.asset(
-              head,
+            child: Image.network(
+              HttpConfig.fullUrl(entity.head),
               width: 56,
               height: 56,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           Text(
-            name,
+            entity.name,
             style: TextStyle(
                 fontSize: 14,
                 color: BaseColor.textDark,
@@ -382,7 +429,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
             overflow: TextOverflow.ellipsis,
           ).marginOn(top: 8),
           Text(
-            content,
+            entity.role,
             style: TextStyle(fontSize: 12, color: BaseColor.textGray),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -403,11 +450,13 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
               width: 14,
               height: 14,
             ),
-          ),
+          ).onClick(() {
+            onFollowChanged(entity);
+          }),
         ],
       ),
     ).onClick(() {
-      onFollowChanged(index % 2 == 0);
+      Get.to(() => BossHomePage(), arguments: entity);
     });
   }
 
@@ -503,22 +552,19 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
             childAspectRatio: 4 / 7,
           ),
           itemBuilder: (context, index) {
-            return searchItemWidget(index);
+            return searchItemWidget(mData[index], index);
           },
-          itemCount: 8,
+          itemCount: mData.length,
         ),
       ),
     );
   }
 
-  Widget searchItemWidget(int index) {
-    String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-    String name = index % 2 == 0 ? "莉莉娅" : "神里凌华";
-    String content = index % 2 == 0 ? "灵魂莲华" : "精神信仰";
-    Color labelColor = index % 2 == 0 ? BaseColor.accent : BaseColor.loadBg;
-    String label = index % 2 == 0
-        ? R.assetsImgBossOrderNormal
-        : R.assetsImgBossOrderSelect;
+  Widget searchItemWidget(BossInfoEntity entity, int index) {
+    Color labelColor = entity.isCollect ? BaseColor.loadBg : BaseColor.accent;
+    String label = entity.isCollect
+        ? R.assetsImgBossOrderSelect
+        : R.assetsImgBossOrderNormal;
 
     return Container(
       color: BaseColor.pageBg,
@@ -527,15 +573,23 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ClipOval(
-            child: Image.asset(
-              head,
+            child: Image.network(
+              HttpConfig.fullUrl(entity.head),
               width: 56,
               height: 56,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead,
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           Text(
-            name,
+            entity.name,
             style: TextStyle(
                 fontSize: 14,
                 color: BaseColor.textDark,
@@ -546,7 +600,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
             overflow: TextOverflow.ellipsis,
           ).marginOn(top: 8),
           Text(
-            content,
+            entity.role,
             style: TextStyle(fontSize: 12, color: BaseColor.textGray),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -568,11 +622,13 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
               height: 14,
             ),
           ).onClick(() {
-            onFollowChanged(true);
+            onFollowChanged(entity);
           }),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => BossHomePage(), arguments: entity);
+    });
   }
 
   ///widgetStatus=2

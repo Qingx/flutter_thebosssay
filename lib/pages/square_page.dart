@@ -24,10 +24,6 @@ class _SquarePageState extends State<SquarePage>
   EasyRefreshController controller;
   bool hasData = false;
 
-  Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
-
   @override
   bool get wantKeepAlive => true;
 
@@ -43,10 +39,13 @@ class _SquarePageState extends State<SquarePage>
     super.initState();
 
     builderFuture = getData();
-    // concat([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], false);
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+  }
+
+  Future<bool> getData() {
+    return Observable.just(true).delay(Duration(seconds: 2)).last;
   }
 
   @override

@@ -1,9 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/search_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -96,13 +104,16 @@ class BodyWidget extends StatefulWidget {
 
 class _BodyWidgetState extends State<BodyWidget>
     with AutomaticKeepAliveClientMixin {
-  int mCurrentTab = 0;
+  StreamSubscription<BaseEvent> eventDispose;
+
   var builderFuture;
 
   ScrollController scrollController;
   EasyRefreshController controller;
 
   List<BossInfoEntity> mData = [];
+
+  String mCurrentTab;
 
   @override
   bool get wantKeepAlive => true;
@@ -112,6 +123,8 @@ class _BodyWidgetState extends State<BodyWidget>
     super.dispose();
     controller?.dispose();
     scrollController?.dispose();
+
+    eventDispose?.cancel();
   }
 
   @override
@@ -122,17 +135,48 @@ class _BodyWidgetState extends State<BodyWidget>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+
+    eventBus();
+  }
+
+  ///eventBus
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      if (event.obj == RefreshFollowEvent) {
+        ///添加追踪boss后刷新
+        controller.callRefresh();
+      }
+    });
   }
 
   ///初始化获取数据
   Future<List<BossInfoEntity>> loadInitData() {
-    return BossApi.ins().obtainFollowBossList().doOnData((event) {
-      mData = event;
-    }).last;
+    if (Global.labelList.isNullOrEmpty()) {
+      return BossApi.ins().obtainBossLabels().flatMap((value) {
+        Global.labelList = [BaseEmpty.emptyLabel, ...value];
+        mCurrentTab = Global.labelList[0].id;
+
+        return BossApi.ins().obtainFollowBossList(mCurrentTab, false);
+      }).doOnData((event) {
+        mData = event;
+      }).doOnError((res) {
+        print(res.msg);
+      }).last;
+    } else {
+      return BossApi.ins()
+          .obtainFollowBossList(mCurrentTab, false)
+          .doOnData((event) {
+        mCurrentTab = Global.labelList[0].id;
+        mData = event;
+      }).doOnError((res) {
+        print(res.msg);
+      }).last;
+    }
   }
 
+  ///刷新数据
   void loadData() {
-    BossApi.ins().obtainFollowBossList().listen((event) {
+    BossApi.ins().obtainFollowBossList(mCurrentTab, false).listen((event) {
       mData = event;
       setState(() {});
     }, onDone: () {
@@ -153,7 +197,7 @@ class _BodyWidgetState extends State<BodyWidget>
   Widget builderWidget(
       BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print('data:${snapshot.data}');
+      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
         return Stack(
           children: [
@@ -162,7 +206,10 @@ class _BodyWidgetState extends State<BodyWidget>
           ],
         );
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          builderFuture = loadInitData();
+          setState(() {});
+        });
     } else {
       return loadingWidget();
     }
@@ -230,7 +277,7 @@ class _BodyWidgetState extends State<BodyWidget>
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return tabItemWidget(index);
+            return tabItemWidget(Global.labelList[index], index);
           },
           itemCount: 16,
         ),
@@ -238,12 +285,16 @@ class _BodyWidgetState extends State<BodyWidget>
     );
   }
 
-  Widget tabItemWidget(int index) {
+  Widget tabItemWidget(BossLabelEntity entity, int index) {
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
-    Color bgColor =
-        mCurrentTab == index ? BaseColor.accent : BaseColor.accentLight;
-    Color fontColor = mCurrentTab == index ? Colors.white : BaseColor.accent;
+
+    bool hasSelect = mCurrentTab == entity.id;
+
+    Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
+    Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
+
+    String name = BaseEmpty.emptyLabel == entity ? "全部" : entity.name;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
       padding: EdgeInsets.only(left: 12, right: 12),
@@ -251,13 +302,13 @@ class _BodyWidgetState extends State<BodyWidget>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          index % 2 == 0 ? "混子上单" : "草食打野",
+          name,
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),
     ).onClick(() {
-      if (index != mCurrentTab) {
-        mCurrentTab = index;
+      if (entity.id != mCurrentTab) {
+        mCurrentTab = entity.id;
         controller.callRefresh();
       }
     });
@@ -345,7 +396,7 @@ class _BodyWidgetState extends State<BodyWidget>
                         ),
                       ),
                       Text(
-                        "最近1小时更新",
+                        BaseTool.getUpdateTime(entity.updateTime),
                         style: TextStyle(
                             fontSize: 12, color: BaseColor.textDarkLight),
                         textAlign: TextAlign.end,
@@ -369,7 +420,9 @@ class _BodyWidgetState extends State<BodyWidget>
           ),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => BossHomePage(), arguments: entity);
+    });
   }
 
   Widget emptyBodyWidget() {

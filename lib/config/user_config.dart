@@ -20,7 +20,7 @@ class UserConfig extends BaseConfig {
   UserEntity get user => spInstance.getObject<UserEntity>(UserKeys.K_USER_DATA);
 
   /// 获取登录状态
-  bool get loginStatus => (user ?? UserEntity()).isNotEmpty();
+  bool get loginStatus => (user ?? UserEntity()).type == "1";
 
   /// 设置文件签名
   set sign(String sign) => spInstance.putString(UserKeys.K_HTTP_SIGN, sign);
@@ -32,7 +32,8 @@ class UserConfig extends BaseConfig {
   set token(String token) => spInstance.putString(UserKeys.K_HTTP_TOKEN, token);
 
   /// 获取用户token
-  String get token => spInstance.getString(UserKeys.K_HTTP_TOKEN,defaultVal: "empty_token");
+  String get token =>
+      spInstance.getString(UserKeys.K_HTTP_TOKEN, defaultVal: "empty_token");
 }
 
 class UserKeys {

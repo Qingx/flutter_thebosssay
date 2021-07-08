@@ -367,7 +367,7 @@ class BaseWidget {
               children: [
                 ClipOval(
                     child: Image.network(
-                  HttpConfig.fullUrl(entity.bossVO.head),
+                  HttpConfig.fullUrl(entity.bossVO?.head),
                   width: 24,
                   height: 24,
                   fit: BoxFit.cover,

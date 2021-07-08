@@ -26,7 +26,7 @@ class _InputCodePageState extends State<InputCodePage> {
   String countText = "30s";
   String codeNumber = "";
   StreamSubscription<int> mDispose;
-  String phoneNumber = Get.arguments as String;
+  String phoneNumber;
 
   void onBack() {
     Get.back();
@@ -91,6 +91,9 @@ class _InputCodePageState extends State<InputCodePage> {
   @override
   void initState() {
     super.initState();
+
+    phoneNumber = Get.arguments as String;
+
     countDown();
   }
 

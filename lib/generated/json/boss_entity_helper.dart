@@ -39,7 +39,7 @@ Map<String, dynamic> bossEntityToJson(BossEntity entity) {
 	data['current'] = entity.current;
 	data['hitCount'] = entity.hitCount;
 	data['pages'] = entity.pages;
-	data['records'] =  entity.records?.map((v) => v.toJson())?.toList();
+	data['records'] =  entity.records.map((v) => v.toJson()).toList();
 	data['searchCount'] = entity.searchCount;
 	data['size'] = entity.size;
 	data['total'] = entity.total;
