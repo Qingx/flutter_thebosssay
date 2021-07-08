@@ -9,6 +9,7 @@ import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -200,6 +201,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   void doFollow(BossInfoEntity entity) {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
+
     BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
       Get.back();
 
@@ -207,6 +209,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       setState(() {});
 
       Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 
       showFollowSuccessDialog(context, onConfirm: () {
         Get.back();

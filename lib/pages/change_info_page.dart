@@ -185,14 +185,14 @@ class ChangeInfoPage extends StatelessWidget {
                   child: Obx(
                     () => Text(
                       index == 0
-                          ? Global.user.user.value == BaseEmpty.emptyUser
+                          ? Global.user.user.value.type == BaseEmpty.emptyUser.type
                               ? "请先登录！"
                               : Global.user.user.value.nickName
                           : index == 1
-                              ? Global.user.user.value == BaseEmpty.emptyUser
+                              ? Global.user.user.value.type == BaseEmpty.emptyUser.type
                                   ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
                                   : Global.user.user.value.id
-                              : Global.user.user.value == BaseEmpty.emptyUser
+                              : Global.user.user.value.type == BaseEmpty.emptyUser.type
                                   ? "ID：${Global.user.user.value.id}"
                                   : Global.user.user.value.phone
                                       .hidePhoneNumber(),

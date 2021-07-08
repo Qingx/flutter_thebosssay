@@ -20,19 +20,19 @@ class BossApi extends BaseApi {
     return post<BossEntity>("/api/boss/recommend", requestBody: data).rebase();
   }
 
-  ///收藏单个boss
+  ///追踪单个boss
   Observable<bool> obtainFollowBoss(String id) {
     var data = {"sourceId": id, "type": 1, "target": true};
     return post<bool>("/api/boss/options", requestBody: data).success();
   }
 
-  ///取消收藏boss
+  ///取消追踪boss
   Observable<bool> obtainNoFollowBoss(String id) {
     var data = {"sourceId": id, "type": 1, "target": false};
     return post<bool>("/api/boss/options", requestBody: data).success();
   }
 
-  ///引导页收藏多个boss
+  ///引导页追踪多个boss
   Observable<bool> obtainGuideFollowList(List<String> ids) {
     var data = {"sourceIds": ids, "type": 1, "target": true, "forced": true};
     return post<bool>("/api/boss/options", requestBody: data).success();

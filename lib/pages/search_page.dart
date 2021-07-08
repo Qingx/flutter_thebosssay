@@ -8,6 +8,7 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -64,11 +65,10 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   }
 
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
+    mCurrentTab = Global.labelList[0].id;
     return BossApi.ins()
         .obtainAllBossList(pageParam, mCurrentTab)
         .doOnData((event) {
-      mCurrentTab = Global.labelList[0].id;
-
       hasData = event.hasData;
       concat(event.records, false);
     }).doOnError((e) {
@@ -152,6 +152,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
       setState(() {});
 
       Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 
       showFollowSuccessDialog(context, onConfirm: () {
         Get.back();

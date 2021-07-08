@@ -236,7 +236,7 @@ class _MinePageState extends State<MinePage>
               children: [
                 Obx(
                   () => Text(
-                    controller.user.value == BaseEmpty.emptyUser
+                    controller.user.value.type == BaseEmpty.emptyUser.type
                         ? "请先登录！"
                         : controller.user.value.nickName,
                     style: TextStyle(
@@ -251,7 +251,7 @@ class _MinePageState extends State<MinePage>
                 ),
                 Obx(
                   () => Text(
-                    controller.user.value == BaseEmpty.emptyUser
+                    controller.user.value.type == BaseEmpty.emptyUser.type
                         ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
                         : "ID：${controller.user.value.id}",
                     style: TextStyle(fontSize: 16, color: BaseColor.textGray),
@@ -391,7 +391,7 @@ class _MinePageState extends State<MinePage>
             overflow: TextOverflow.ellipsis,
           ).marginOn(left: 12),
           Expanded(
-            child: index == 0 && controller.user.value == BaseEmpty.emptyUser
+            child: index == 0 && controller.user.value.type == BaseEmpty.emptyUser.type
                 ? Container(
                     padding: EdgeInsets.only(right: 4),
                     alignment: Alignment.centerRight,

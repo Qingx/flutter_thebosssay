@@ -38,13 +38,13 @@ class _SquarePageState extends State<SquarePage>
   void initState() {
     super.initState();
 
-    builderFuture = getData();
+    builderFuture = loadInitData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
   }
 
-  Future<bool> getData() {
+  Future<bool> loadInitData() {
     return Observable.just(true).delay(Duration(seconds: 2)).last;
   }
 

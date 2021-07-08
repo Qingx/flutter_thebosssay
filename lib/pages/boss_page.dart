@@ -163,10 +163,10 @@ class _BodyWidgetState extends State<BodyWidget>
         print(res.msg);
       }).last;
     } else {
+      mCurrentTab = Global.labelList[0].id;
       return BossApi.ins()
           .obtainFollowBossList(mCurrentTab, false)
           .doOnData((event) {
-        mCurrentTab = Global.labelList[0].id;
         mData = event;
       }).doOnError((res) {
         print(res.msg);

@@ -13,6 +13,7 @@ import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/search_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -76,9 +77,18 @@ class _FollowPageState extends State<FollowPage>
   ///eventBus
   void eventBus() {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      ///添加追踪boss后刷新
       if (event.obj == RefreshFollowEvent) {
-        ///添加追踪boss后刷新
         controller.callRefresh();
+      }
+
+      ///刷新userInfo
+      if (event.obj == RefreshUserEvent) {
+        UserApi.ins().obtainRefreshUser().listen((event) {
+          UserConfig.getIns().token = event.token;
+          UserConfig.getIns().user = event.userInfo;
+          Global.user.setUser(event.userInfo);
+        });
       }
     });
   }
@@ -114,11 +124,11 @@ class _FollowPageState extends State<FollowPage>
         print(e);
       }).last;
     } else {
+      mCurrentTab = Global.labelList[0].id;
       return BossApi.ins()
           .obtainFollowBossList(mCurrentTab, true)
           .flatMap((value) {
         bossList = value;
-        mCurrentTab = Global.labelList[0].id;
 
         return BossApi.ins().obtainFollowArticle(pageParam);
       }).doOnData((event) {
