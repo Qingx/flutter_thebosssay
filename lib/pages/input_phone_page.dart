@@ -43,7 +43,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
     if (isInputAvailable(true)) {
       BaseWidget.showLoadingAlert("正在发送验证码...", context);
 
-      UserApi.ins().obtainSendCode(phoneNumber).listen((event) {
+      UserApi.ins().obtainSendCode(phoneNumber, 0).listen((event) {
         Get.off(() => InputCodePage(), arguments: phoneNumber);
       }, onError: (res) {
         Get.back();

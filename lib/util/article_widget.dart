@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/pages/article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/date_format.dart';
+import 'package:get/get.dart';
 
 class ArticleWidget {
   ///含正文 纯文字
@@ -112,7 +114,9 @@ class ArticleWidget {
           ),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => ArticlePage(), arguments: entity.id);
+    });
   }
 
   ///含正文 单个图片文字
@@ -252,7 +256,9 @@ class ArticleWidget {
           )
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => ArticlePage(), arguments: entity.id);
+    });
   }
 
   ///无正文 单个图片文字
@@ -309,7 +315,9 @@ class ArticleWidget {
           ).marginOn(left: 16),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => ArticlePage(), arguments: entity.id);
+    });
   }
 
   ///无正文 纯文字
@@ -408,7 +416,9 @@ class ArticleWidget {
           ),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => ArticlePage(), arguments: entity.id);
+    });
   }
 
   ///无正文 三个图片文字
@@ -479,6 +489,8 @@ class ArticleWidget {
           ).marginOn(top: 16),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => ArticlePage(), arguments: entity.id);
+    });
   }
 }

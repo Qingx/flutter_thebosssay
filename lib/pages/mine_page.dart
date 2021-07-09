@@ -4,7 +4,7 @@ import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
-import 'package:flutter_boss_says/pages/change_info_page.dart';
+import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/pages/contact_us_page.dart';
 import 'package:flutter_boss_says/pages/favorites_page.dart';
 import 'package:flutter_boss_says/pages/history_page.dart';
@@ -82,7 +82,7 @@ class _MinePageState extends State<MinePage>
 
   void onClickUser() {
     if (UserConfig.getIns().loginStatus) {
-      Get.to(() => ChangeInfoPage());
+      Get.to(() => UserInfoPage());
     } else {
       BaseTool.toast(msg: "请先登录！");
       Get.to(() => InputPhonePage());

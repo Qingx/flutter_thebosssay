@@ -45,6 +45,7 @@ dependencies:
   uuid: ^2.2.2
   json_serializable: ^3.5.1
   event_bus: ^1.1.1
+  flutter_html: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -97,6 +98,7 @@ flutter:
     # assets/img/*
     - assets/img/emptyLine.png
     - assets/img/shareDark.png
+    - assets/img/favoriteDark.png
     - assets/img/bossSelect.png
     - assets/img/bossTopHead.png
     - assets/img/itemAbout.png

@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -46,9 +49,13 @@ class _ChangePhoneState extends State<ChangePhone> {
 
   ///验证当前手机号 提交code
   void onSubmitted(content) {
-    mCurrentIndex = 1;
-    mPageController.jumpToPage(1);
-    setState(() {});
+    UserApi.ins().obtainConfirmPhone(inputPhone, content).listen((event) {
+      mCurrentIndex = 1;
+      mPageController.jumpToPage(1);
+      setState(() {});
+    }, onError: (res) {
+      BaseTool.toast(msg: res.msg);
+    });
   }
 
   @override
@@ -252,7 +259,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
   void trySendCode() {
     phoneNumber = inputNumber;
     BaseWidget.showLoadingAlert("正在发送验证码...", context);
-    UserApi.ins().obtainSendCode(phoneNumber).listen((event) {
+    UserApi.ins().obtainSendCode(phoneNumber, 2).listen((event) {
       countDown();
       hasClickSend = true;
       setState(() {});
@@ -288,7 +295,21 @@ class _ChangeWidgetState extends State<ChangeWidget> {
 
   ///提交code
   void onSubmitted(content) {
-    BaseTool.toast(msg: "$phoneNumber+$content}");
+    UserEntity entity = Global.user.user.value;
+
+    BaseWidget.showLoadingAlert("正在修改...", context);
+    UserApi.ins().obtainChangePhone(phoneNumber, content).listen((event) {
+      entity.phone = phoneNumber;
+      UserConfig.getIns().user = entity;
+      Global.user.setUser(entity);
+
+      Get.back();
+      Get.back();
+      BaseTool.toast(msg: "修改成功");
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: "修改失败，${res.msg}");
+    });
   }
 
   @override

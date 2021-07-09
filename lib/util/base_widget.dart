@@ -194,6 +194,22 @@ class BaseWidget {
     );
   }
 
+  static EasyRefresh noRefreshWidget(
+      {List<Widget> slivers,
+      EasyRefreshController controller,
+      ScrollController scrollController}) {
+    return EasyRefresh.custom(
+      enableControlFinishRefresh: true,
+      taskIndependence: false,
+      controller: controller,
+      scrollController: scrollController,
+      scrollDirection: Axis.vertical,
+      topBouncing: true,
+      bottomBouncing: true,
+      slivers: slivers,
+    );
+  }
+
   static Future<dynamic> showLoadingAlert(String notice, BuildContext context) {
     return showDialog(
       barrierDismissible: true,

@@ -16,8 +16,8 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class ChangeInfoPage extends StatelessWidget {
-  ChangeInfoPage({Key key}) : super(key: key);
+class UserInfoPage extends StatelessWidget {
+  UserInfoPage({Key key}) : super(key: key);
 
   List<String> names = ["账号昵称", "账号ID", "登录手机号"];
 
@@ -54,7 +54,11 @@ class ChangeInfoPage extends StatelessWidget {
           Get.back();
         }, onConfirm: (phone) {
           if (isInputAvailable(phone)) {
-            Get.off(() => ChangePhone(), arguments: phone);
+            UserApi.ins().obtainSendCode(phone, 1).listen((event) {
+              Get.off(() => ChangePhone(), arguments: phone);
+            }, onError: (res) {
+              BaseTool.toast(msg: "发送失败，${res.msg}");
+            });
           }
         });
         break;
@@ -98,9 +102,11 @@ class ChangeInfoPage extends StatelessWidget {
 
     if (entity.nickName != name) {
       BaseWidget.showLoadingAlert("正在更新...", context);
-      UserApi.ins().obtainUpdateUser(nickName: name).listen((event) {
+      UserApi.ins().obtainChangeName(name).listen((event) {
         entity.nickName = name;
+        UserConfig.getIns().user = entity;
         Global.user.setUser(entity);
+
         Get.back();
         Get.back();
         BaseTool.toast(msg: "更新成功");

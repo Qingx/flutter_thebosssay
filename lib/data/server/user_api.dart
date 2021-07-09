@@ -18,9 +18,9 @@ class UserApi extends BaseApi {
         .rebase();
   }
 
-  ///发送验证码
-  Observable<bool> obtainSendCode(String phone) {
-    var data = {"call": phone};
+  ///发送验证码 type==>验证码类型: 0.登录; 1.确认当前手机号; 2.修改手机号
+  Observable<bool> obtainSendCode(String phone, int type) {
+    var data = {"call": phone, "type": type};
     return post<bool>("/api/account/send-code", requestBody: data).success();
   }
 
@@ -36,9 +36,22 @@ class UserApi extends BaseApi {
   }
 
   ///修改用户信息
-  Observable<bool> obtainUpdateUser({String nickName, String phone}) {
-    var data = {"nickName": nickName, "phone": phone};
+  Observable<bool> obtainChangeName(String nickName) {
+    var data = {"nickName": nickName};
     return post<bool>("/api/account/update-user", requestBody: data).success();
+  }
+
+  ///验证当前手机号
+  Observable<bool> obtainConfirmPhone(String phone, String code) {
+    var data = {"call": phone, "code": code};
+    return post<bool>("/api/account/check-current", requestBody: data)
+        .success();
+  }
+
+  ///修改手机号
+  Observable<bool> obtainChangePhone(String phone, String code) {
+    var data = {"call": phone, "code": code};
+    return post<bool>("/api/account/check-change", requestBody: data).success();
   }
 
   ///刷新用户信息
