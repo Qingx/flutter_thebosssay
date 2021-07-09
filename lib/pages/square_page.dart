@@ -157,7 +157,7 @@ class _SquarePageState extends State<SquarePage>
           itemBuilder: (context, index) {
             return tabItemWidget(Global.labelList[index], index);
           },
-          itemCount: 16,
+          itemCount: Global.labelList.length,
         ),
       ),
     );

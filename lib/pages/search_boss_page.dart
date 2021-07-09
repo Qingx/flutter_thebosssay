@@ -24,7 +24,7 @@ class SearchBossPage extends StatefulWidget {
 class _SearchBossPageState extends State<SearchBossPage>
     with BasePageController<BossInfoEntity> {
   String hintText;
-  String searchText = "";
+  String searchText;
 
   var builderFuture;
 
@@ -46,6 +46,7 @@ class _SearchBossPageState extends State<SearchBossPage>
   void initState() {
     super.initState();
     hintText = "大家都在搜莉莉娅";
+    searchText = "";
 
     editingController = TextEditingController();
 
@@ -57,7 +58,9 @@ class _SearchBossPageState extends State<SearchBossPage>
 
   ///初始化数据
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
-    return BossApi.ins().obtainAllBossList(pageParam, "-1").doOnData((event) {
+    return BossApi.ins()
+        .obtainSearchBossList(pageParam, searchText)
+        .doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
     }).doOnError((res) {
@@ -72,7 +75,7 @@ class _SearchBossPageState extends State<SearchBossPage>
       pageParam.reset();
     }
 
-    BossApi.ins().obtainAllBossList(pageParam, "-1").listen((event) {
+    BossApi.ins().obtainSearchBossList(pageParam, searchText).listen((event) {
       hasData = event.hasData;
       concat(event.records, loadMore);
       setState(() {});
@@ -93,8 +96,7 @@ class _SearchBossPageState extends State<SearchBossPage>
     if (!editingController.text.isNullOrEmpty()) {
       editingController.clear();
       searchText = "";
-      builderFuture = loadInitData();
-      setState(() {});
+      controller.callRefresh();
     }
   }
 
@@ -102,7 +104,6 @@ class _SearchBossPageState extends State<SearchBossPage>
   void onEditSubmitted(text) {
     searchText = text;
     controller.callRefresh();
-    setState(() {});
   }
 
   void onEditChanged(text) {
@@ -186,7 +187,6 @@ class _SearchBossPageState extends State<SearchBossPage>
 
   Widget builderWidget(BuildContext context,
       AsyncSnapshot<WlPage.Page<BossInfoEntity>> snapshot) {
-    print("snapshot:${snapshot.data}");
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();

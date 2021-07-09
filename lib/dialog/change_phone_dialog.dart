@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
-Future<dynamic> showChangeName(BuildContext context,
+Future<dynamic> showPhoneName(BuildContext context,
     {Function onDismiss, Function(String) onConfirm}) {
   TextEditingController editingController = TextEditingController();
   return showDialog(
@@ -11,7 +11,7 @@ Future<dynamic> showChangeName(BuildContext context,
     builder: (context) {
       return Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/4),
+        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 4),
         child: Material(
           borderRadius: BorderRadius.all(Radius.circular(12)),
           child: Container(
@@ -23,7 +23,7 @@ Future<dynamic> showChangeName(BuildContext context,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "修改账号昵称",
+                  "验证当前手机号",
                   style: TextStyle(
                     fontSize: 16,
                     color: BaseColor.textDark,
@@ -40,9 +40,10 @@ Future<dynamic> showChangeName(BuildContext context,
                   maxLines: 1,
                   textAlign: TextAlign.start,
                   autofocus: false,
+                  keyboardType: TextInputType.number,
                   style: TextStyle(fontSize: 13, color: BaseColor.textDark),
                   decoration: InputDecoration(
-                    hintText: "输入新的昵称",
+                    hintText: "输入当前登录的手机号",
                     hintStyle:
                         TextStyle(fontSize: 13, color: BaseColor.textGray),
                     fillColor: BaseColor.loadBg,
@@ -105,9 +106,7 @@ Future<dynamic> showChangeName(BuildContext context,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ).onClick(() {
-                        if (!editingController.text.isNullOrEmpty()) {
-                          onConfirm(editingController.text);
-                        }
+                        onConfirm(editingController.text);
                       }),
                     ),
                   ],

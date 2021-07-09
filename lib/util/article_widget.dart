@@ -75,7 +75,7 @@ class ArticleWidget {
             ),
           ),
           Text(
-            entity.content,
+            entity.descContent,
             style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
             textAlign: TextAlign.start,
             maxLines: 2,
@@ -192,7 +192,7 @@ class ArticleWidget {
                         ),
                       ),
                       Text(
-                        entity.content,
+                        entity.descContent,
                         style: TextStyle(
                             fontSize: 14, color: BaseColor.textDarkLight),
                         textAlign: TextAlign.start,

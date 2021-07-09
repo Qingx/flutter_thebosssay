@@ -5,6 +5,8 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
+import 'package:flutter_boss_says/dialog/change_phone_dialog.dart';
+import 'package:flutter_boss_says/pages/change_phone.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -37,13 +39,57 @@ class ChangeInfoPage extends StatelessWidget {
     });
   }
 
-  void onClickItem(index, context) {
-    if (index == 0) {
-      showChangeName(context, onDismiss: () {
-        Get.back();
-      }, onConfirm: (name) {
-        tryChangeName(name, context);
-      });
+  ///点击修改
+  void onClickChange(index, context) {
+    switch (index) {
+      case 0:
+        showChangeName(context, onDismiss: () {
+          Get.back();
+        }, onConfirm: (name) {
+          tryChangeName(name, context);
+        });
+        break;
+      default:
+        showPhoneName(context, onDismiss: () {
+          Get.back();
+        }, onConfirm: (phone) {
+          if (isInputAvailable(phone)) {
+            Get.off(() => ChangePhone(), arguments: phone);
+          }
+        });
+        break;
+    }
+  }
+
+  bool isInputAvailable(String content) {
+    if (content.isNullOrEmpty()) {
+      BaseTool.toast(msg: "请输入手机号");
+      return false;
+    }
+
+    if (content[0] != "1") {
+      BaseTool.toast(msg: "请输入正确的手机号");
+      return false;
+    }
+
+    if (content.length != 11) {
+      BaseTool.toast(msg: "请输入正确的手机号");
+      return false;
+    }
+
+    return true;
+  }
+
+  void onClickItem(index) {
+    switch (index) {
+      case 0:
+        BaseTool.toast(msg: "账号昵称：${Global.user.user.value.nickName}");
+        break;
+      case 1:
+        BaseTool.toast(msg: "账号ID：${Global.user.user.value.id}");
+        break;
+      default:
+        break;
     }
   }
 
@@ -185,14 +231,17 @@ class ChangeInfoPage extends StatelessWidget {
                   child: Obx(
                     () => Text(
                       index == 0
-                          ? Global.user.user.value.type == BaseEmpty.emptyUser.type
+                          ? Global.user.user.value.type ==
+                                  BaseEmpty.emptyUser.type
                               ? "请先登录！"
                               : Global.user.user.value.nickName
                           : index == 1
-                              ? Global.user.user.value.type == BaseEmpty.emptyUser.type
+                              ? Global.user.user.value.type ==
+                                      BaseEmpty.emptyUser.type
                                   ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
                                   : Global.user.user.value.id
-                              : Global.user.user.value.type == BaseEmpty.emptyUser.type
+                              : Global.user.user.value.type ==
+                                      BaseEmpty.emptyUser.type
                                   ? "ID：${Global.user.user.value.id}"
                                   : Global.user.user.value.phone
                                       .hidePhoneNumber(),
@@ -207,7 +256,10 @@ class ChangeInfoPage extends StatelessWidget {
                 index == 1
                     ? SizedBox()
                     : Image.asset(R.assetsImgChangeInfo, width: 16, height: 16)
-                        .marginOn(right: 32),
+                        .marginOn(right: 32)
+                        .onClick(() {
+                        onClickChange(index, context);
+                      }),
               ],
             ),
           ),
@@ -218,7 +270,7 @@ class ChangeInfoPage extends StatelessWidget {
         ],
       ),
     ).onClick(() {
-      onClickItem(index, context);
+      onClickItem(index);
     });
   }
 }

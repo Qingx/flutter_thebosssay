@@ -22,7 +22,7 @@ class SearchArticlePage extends StatefulWidget {
 class _SearchArticlePageState extends State<SearchArticlePage>
     with BasePageController<ArticleEntity> {
   String hintText;
-  String searchText = "";
+  String searchText;
 
   var builderFuture;
 
@@ -44,6 +44,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   void initState() {
     super.initState();
     hintText = "大家都在搜莉莉娅";
+    searchText = "";
 
     editingController = TextEditingController();
 
@@ -55,7 +56,9 @@ class _SearchArticlePageState extends State<SearchArticlePage>
 
   ///初始化数据
   Future<WlPage.Page<ArticleEntity>> loadInitData() {
-    return BossApi.ins().obtainAllArticle(pageParam, "-1").doOnData((event) {
+    return BossApi.ins()
+        .obtainSearchArticleList(pageParam, searchText)
+        .doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
     }).doOnError((res) {
@@ -70,7 +73,8 @@ class _SearchArticlePageState extends State<SearchArticlePage>
       pageParam.reset();
     }
 
-    BossApi.ins().obtainAllArticle(pageParam, "-1").listen((event) {
+    BossApi.ins().obtainSearchArticleList(pageParam, searchText).listen(
+        (event) {
       hasData = event.hasData;
       concat(event.records, loadMore);
       setState(() {});
@@ -91,8 +95,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
     if (!editingController.text.isNullOrEmpty()) {
       editingController.clear();
       searchText = "";
-      builderFuture = loadInitData();
-      setState(() {});
+      controller.callRefresh();
     }
   }
 
@@ -100,7 +103,6 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   void onEditSubmitted(text) {
     searchText = text;
     controller.callRefresh();
-    setState(() {});
   }
 
   void onEditChanged(text) {

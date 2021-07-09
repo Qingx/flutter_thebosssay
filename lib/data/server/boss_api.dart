@@ -98,4 +98,25 @@ class BossApi extends BaseApi {
         .rebase(pageParam: pageParam);
   }
 
+  ///搜索boss
+  Observable<Page<BossInfoEntity>> obtainSearchBossList(
+      PageParam pageParam, String search) {
+    final param = pageParam.toParam(doCreate: (map) {
+      var data = {"name": search};
+      map.addAll(data);
+    });
+    return postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
+        .rebase(pageParam: pageParam);
+  }
+
+  ///搜索文章
+  Observable<Page<ArticleEntity>> obtainSearchArticleList(
+      PageParam pageParam, String search) {
+    final param = pageParam.toParam(doCreate: (map) {
+      var data = {"name": search};
+      map.addAll(data);
+    });
+    return postPage<ArticleEntity>("/api/article/list", requestBody: param)
+        .rebase(pageParam: pageParam);
+  }
 }

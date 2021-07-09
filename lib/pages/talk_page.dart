@@ -19,11 +19,11 @@ class TalkPage extends StatefulWidget {
 
 class _TalkPageState extends State<TalkPage>
     with AutomaticKeepAliveClientMixin {
-  int mCurrentIndex = 0;
-  List<String> mTitles = ["追踪", "广场"];
-  List<Widget> mPages = [FollowPage(), SquarePage()];
+  int mCurrentIndex;
+  List<String> mTitles;
+  List<Widget> mPages;
 
-  PageController mPageController = PageController();
+  PageController mPageController;
 
   @override
   void dispose() {
@@ -36,6 +36,11 @@ class _TalkPageState extends State<TalkPage>
   @override
   void initState() {
     super.initState();
+
+    mCurrentIndex = 0;
+    mTitles = ["追踪", "广场"];
+    mPages = [FollowPage(), SquarePage()];
+    mPageController = PageController();
   }
 
   @override

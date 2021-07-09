@@ -119,11 +119,11 @@ class _MinePageState extends State<MinePage>
       case 0:
         Global.eventBus.fire(BaseEvent(JumpBossEvent));
         break;
-      case 2:
-        onClickTodayHistory();
+      case 1:
+        onClickFavorite();
         break;
       default:
-        BaseTool.toast(msg: infoNames[index]);
+        onClickTodayHistory();
         break;
     }
   }
@@ -391,7 +391,8 @@ class _MinePageState extends State<MinePage>
             overflow: TextOverflow.ellipsis,
           ).marginOn(left: 12),
           Expanded(
-            child: index == 0 && controller.user.value.type == BaseEmpty.emptyUser.type
+            child: index == 0 &&
+                    controller.user.value.type == BaseEmpty.emptyUser.type
                 ? Container(
                     padding: EdgeInsets.only(right: 4),
                     alignment: Alignment.centerRight,

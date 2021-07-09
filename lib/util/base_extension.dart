@@ -33,7 +33,7 @@ extension FunString on String {
   }
 
   String hidePhoneNumber(){
-    return this.replaceRange(3, 7, "****");
+    return this.replaceRange(3, 11, "********");
   }
 }
 

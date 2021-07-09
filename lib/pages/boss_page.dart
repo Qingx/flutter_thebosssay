@@ -280,7 +280,7 @@ class _BodyWidgetState extends State<BodyWidget>
           itemBuilder: (context, index) {
             return tabItemWidget(Global.labelList[index], index);
           },
-          itemCount: 16,
+          itemCount: Global.labelList.length,
         ),
       ),
     );
