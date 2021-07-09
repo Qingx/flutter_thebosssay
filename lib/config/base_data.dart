@@ -1,7 +1,6 @@
 import 'dart:core';
 
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 abstract class DataSource {
   bool get isDataEmpty;
@@ -37,7 +36,7 @@ class BaseData<T> extends DataSource {
     } else {
       var data = json['data'];
 
-      if(data == null) {
+      if (data == null) {
         if (T.toString().startsWith("List")) {
           this.data = JsonConvert.fromJsonAsT<T>([]);
         }

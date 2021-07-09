@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 
 class SquarePage extends StatefulWidget {
   const SquarePage({Key key}) : super(key: key);
@@ -110,7 +110,6 @@ class _SquarePageState extends State<SquarePage>
   Widget builderWidget(BuildContext context,
       AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
         return contentWidget();
       } else

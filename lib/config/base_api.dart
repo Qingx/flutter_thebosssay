@@ -1,12 +1,12 @@
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_boss_says/config/base_data.dart';
+import 'package:flutter_boss_says/config/base_page.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
-import 'package:flutter_boss_says/config/base_data.dart';
-import 'package:flutter_boss_says/config/page_data.dart';
-import 'package:flutter_boss_says/config/base_page.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BaseApi {
@@ -55,8 +55,8 @@ class BaseApi {
   /// 发起Get请求
   Observable<BaseData<T>> get<T>(String pathOrUrl,
           {Map<String, dynamic> queryParameters}) =>
-      Observable.fromFuture(
-          _http<T>(pathOrUrl, HttpConfig.Get, queryParameters: queryParameters));
+      Observable.fromFuture(_http<T>(pathOrUrl, HttpConfig.Get,
+          queryParameters: queryParameters));
 
   /// 发起Post请求
   Observable<BaseData<T>> post<T>(String pathOrUrl,

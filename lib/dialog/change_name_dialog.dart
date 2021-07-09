@@ -11,7 +11,7 @@ Future<dynamic> showChangeName(BuildContext context,
     builder: (context) {
       return Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/4),
+        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 4),
         child: Material(
           borderRadius: BorderRadius.all(Radius.circular(12)),
           child: Container(

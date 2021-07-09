@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BaseSP {
   String name;

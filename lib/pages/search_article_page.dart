@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
-import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:get/get.dart';
 
 class SearchArticlePage extends StatefulWidget {
@@ -186,7 +185,6 @@ class _SearchArticlePageState extends State<SearchArticlePage>
 
   Widget builderWidget(BuildContext context,
       AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
-    print("snapshot:${snapshot.data}");
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();

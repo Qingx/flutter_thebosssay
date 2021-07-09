@@ -6,20 +6,19 @@ import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
-import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/all_boss_page.dart';
+import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/search_boss_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class BossPage extends StatefulWidget {
   const BossPage({Key key}) : super(key: key);
@@ -198,7 +197,6 @@ class _BodyWidgetState extends State<BodyWidget>
   Widget builderWidget(
       BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
         return Stack(
           children: [

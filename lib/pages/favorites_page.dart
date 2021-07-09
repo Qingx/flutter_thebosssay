@@ -209,7 +209,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget builderWidget(
       BuildContext context, AsyncSnapshot<List<FavoriteEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
         return Stack(
           children: [

@@ -3,8 +3,8 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:get/get.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:get/get.dart';
 
 class BossInfoPage extends StatelessWidget {
   BossInfoPage({Key key}) : super(key: key);

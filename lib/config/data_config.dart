@@ -18,7 +18,8 @@ class DataConfig extends BaseConfig {
   String get firstUserApp =>
       spInstance.getString(DataKeys.K_FIRST_USE, defaultVal: "empty");
 
-  set setTempId(String tempId) => spInstance.putString(DataKeys.K_TEMP_ID, tempId);
+  set setTempId(String tempId) =>
+      spInstance.putString(DataKeys.K_TEMP_ID, tempId);
 
   /// 获取tempId
   String get tempId =>

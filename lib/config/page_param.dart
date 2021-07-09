@@ -28,10 +28,10 @@ class PageParam {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is PageParam &&
-              runtimeType == other.runtimeType &&
-              size == other.size &&
-              current == other.current;
+      other is PageParam &&
+          runtimeType == other.runtimeType &&
+          size == other.size &&
+          current == other.current;
 
   @override
   int get hashCode => size.hashCode ^ current.hashCode;

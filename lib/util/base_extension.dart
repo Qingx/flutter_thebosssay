@@ -32,7 +32,7 @@ extension FunString on String {
     return this == null || this.isEmpty;
   }
 
-  String hidePhoneNumber(){
+  String hidePhoneNumber() {
     return this.replaceRange(3, 11, "********");
   }
 }

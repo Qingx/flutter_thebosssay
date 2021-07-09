@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
@@ -19,7 +20,6 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 
 class AllBossPage extends StatefulWidget {
   const AllBossPage({Key key}) : super(key: key);
@@ -39,7 +39,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   String mCurrentTab;
 
-  //0:首页界面 1:搜索结果页面 2:搜索结果空界面
+  //0:首页界面 1:搜索结果页面
   int widgetStatus = 0;
 
   @override
@@ -64,9 +64,22 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   }
 
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
+    pageParam?.reset();
     mCurrentTab = Global.labelList[0].id;
     return BossApi.ins()
         .obtainAllBossList(pageParam, mCurrentTab)
+        .doOnData((event) {
+      hasData = event.hasData;
+      concat(event.records, false);
+    }).doOnError((e) {
+      print(e);
+    }).last;
+  }
+
+  Future<WlPage.Page<BossInfoEntity>> loadSearchData(searchText) {
+    pageParam?.reset();
+    return BossApi.ins()
+        .obtainSearchBossList(pageParam, searchText)
         .doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
@@ -106,7 +119,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   void onEditSubmitted(text) {
     widgetStatus = 1;
-    builderFuture = loadInitData();
+    builderFuture = loadSearchData(text);
     setState(() {});
   }
 
@@ -247,10 +260,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       if (snapshot.hasData) {
         if (widgetStatus == 0) {
           return contentWidget();
-        } else if (widgetStatus == 1) {
-          return searchWidget();
         } else {
-          return searchEmptyWidget();
+          return searchWidget();
         }
       } else
         return BaseWidget.errorWidget(() {
@@ -492,18 +503,19 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   ///widgetStatus=1
   Widget searchWidget() {
-    return Container(
-      child: Column(
-        children: [
-          searchTitleWidget(),
-          Expanded(child: searchResultWidget()),
-        ],
-      ),
-    );
+    return mData.isNullOrEmpty()
+        ? searchEmptyWidget()
+        : Container(
+            child: Column(
+              children: [
+                searchTitleWidget(),
+                Expanded(child: searchResultWidget()),
+              ],
+            ),
+          );
   }
 
   Widget searchTitleWidget() {
-    int number = 4;
     return Container(
       alignment: Alignment.centerLeft,
       height: 40,
@@ -516,7 +528,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
               fontWeight: FontWeight.bold),
           children: [
             TextSpan(
-              text: " $number ",
+              text: "${mData.length ?? 0}",
               style: TextStyle(
                   color: BaseColor.accent,
                   fontSize: 14,
@@ -630,7 +642,6 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
     });
   }
 
-  ///widgetStatus=2
   Widget searchEmptyWidget() {
     return Container(
       child: Column(

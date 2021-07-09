@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key key}) : super(key: key);

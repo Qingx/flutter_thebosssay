@@ -14,8 +14,8 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
-import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/all_boss_page.dart';
+import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -191,7 +191,6 @@ class _FollowPageState extends State<FollowPage>
 
   Widget builderWidget(BuildContext context,
       AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
-    print("snapshot:${snapshot.data}");
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();

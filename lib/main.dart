@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
-import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/r.dart';

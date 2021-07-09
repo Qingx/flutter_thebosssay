@@ -1,5 +1,5 @@
-import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/base_data.dart';
+import 'package:flutter_boss_says/config/page_data.dart';
 
 class BasePage<T> extends DataSource {
   int timestamps;
