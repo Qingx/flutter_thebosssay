@@ -12,6 +12,7 @@ import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -453,7 +454,15 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return BaseWidget.followItem(mData[index], index, context);
+                ArticleEntity entity = mData[index];
+
+                if (entity.files.isNullOrEmpty()) {
+                  return ArticleWidget.onlyTextWithContent(
+                      entity, index, context);
+                } else {
+                  return ArticleWidget.singleImgWithContent(
+                      entity, index, context);
+                }
               },
               childCount: mData.length,
             ),

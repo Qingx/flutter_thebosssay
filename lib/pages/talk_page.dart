@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/pages/follow_page.dart';
+import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
 import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -104,7 +105,6 @@ class _TalkPageState extends State<TalkPage>
   }
 
   void onSearchClick() {
-    // BaseTool.toast(msg: "clickSearch");
-    Get.to(() => TestPage());
+    Get.to(() => SearchArticlePage());
   }
 }

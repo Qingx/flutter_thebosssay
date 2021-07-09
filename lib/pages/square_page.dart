@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 
 class SquarePage extends StatefulWidget {
   const SquarePage({Key key}) : super(key: key);
@@ -17,11 +23,12 @@ class SquarePage extends StatefulWidget {
 
 class _SquarePageState extends State<SquarePage>
     with AutomaticKeepAliveClientMixin, BasePageController {
-  int mCurrentTab = 0;
   var builderFuture;
 
   ScrollController scrollController;
   EasyRefreshController controller;
+
+  String mCurrentTab;
   bool hasData = false;
 
   @override
@@ -30,6 +37,7 @@ class _SquarePageState extends State<SquarePage>
   @override
   void dispose() {
     super.dispose();
+
     controller?.dispose();
     scrollController?.dispose();
   }
@@ -44,8 +52,31 @@ class _SquarePageState extends State<SquarePage>
     controller = EasyRefreshController();
   }
 
-  Future<bool> loadInitData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
+  ///初始化获取数据
+  Future<WlPage.Page<ArticleEntity>> loadInitData() {
+    if (Global.labelList.isNullOrEmpty()) {
+      BossApi.ins().obtainBossLabels().flatMap((value) {
+        Global.labelList = [BaseEmpty.emptyLabel, ...value];
+        mCurrentTab = Global.labelList[0].id;
+
+        return BossApi.ins().obtainAllArticle(pageParam, mCurrentTab);
+      }).doOnData((event) {
+        hasData = event.hasData;
+        concat(event.records, false);
+      }).doOnError((e) {
+        print(e);
+      }).last;
+    } else {
+      mCurrentTab = Global.labelList[0].id;
+      return BossApi.ins()
+          .obtainAllArticle(pageParam, mCurrentTab)
+          .doOnData((event) {
+        hasData = event.hasData;
+        concat(event.records, false);
+      }).doOnError((e) {
+        print(e);
+      }).last;
+    }
   }
 
   @override
@@ -54,11 +85,9 @@ class _SquarePageState extends State<SquarePage>
       pageParam.reset();
     }
 
-    // List<int> testData = [];
-    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
-      hasData = true;
-      concat(event, loadMore);
+    BossApi.ins().obtainAllArticle(pageParam, mCurrentTab).listen((event) {
+      hasData = event.hasData;
+      concat(event.records, loadMore);
       setState(() {});
     }, onDone: () {
       if (loadMore) {
@@ -72,19 +101,23 @@ class _SquarePageState extends State<SquarePage>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+    return FutureBuilder<WlPage.Page<ArticleEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  Widget builderWidget(BuildContext context,
+      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print('data:${snapshot.data}');
+      print("snapshot:${snapshot.data}");
       if (snapshot.hasData) {
         return contentWidget();
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          builderFuture = loadInitData();
+          setState(() {});
+        });
     } else {
       return loadingWidget();
     }
@@ -122,7 +155,7 @@ class _SquarePageState extends State<SquarePage>
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return tabItemWidget(index);
+            return tabItemWidget(Global.labelList[index], index);
           },
           itemCount: 16,
         ),
@@ -130,12 +163,14 @@ class _SquarePageState extends State<SquarePage>
     );
   }
 
-  Widget tabItemWidget(int index) {
+  Widget tabItemWidget(BossLabelEntity entity, int index) {
+    bool hasSelect = entity.id == mCurrentTab;
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
-    Color bgColor =
-        mCurrentTab == index ? BaseColor.accent : BaseColor.accentLight;
-    Color fontColor = mCurrentTab == index ? Colors.white : BaseColor.accent;
+    Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
+    Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
+
+    String name = BaseEmpty.emptyLabel == entity ? "全部" : entity.name;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
       padding: EdgeInsets.only(left: 12, right: 12),
@@ -143,13 +178,13 @@ class _SquarePageState extends State<SquarePage>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          index % 2 == 0 ? "全部" : "职业作者",
+          name,
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),
     ).onClick(() {
-      if (index != mCurrentTab) {
-        mCurrentTab = index;
+      if (entity.id != mCurrentTab) {
+        mCurrentTab = entity.id;
         controller.callRefresh();
       }
     });
@@ -168,9 +203,18 @@ class _SquarePageState extends State<SquarePage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return index % 5 == 0
-                    ? BaseWidget.adTriImgNoContent(index, context)
-                    : BaseWidget.singleImgNoContent(index, context);
+                ArticleEntity entity = mData[index];
+
+                if (entity.files.isNullOrEmpty()) {
+                  return ArticleWidget.onlyTextNoContent(
+                      entity, index, context);
+                } else if (entity.files.length == 1) {
+                  return ArticleWidget.singleImgNoContent(
+                      entity, index, context);
+                } else {
+                  return ArticleWidget.adTriImgNoContent(
+                      entity, index, context);
+                }
               },
               childCount: mData.length,
             ),

@@ -36,7 +36,7 @@ class BaseTool {
       } else if (minutes >= 0) {
         return "$minutes分钟前更新";
       } else {
-        return "$seconds前更新";
+        return "$seconds秒前更新";
       }
     } else {
       return "时间戳异常";

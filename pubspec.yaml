@@ -107,6 +107,7 @@ flutter:
     - assets/img/testPhoto.png
     - assets/img/bossNormal.png
     - assets/img/itemScore.png
+    - assets/img/errorIcon.png
     - assets/img/bossTopBg.png
     - assets/img/testHead.png
     - assets/img/search.png

@@ -21,17 +21,16 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
-import 'package:rxdart/rxdart.dart';
 
-class SearchPage extends StatefulWidget {
-  const SearchPage({Key key}) : super(key: key);
+class AllBossPage extends StatefulWidget {
+  const AllBossPage({Key key}) : super(key: key);
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  _AllBossPageState createState() => _AllBossPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with BasePageController {
-  String hintText = "大家都在搜莉莉娅";
+class _AllBossPageState extends State<AllBossPage> with BasePageController {
+  String hintText;
   TextEditingController editingController;
 
   var builderFuture;
@@ -55,6 +54,7 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   @override
   void initState() {
     super.initState();
+    hintText = "大家都在搜莉莉娅";
 
     editingController = TextEditingController();
 
@@ -108,7 +108,6 @@ class _SearchPageState extends State<SearchPage> with BasePageController {
   void onEditSubmitted(text) {
     widgetStatus = 1;
     builderFuture = loadInitData();
-    Fluttertoast.showToast(msg: text);
     setState(() {});
   }
 

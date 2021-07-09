@@ -15,8 +15,9 @@ import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
-import 'package:flutter_boss_says/pages/search_page.dart';
+import 'package:flutter_boss_says/pages/all_boss_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -344,7 +345,7 @@ class _FollowPageState extends State<FollowPage>
               ),
             ),
           ).onClick(() {
-            Get.to(() => SearchPage());
+            Get.to(() => AllBossPage());
           }),
         ],
       ),
@@ -468,7 +469,15 @@ class _FollowPageState extends State<FollowPage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return BaseWidget.followItem(mData[index], index, context);
+                ArticleEntity entity = mData[index];
+
+                if (entity.files.isNullOrEmpty()) {
+                  return ArticleWidget.onlyTextWithContent(
+                      entity, index, context);
+                } else {
+                  return ArticleWidget.singleImgWithContent(
+                      entity, index, context);
+                }
               },
               childCount: mData.length,
             ),

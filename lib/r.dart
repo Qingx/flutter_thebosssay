@@ -23,6 +23,8 @@ class R {
   static final String assetsImgBossNormal = 'assets/img/bossNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemScore.png)
   static final String assetsImgItemScore = 'assets/img/itemScore.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/errorIcon.png)
+  static final String assetsImgErrorIcon = 'assets/img/errorIcon.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossTopBg.png)
   static final String assetsImgBossTopBg = 'assets/img/bossTopBg.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testHead.png)
