@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
@@ -42,18 +44,24 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   //0:首页界面 1:搜索结果页面
   int widgetStatus = 0;
 
+  StreamSubscription<BaseEvent> eventDispose;
+
   @override
   void dispose() {
     super.dispose();
+
     editingController?.dispose();
     controller?.dispose();
     scrollController?.dispose();
+    eventDispose?.cancel();
   }
 
   @override
   void initState() {
     super.initState();
     hintText = "大家都在搜莉莉娅";
+
+    eventBus();
 
     editingController = TextEditingController();
 
@@ -86,6 +94,15 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
     }).doOnError((e) {
       print(e);
     }).last;
+  }
+
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      ///添加追踪boss后刷新
+      if (event.obj == RefreshFollowEvent) {
+        controller.callRefresh();
+      }
+    });
   }
 
   @override

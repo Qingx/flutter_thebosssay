@@ -114,6 +114,7 @@ flutter:
     - assets/img/testHead.png
     - assets/img/search.png
     - assets/img/changeInfo.png
+    - assets/img/favoriteAccent.png
     - assets/img/likeNormal.png
     - assets/img/bossOrderNormal.png
     - assets/img/splash.png

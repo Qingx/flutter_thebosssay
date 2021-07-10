@@ -23,8 +23,8 @@ class UserInfoPage extends StatelessWidget {
 
   ///尝试退出登录
   void tryLogout(context) {
-    DataConfig.getIns().setTempId = BaseTool.createTempId();
     UserConfig.getIns().clear();
+    DataConfig.getIns().setTempId = BaseTool.createTempId();
     Global.user.setUser(BaseEmpty.emptyUser);
 
     BaseWidget.showLoadingAlert("正在清理数据...", context);

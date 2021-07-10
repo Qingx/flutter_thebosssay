@@ -77,4 +77,23 @@ class UserApi extends BaseApi {
     return post<FavoriteEntity>("/api/collect/delete", requestBody: data)
         .success();
   }
+
+  ///收藏文章
+  Observable<bool> obtainFavoriteArticle(String articleId, String folderId) {
+    var data = {
+      "groupId": folderId,
+      "sourceId": articleId,
+      "target": true,
+      "type": 1
+    };
+    return post<FavoriteEntity>("/api/article/options", requestBody: data)
+        .success();
+  }
+
+  ///取消收藏文章
+  Observable<bool> obtainCancelFavoriteArticle(String articleId) {
+    var data = {"sourceId": articleId, "target": false, "type": 1};
+    return post<FavoriteEntity>("/api/article/options", requestBody: data)
+        .success();
+  }
 }

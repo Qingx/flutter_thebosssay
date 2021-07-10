@@ -119,4 +119,9 @@ class BossApi extends BaseApi {
     return postPage<ArticleEntity>("/api/article/list", requestBody: param)
         .rebase(pageParam: pageParam);
   }
+
+  ///获取文章详情
+  Observable<ArticleEntity> obtainArticleDetail(String id) {
+    return get<ArticleEntity>("/api/article/details/$id").rebase();
+  }
 }

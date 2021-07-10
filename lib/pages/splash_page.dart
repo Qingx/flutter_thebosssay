@@ -65,21 +65,25 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+
+    countTime();
+
     Global.user = Get.find<UserController>(tag: "user");
+    Global.user.setUser(UserConfig.getIns().user);
 
-    if (UserConfig.getIns().loginStatus) {
-      Global.user.setUser(UserConfig.getIns().user);
-    }
-
-    if (UserConfig.getIns().token == "empty_token") {
+    if (!UserConfig.getIns().loginStatus) {
       UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
         UserConfig.getIns().token = event.token;
         UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);
       });
+    } else {
+      UserApi.ins().obtainRefreshUser().listen((event) {
+        UserConfig.getIns().token = event.token;
+        UserConfig.getIns().user = event.userInfo;
+        Global.user.setUser(event.userInfo);
+      });
     }
-
-    countTime();
   }
 
   @override

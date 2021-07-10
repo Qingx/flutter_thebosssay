@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
-Future<dynamic> showNewFolder(BuildContext context,
+Future<dynamic> showNewFolderDialog(BuildContext context,
     {Function onDismiss, Function(String) onConfirm}) {
   TextEditingController editingController = TextEditingController();
   return showDialog(

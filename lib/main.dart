@@ -36,8 +36,6 @@ class _MyAppState extends State<MyApp> {
           DataConfig.getIns().setTempId = BaseTool.createTempId();
         }
 
-        print('tempId====>${DataConfig.getIns().tempId}');
-
         if (isFirstUseApp) {
           Get.off(() => GuidePage());
         } else {

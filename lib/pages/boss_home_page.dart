@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
@@ -101,11 +103,14 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   BossInfoEntity entity;
 
+  StreamSubscription<BaseEvent> eventDispose;
+
   @override
   void dispose() {
     super.dispose();
     scrollController?.dispose();
     controller?.dispose();
+    eventDispose?.cancel();
   }
 
   @override
@@ -118,6 +123,17 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     controller = EasyRefreshController();
 
     builderFuture = loadInitData();
+
+    eventBus();
+  }
+
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      ///添加追踪boss后刷新
+      if (event.obj == RefreshFollowEvent) {
+        controller.callRefresh();
+      }
+    });
   }
 
   ///初始化获取数据
@@ -142,6 +158,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     BossApi.ins().obtainBossArticleList(pageParam, entity.id).listen((event) {
       hasData = event.hasData;
       concat(event.records, loadMore);
+
+      entity.isCollect = event.records[0].bossVO.isCollect;
       setState(() {});
     }, onError: (res) {
       print(res.msg);

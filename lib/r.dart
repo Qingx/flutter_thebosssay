@@ -35,6 +35,8 @@ class R {
   static final String assetsImgSearch = 'assets/img/search.png';
   /// ![](http://127.0.0.1:11111111/assets/img/changeInfo.png)
   static final String assetsImgChangeInfo = 'assets/img/changeInfo.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/favoriteAccent.png)
+  static final String assetsImgFavoriteAccent = 'assets/img/favoriteAccent.png';
   /// ![](http://127.0.0.1:11111111/assets/img/likeNormal.png)
   static final String assetsImgLikeNormal = 'assets/img/likeNormal.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderNormal.png)

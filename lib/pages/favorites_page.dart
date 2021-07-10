@@ -121,7 +121,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   ///添加收藏夹
   void showAddFolder() {
-    showNewFolder(context, onDismiss: () {
+    showNewFolderDialog(context, onDismiss: () {
       Get.back();
     }, onConfirm: onAddFolder);
   }

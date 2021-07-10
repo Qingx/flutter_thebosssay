@@ -115,7 +115,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      var data={"id":entity.id,"collect":entity.isCollect};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -257,7 +258,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      var data={"id":entity.id,"collect":entity.isCollect};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -316,7 +318,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      var data={"id":entity.id,"collect":entity.isCollect};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -417,7 +420,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      var data={"id":entity.id,"collect":entity.isCollect};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -490,7 +494,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      var data={"id":entity.id,"collect":entity.isCollect};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 }

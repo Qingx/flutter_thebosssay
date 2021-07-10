@@ -7,7 +7,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   String head = ""; //boss头像
   String id;
   String info; //boss描述
-  bool isCollect; //是否追踪
+  bool isCollect = false; //是否追踪
   bool isPoint; //是否点赞
   String name; //boss名
   int point; //点赞数
