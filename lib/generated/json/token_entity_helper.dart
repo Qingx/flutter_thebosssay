@@ -1,5 +1,6 @@
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 
 tokenEntityFromJson(TokenEntity data, Map<String, dynamic> json) {
 	if (json['token'] != null) {
@@ -14,6 +15,6 @@ tokenEntityFromJson(TokenEntity data, Map<String, dynamic> json) {
 Map<String, dynamic> tokenEntityToJson(TokenEntity entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['token'] = entity.token;
-	data['userInfo'] = entity.userInfo?.toJson();
+	data['userInfo'] = entity.userInfo.toJson();
 	return data;
 }

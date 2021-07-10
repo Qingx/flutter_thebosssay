@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -13,6 +16,8 @@ import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+
+import 'article_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({Key key}) : super(key: key);
@@ -29,7 +34,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   List<FavoriteEntity> mData = [];
   List<String> mSelectId = [];
-  int numbers = 0;
+  int numbers = Global.user.user.value.collectNum;
 
   @override
   void dispose() {
@@ -83,6 +88,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
     BaseWidget.showLoadingAlert("尝试删除...", context);
     UserApi.ins().obtainRemoveFavorite(entity.id).listen((event) {
       mData.remove(entity);
+      numbers = 0;
+      mData.forEach((e) {
+        numbers = numbers + e.list.length;
+      });
+
+      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 
       BaseTool.toast(msg: "删除成功");
       Get.back();
@@ -96,10 +107,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   ///取消收藏文章
   void onRemoveArticle(String favoriteId, ArticleEntity entity) {
-    FavoriteEntity favoriteEntity =
-        mData.firstWhere((element) => element.id == favoriteId);
-    favoriteEntity.list.remove(entity);
-    setState(() {});
+    BaseWidget.showLoadingAlert("尝试取消收藏", context);
+
+    UserApi.ins().obtainCancelFavoriteArticle(entity.id).listen((event) {
+      Get.back();
+
+      FavoriteEntity favoriteEntity =
+          mData.firstWhere((element) => element.id == favoriteId);
+      favoriteEntity.list.remove(entity);
+      numbers--;
+
+      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      setState(() {});
+    }, onError: (res) {
+      Get.back();
+      print('${res.msg}');
+      BaseTool.toast(msg: "取消失败，${res.msg}");
+    });
   }
 
   ///展开/收起
@@ -427,7 +451,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ],
       ),
     ).onClick(() {
-      onArticleClick(entity);
+      var data = {"id": entity.id, "collect": true};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 

@@ -1,6 +1,9 @@
 import 'package:flutter_boss_says/config/base_api.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/config/page_data.dart';
+import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
+import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -95,5 +98,22 @@ class UserApi extends BaseApi {
     var data = {"sourceId": articleId, "target": false, "type": 1};
     return post<FavoriteEntity>("/api/article/options", requestBody: data)
         .success();
+  }
+
+  ///获取历史记录 today true
+  Observable<Page<HistoryEntity>> obtainHistory(
+      PageParam pageParam, bool today) {
+    final param = pageParam.toParam(doCreate: (map) {
+      var data = {"today": today};
+      map.addAll(data);
+    });
+    return postPage<HistoryEntity>("/api/article/read-history",
+            requestBody: param)
+        .rebase(pageParam: pageParam);
+  }
+
+  ///删除历史记录
+  Observable<bool> obtainDeleteHistory(String id) {
+    return get<bool>("/api/article/del-read/$id").success();
   }
 }

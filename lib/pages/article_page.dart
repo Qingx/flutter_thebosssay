@@ -15,9 +15,9 @@ import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:share/share.dart';
@@ -65,7 +65,9 @@ class _ArticlePageState extends State<ArticlePage> {
   Future<ArticleEntity> loadInitData() {
     print("文章id：$articleId");
     return BossApi.ins().obtainArticleDetail(articleId).doOnData((event) {
+      hasCollect = event.isCollect;
       mData = event;
+      setState(() {});
     }).last;
   }
 
@@ -88,7 +90,10 @@ class _ArticlePageState extends State<ArticlePage> {
 
   ///展示收藏夹
   void showFavoriteFolder() {
+    BaseWidget.showLoadingAlert("获取收藏夹...", context);
     UserApi.ins().obtainFavoriteList().listen((event) {
+      Get.back();
+
       showSelectFolderDialog(context, event, onDismiss: () {
         Get.back();
       }, onConfirm: (folderId) {
@@ -96,6 +101,9 @@ class _ArticlePageState extends State<ArticlePage> {
       }, onCreate: () {
         showAddFolder();
       });
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: "获取失败，${res.msg}");
     });
   }
 
@@ -292,7 +300,7 @@ class _ArticlePageState extends State<ArticlePage> {
           setState(() {});
         });
     } else {
-      return BaseWidget.loadingWidget();
+      return BaseWidget.loadingArticleWidget(context);
     }
   }
 

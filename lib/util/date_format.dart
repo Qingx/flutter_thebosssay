@@ -4,13 +4,22 @@ class DateFormat {
   static const List<String> mmddhhnn = [mm, '月', dd, '日 ', HH, ':', nn];
   static const List<String> yyyymmdd = [yyyy, '/', mm, '/', dd];
   static const List<String> nnss = [nn, ':', ss];
+  static const List<String> hhnn = [HH, ':', nn];
 
-  ///12月12日 12:12
+  ///12:12 分秒
   static String getNNSS(int time) {
     if (time == null || time < 1000) return "";
 
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(time);
     return formatDate(dateTime, nnss);
+  }
+
+  ///12:12 时分
+  static String getHHNN(int time) {
+    if (time == null || time < 1000) return "";
+
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(time);
+    return formatDate(dateTime, hhnn);
   }
 
   ///12月12日 12:12

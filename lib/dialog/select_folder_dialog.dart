@@ -20,13 +20,10 @@ Future<dynamic> showSelectFolderDialog(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Visibility(
-                  child: Icon(
-                    Icons.check,
-                    color: BaseColor.accent,
-                    size: 20,
-                  ),
-                  visible: hasSelect,
+                Icon(
+                  Icons.check,
+                  color: hasSelect ? BaseColor.accent : Colors.transparent,
+                  size: 20,
                 ),
                 Text(
                   entity.name,
@@ -80,7 +77,7 @@ Future<dynamic> showSelectFolderDialog(
             borderRadius: BorderRadius.all(Radius.circular(12)),
             child: Container(
               width: MediaQuery.of(context).size.width - 32,
-              height: 196,
+              height: 320,
               padding: EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -132,10 +129,14 @@ Future<dynamic> showSelectFolderDialog(
                   ),
                   Flexible(
                     child: MediaQuery.removePadding(
+                      removeBottom: true,
+                      removeTop: true,
                       context: context,
                       child: ListView.builder(
                         itemBuilder: (context, index) {
-                          return folderItemWidget(mData[index], index, state);
+                          return folderItemWidget(mData[index], index, () {
+                            state(() {});
+                          });
                         },
                         itemCount: mData.length,
                       ),
@@ -149,7 +150,7 @@ Future<dynamic> showSelectFolderDialog(
                         child: Container(
                           height: 36,
                           alignment: Alignment.center,
-                          margin: EdgeInsets.only(top: 28),
+                          margin: EdgeInsets.only(top: 16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                             color: BaseColor.loadBg,
@@ -172,7 +173,7 @@ Future<dynamic> showSelectFolderDialog(
                         child: Container(
                           height: 36,
                           alignment: Alignment.center,
-                          margin: EdgeInsets.only(left: 16, top: 28),
+                          margin: EdgeInsets.only(left: 16, top: 16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                             color: BaseColor.accent,

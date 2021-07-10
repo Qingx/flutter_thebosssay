@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/data/entity/history_entity.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/pages/article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -17,27 +23,13 @@ class HistoryPage extends StatefulWidget {
   _HistoryPageState createState() => _HistoryPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage> with BasePageController {
+class _HistoryPageState extends State<HistoryPage>
+    with BasePageController<HistoryEntity> {
   var builderFuture;
 
   ScrollController scrollController;
   EasyRefreshController controller;
   bool hasData = false;
-
-  Future<bool> getData() {
-    return Observable.just(true).delay(Duration(seconds: 2)).last;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    builderFuture = getData();
-    // concat([0, 1, 2, 3, 4], false);
-
-    scrollController = ScrollController();
-    controller = EasyRefreshController();
-  }
 
   @override
   void dispose() {
@@ -48,23 +40,55 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    scrollController = ScrollController();
+    controller = EasyRefreshController();
+
+    builderFuture = loadInitData();
+  }
+
+  Future<WlPage.Page<HistoryEntity>> loadInitData() {
+    return UserApi.ins().obtainHistory(pageParam, true).doOnData((event) {
+      hasData = event.hasData;
+      concat(event.records, false);
+    }).last;
+  }
+
+  @override
   void loadData(bool loadMore) {
     if (!loadMore) {
       pageParam.reset();
     }
 
-    List<int> testData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    Observable.just(testData).delay(Duration(seconds: 2)).listen((event) {
-      hasData = true;
-      concat(event, loadMore);
+    UserApi.ins().obtainHistory(pageParam, true).listen((event) {
+      hasData = event.hasData;
+      concat(event.records, loadMore);
       setState(() {});
-    }, onDone: () {
+    }).onDone(() {
       if (loadMore) {
         controller.finishLoad();
       } else {
         controller.resetLoadState();
         controller.finishRefresh();
       }
+    });
+  }
+
+  ///删除历史记录
+  void removeHistory(HistoryEntity entity, int index) {
+    BaseWidget.showLoadingAlert("尝试删除...", context);
+
+    UserApi.ins().obtainDeleteHistory(entity.id).listen((event) {
+      Get.back();
+
+      mData.removeAt(index);
+      setState(() {});
+    }, onError: (res) {
+      Get.back();
+      print(res.msg);
+      BaseTool.toast(msg: "删除失败，${res.msg}");
     });
   }
 
@@ -121,15 +145,15 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
   }
 
   Widget bodyWidget() {
-    return FutureBuilder<bool>(
+    return FutureBuilder<WlPage.Page<HistoryEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
+  Widget builderWidget(BuildContext context,
+      AsyncSnapshot<WlPage.Page<HistoryEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      print('data:${snapshot.data}');
       if (snapshot.hasData) {
         return contentWidget();
       } else
@@ -166,25 +190,20 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return listItemWidget(index);
+                return articleItemWidget(mData[index], index);
               },
               childCount: mData.length,
             ),
           );
   }
 
-  Widget listItemWidget(index) {
-    bool hasIndex = index % 2 == 0;
-    String title = hasIndex
-        ? "搞什么副业可以月入过万搞什么副业可以月入过万"
-        : "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业";
-    String head = hasIndex ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-    String name = hasIndex ? "莉莉娅" : "神里凌华";
-    return Slidable(
-      child: Container(
-        child: Column(
-          children: [
-            Container(
+  Widget articleItemWidget(HistoryEntity entity, index) {
+    String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
+    return Container(
+      child: Column(
+        children: [
+          Slidable(
+            child: Container(
               padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
               alignment: Alignment.centerLeft,
               child: Column(
@@ -192,7 +211,7 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    entity.articleTitle ?? "暂无标题",
                     style: TextStyle(fontSize: 14, color: BaseColor.textDark),
                     softWrap: true,
                     maxLines: 2,
@@ -204,15 +223,23 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ClipOval(
-                        child: Image.asset(
-                          head,
+                        child: Image.network(
+                          HttpConfig.fullUrl(entity.bossHead),
                           width: 24,
                           height: 24,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              head,
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
                       ),
                       Text(
-                        name,
+                        entity.bossName ?? "莉莉娅",
                         style:
                             TextStyle(fontSize: 14, color: BaseColor.textGray),
                         softWrap: false,
@@ -222,7 +249,7 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
                       ).marginOn(left: 8),
                       Expanded(child: SizedBox()),
                       Text(
-                        "2021/07/04",
+                        DateFormat.getMMDDHHMM(entity.updateTime),
                         style: TextStyle(
                           fontSize: 13,
                           color: BaseColor.textGray,
@@ -237,33 +264,33 @@ class _HistoryPageState extends State<HistoryPage> with BasePageController {
                 ],
               ),
             ),
-            Visibility(
-              child: Container(
-                height: 1,
-                color: BaseColor.line,
+            actionPane: SlidableScrollActionPane(),
+            key: Key(entity.id),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: '删除',
+                color: Colors.red,
+                icon: Icons.delete,
+                closeOnTap: false,
+                onTap: () {
+                  removeHistory(entity, index);
+                },
               ),
-              visible: index != mData.length - 1,
+            ],
+          ),
+          Visibility(
+            child: Container(
+              height: 1,
+              color: BaseColor.line,
             ),
-          ],
-        ),
-      ).onClick(() {
-        BaseTool.toast(msg: name);
-      }),
-      actionPane: SlidableScrollActionPane(),
-      key: Key(mData[index].toString()),
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: '删除',
-          color: Colors.red,
-          icon: Icons.delete,
-          closeOnTap: false,
-          onTap: () {
-            mData.removeAt(index);
-            setState(() {});
-          },
-        ),
-      ],
-    );
+            visible: index != mData.length - 1,
+          )
+        ],
+      ),
+    ).onClick(() {
+      var data = {"id": entity.id, "collect": false};
+      Get.to(() => ArticlePage(), arguments: data);
+    });
   }
 
   Widget emptyBodyWidget() {

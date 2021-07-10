@@ -244,4 +244,52 @@ class BaseWidget {
       },
     );
   }
+
+  static Widget loadingArticleWidget(BuildContext context) {
+    return Container(
+      color: BaseColor.pageBg,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          loadingItemWidget(0.7, 24, context),
+          loadingItemWidget(0.3, 8, context),
+          loadingItemWidget(1, 16, context),
+          loadingItemWidget(1, 8, context),
+          loadingItemWidget(1, 8, context),
+          loadingItemWidget(0.4, 8, context),
+          loadingItemWidget(0.6, 8, context),
+          loadingItemWidget(1, 16, context),
+          loadingItemWidget(0.2, 8, context),
+          loadingItemWidget(0.6, 8, context),
+          Container(
+              margin: EdgeInsets.only(top: 16, left: 16, right: 16),
+              height: 48,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SpinKitFadingCircle(
+                    color: Color(0xff0e1e1e1),
+                    size: 48,
+                    duration: Duration(milliseconds: 2000),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+
+  static Widget loadingItemWidget(
+      double width, double margin, BuildContext context) {
+    return Container(
+      width: (MediaQuery.of(context).size.width - 32) * width,
+      height: 16,
+      margin: EdgeInsets.only(left: 16, right: 16, top: margin),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        color: BaseColor.loadBg,
+      ),
+    );
+  }
 }

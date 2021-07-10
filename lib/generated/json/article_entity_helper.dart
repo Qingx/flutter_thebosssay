@@ -8,11 +8,6 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	if (json['bossVO'] != null) {
 		data.bossVO = BossInfoEntity().fromJson(json['bossVO']);
 	}
-	if (json['collect'] != null) {
-		data.collect = json['collect'] is String
-				? int.tryParse(json['collect'])
-				: json['collect'].toInt();
-	}
 	if (json['content'] != null) {
 		data.content = json['content'].toString();
 	}
@@ -41,6 +36,11 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['point'])
 				: json['point'].toInt();
 	}
+	if (json['collect'] != null) {
+		data.collect = json['collect'] is String
+				? int.tryParse(json['collect'])
+				: json['collect'].toInt();
+	}
 	if (json['status'] != null) {
 		data.status = json['status'] is String
 				? int.tryParse(json['status'])
@@ -56,7 +56,6 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['bossId'] = entity.bossId;
 	data['bossVO'] = entity.bossVO?.toJson();
-	data['collect'] = entity.collect;
 	data['content'] = entity.content;
 	data['createTime'] = entity.createTime;
 	data['descContent'] = entity.descContent;
@@ -65,6 +64,7 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['isCollect'] = entity.isCollect;
 	data['isPoint'] = entity.isPoint;
 	data['point'] = entity.point;
+	data['collect'] = entity.collect;
 	data['status'] = entity.status;
 	data['title'] = entity.title;
 	return data;

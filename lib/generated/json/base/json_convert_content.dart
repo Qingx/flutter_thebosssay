@@ -7,16 +7,18 @@ import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/generated/json/user_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
 import 'package:flutter_boss_says/generated/json/token_entity_helper.dart';
-import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
-import 'package:flutter_boss_says/generated/json/boss_label_entity_helper.dart';
-import 'package:flutter_boss_says/data/entity/article_entity.dart';
-import 'package:flutter_boss_says/generated/json/article_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/generated/json/boss_info_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/boss_entity.dart';
 import 'package:flutter_boss_says/generated/json/boss_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/generated/json/favorite_entity_helper.dart';
+import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/generated/json/boss_label_entity_helper.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/generated/json/article_entity_helper.dart';
+import 'package:flutter_boss_says/data/entity/history_entity.dart';
+import 'package:flutter_boss_says/generated/json/history_entity_helper.dart';
 
 class JsonConvert<T> {
 	T fromJson(Map<String, dynamic> json) {
@@ -33,16 +35,18 @@ class JsonConvert<T> {
 				return userEntityFromJson(data as UserEntity, json) as T;
 			case TokenEntity:
 				return tokenEntityFromJson(data as TokenEntity, json) as T;
-			case BossLabelEntity:
-				return bossLabelEntityFromJson(data as BossLabelEntity, json) as T;
-			case ArticleEntity:
-				return articleEntityFromJson(data as ArticleEntity, json) as T;
 			case BossInfoEntity:
 				return bossInfoEntityFromJson(data as BossInfoEntity, json) as T;
 			case BossEntity:
 				return bossEntityFromJson(data as BossEntity, json) as T;
 			case FavoriteEntity:
-				return favoriteEntityFromJson(data as FavoriteEntity, json) as T;    }
+				return favoriteEntityFromJson(data as FavoriteEntity, json) as T;
+			case BossLabelEntity:
+				return bossLabelEntityFromJson(data as BossLabelEntity, json) as T;
+			case ArticleEntity:
+				return articleEntityFromJson(data as ArticleEntity, json) as T;
+			case HistoryEntity:
+				return historyEntityFromJson(data as HistoryEntity, json) as T;    }
     return data as T;
   }
 
@@ -52,16 +56,18 @@ class JsonConvert<T> {
 				return userEntityToJson(data as UserEntity);
 			case TokenEntity:
 				return tokenEntityToJson(data as TokenEntity);
-			case BossLabelEntity:
-				return bossLabelEntityToJson(data as BossLabelEntity);
-			case ArticleEntity:
-				return articleEntityToJson(data as ArticleEntity);
 			case BossInfoEntity:
 				return bossInfoEntityToJson(data as BossInfoEntity);
 			case BossEntity:
 				return bossEntityToJson(data as BossEntity);
 			case FavoriteEntity:
 				return favoriteEntityToJson(data as FavoriteEntity);
+			case BossLabelEntity:
+				return bossLabelEntityToJson(data as BossLabelEntity);
+			case ArticleEntity:
+				return articleEntityToJson(data as ArticleEntity);
+			case HistoryEntity:
+				return historyEntityToJson(data as HistoryEntity);
 			}
 			return data as T;
 		}
@@ -72,16 +78,18 @@ class JsonConvert<T> {
 			return UserEntity().fromJson(json);
 		}	else if(type == (TokenEntity).toString()){
 			return TokenEntity().fromJson(json);
-		}	else if(type == (BossLabelEntity).toString()){
-			return BossLabelEntity().fromJson(json);
-		}	else if(type == (ArticleEntity).toString()){
-			return ArticleEntity().fromJson(json);
 		}	else if(type == (BossInfoEntity).toString()){
 			return BossInfoEntity().fromJson(json);
 		}	else if(type == (BossEntity).toString()){
 			return BossEntity().fromJson(json);
 		}	else if(type == (FavoriteEntity).toString()){
 			return FavoriteEntity().fromJson(json);
+		}	else if(type == (BossLabelEntity).toString()){
+			return BossLabelEntity().fromJson(json);
+		}	else if(type == (ArticleEntity).toString()){
+			return ArticleEntity().fromJson(json);
+		}	else if(type == (HistoryEntity).toString()){
+			return HistoryEntity().fromJson(json);
 		}	
 		return null;
 	}
@@ -92,16 +100,18 @@ class JsonConvert<T> {
 			return data.map<UserEntity>((e) => UserEntity().fromJson(e)).toList() as M;
 		}	else if(<TokenEntity>[] is M){
 			return data.map<TokenEntity>((e) => TokenEntity().fromJson(e)).toList() as M;
-		}	else if(<BossLabelEntity>[] is M){
-			return data.map<BossLabelEntity>((e) => BossLabelEntity().fromJson(e)).toList() as M;
-		}	else if(<ArticleEntity>[] is M){
-			return data.map<ArticleEntity>((e) => ArticleEntity().fromJson(e)).toList() as M;
 		}	else if(<BossInfoEntity>[] is M){
 			return data.map<BossInfoEntity>((e) => BossInfoEntity().fromJson(e)).toList() as M;
 		}	else if(<BossEntity>[] is M){
 			return data.map<BossEntity>((e) => BossEntity().fromJson(e)).toList() as M;
 		}	else if(<FavoriteEntity>[] is M){
 			return data.map<FavoriteEntity>((e) => FavoriteEntity().fromJson(e)).toList() as M;
+		}	else if(<BossLabelEntity>[] is M){
+			return data.map<BossLabelEntity>((e) => BossLabelEntity().fromJson(e)).toList() as M;
+		}	else if(<ArticleEntity>[] is M){
+			return data.map<ArticleEntity>((e) => ArticleEntity().fromJson(e)).toList() as M;
+		}	else if(<HistoryEntity>[] is M){
+			return data.map<HistoryEntity>((e) => HistoryEntity().fromJson(e)).toList() as M;
 		}
 		throw Exception("not fond");
 	}
