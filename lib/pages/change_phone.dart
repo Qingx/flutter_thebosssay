@@ -49,12 +49,16 @@ class _ChangePhoneState extends State<ChangePhone> {
 
   ///验证当前手机号 提交code
   void onSubmitted(content) {
+    BaseWidget.showLoadingAlert("正在验证...", context);
     UserApi.ins().obtainConfirmPhone(inputPhone, content).listen((event) {
+      BaseTool.toast(msg: "验证成功");
+      Get.back();
       mCurrentIndex = 1;
       mPageController.jumpToPage(1);
       setState(() {});
     }, onError: (res) {
-      BaseTool.toast(msg: res.msg);
+      BaseTool.toast(msg: "验证失败，${res.msg}");
+      Get.back();
     });
   }
 
@@ -269,7 +273,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
       Get.back();
 
       print(res.msg);
-      BaseTool.toast(msg: "发送失败，、${res.msg}");
+      BaseTool.toast(msg: "发送失败，${res.msg}");
     });
   }
 

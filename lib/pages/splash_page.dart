@@ -68,17 +68,18 @@ class _SplashPageState extends State<SplashPage> {
 
     countTime();
 
+    bool loginStatus = UserConfig.getIns().loginStatus;
     Global.user = Get.find<UserController>(tag: "user");
-    Global.user.setUser(UserConfig.getIns().user);
 
-    if (!UserConfig.getIns().loginStatus) {
-      UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
+    if (loginStatus) {
+      UserApi.ins().obtainRefreshUser().listen((event) {
         UserConfig.getIns().token = event.token;
         UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);
       });
     } else {
-      UserApi.ins().obtainRefreshUser().listen((event) {
+      String tempId = DataConfig.getIns().tempId;
+      UserApi.ins().obtainTempLogin(tempId).listen((event) {
         UserConfig.getIns().token = event.token;
         UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);

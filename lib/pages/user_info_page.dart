@@ -23,19 +23,23 @@ class UserInfoPage extends StatelessWidget {
 
   ///尝试退出登录
   void tryLogout(context) {
-    UserConfig.getIns().clear();
-    DataConfig.getIns().setTempId = BaseTool.createTempId();
-    Global.user.setUser(BaseEmpty.emptyUser);
-
     BaseWidget.showLoadingAlert("正在清理数据...", context);
 
-    UserApi.ins().obtainTempLogin(DataConfig.getIns().tempId).listen((event) {
+    String tempId = BaseTool.createTempId();
+    UserApi.ins().obtainTempLogin(tempId).listen((event) {
+      DataConfig.getIns().setTempId = tempId;
+      UserConfig.getIns().clear();
+      Global.user.setUser(BaseEmpty.emptyUser);
+
       UserConfig.getIns().token = event.token;
       UserConfig.getIns().user = event.userInfo;
       Global.user.setUser(event.userInfo);
 
       BaseTool.toast(msg: "退出成功");
       Get.offAll(() => HomePage());
+    }, onError: (res) {
+      print("数据同步失败，${res.msg}");
+      Get.back();
     });
   }
 

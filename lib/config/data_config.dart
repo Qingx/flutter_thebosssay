@@ -1,4 +1,5 @@
 import 'package:flutter_boss_says/util/base_sp.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 
 /// 应用数据相关缓存
 class DataConfig extends BaseConfig {
@@ -22,8 +23,8 @@ class DataConfig extends BaseConfig {
       spInstance.putString(DataKeys.K_TEMP_ID, tempId);
 
   /// 获取tempId
-  String get tempId =>
-      spInstance.getString(DataKeys.K_TEMP_ID, defaultVal: "empty");
+  String get tempId => spInstance.getString(DataKeys.K_TEMP_ID,
+      defaultVal: BaseTool.createTempId());
 }
 
 class DataKeys {

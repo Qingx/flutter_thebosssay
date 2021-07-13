@@ -79,6 +79,8 @@ class R {
   static final String assetsImgContact2 = 'assets/img/contact2.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingDark.png)
   static final String assetsImgSettingDark = 'assets/img/settingDark.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/launchImage.png)
+  static final String assetsImgLaunchImage = 'assets/img/launchImage.png';
   /// ![](http://127.0.0.1:11111111/assets/img/contact3.png)
   static final String assetsImgContact3 = 'assets/img/contact3.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkSelect.png)
