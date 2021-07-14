@@ -124,4 +124,9 @@ class BossApi extends BaseApi {
   Observable<ArticleEntity> obtainArticleDetail(String id) {
     return get<ArticleEntity>("/api/article/details/$id").rebase();
   }
+
+  ///获取Boss详情
+  Observable<BossInfoEntity> obtainBossDetail(String id) {
+    return get<BossInfoEntity>("/api/boss/details/$id").rebase();
+  }
 }

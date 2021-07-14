@@ -29,11 +29,11 @@ class BaseTool {
       int minutes = diff ~/ (1000 * 60);
       int seconds = diff ~/ 1000;
 
-      if (days >= 0) {
+      if (days > 0) {
         return "$days天前更新";
-      } else if (hours >= 0) {
+      } else if (hours > 0) {
         return "最近$hours小时更新";
-      } else if (minutes >= 0) {
+      } else if (minutes > 0) {
         return "$minutes分钟前更新";
       } else {
         return "$seconds秒前更新";

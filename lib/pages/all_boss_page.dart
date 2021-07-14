@@ -74,8 +74,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
     pageParam?.reset();
     mCurrentTab = Global.labelList[0].id;
-    return BossApi.ins()
-        .obtainAllBossList(pageParam, mCurrentTab)
+    return BossApi.ins().obtainAllBossList(pageParam, mCurrentTab)
         .doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);

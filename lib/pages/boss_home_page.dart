@@ -117,7 +117,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   void initState() {
     super.initState();
     entity = Get.arguments as BossInfoEntity;
-    print(entity.toString());
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -131,7 +130,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
       ///添加追踪boss后刷新
       if (event.obj == RefreshFollowEvent) {
-        controller.callRefresh();
+        BossApi.ins().obtainBossDetail(entity.id).listen((event) {
+          entity = event;
+          setState(() {});
+        });
       }
     });
   }
@@ -159,7 +161,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       hasData = event.hasData;
       concat(event.records, loadMore);
 
-      entity.isCollect = event.records[0].bossVO.isCollect;
       setState(() {});
     }, onError: (res) {
       print(res.msg);
@@ -193,13 +194,13 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   void onFollowChange() {
     if (entity.isCollect) {
-      cancelFollow(entity);
+      cancelFollow();
     } else {
-      doFollow(entity);
+      doFollow();
     }
   }
 
-  void cancelFollow(BossInfoEntity entity) {
+  void cancelFollow() {
     BaseWidget.showLoadingAlert("尝试取消...", context);
     BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
       Get.back();
@@ -218,7 +219,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     });
   }
 
-  void doFollow(BossInfoEntity entity) {
+  void doFollow() {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
 
     BossApi.ins().obtainFollowBoss(entity.id).listen((event) {

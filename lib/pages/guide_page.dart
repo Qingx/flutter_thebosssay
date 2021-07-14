@@ -36,9 +36,8 @@ class _GuidePageState extends State<GuidePage> {
 
   double indicatorWidth = 0;
   ScrollController controller;
-  List<String> listSelect = [];
-
   List<BossInfoEntity> mData = [];
+  List<String> listSelect = [];
 
   @override
   void dispose() {
@@ -52,69 +51,7 @@ class _GuidePageState extends State<GuidePage> {
   void initState() {
     super.initState();
 
-    Map<String, dynamic> json = {
-      "data": [
-        {
-          "id": "1412617791843872770",
-          "name": "马化腾",
-          "role": "腾讯公司董事会主席兼首席执行官",
-          "head":
-              "https://ss1.baidu.com/-4o3dSag_xI4khGko9WTAnF6hhy/baike/w%3D268/sign=153b390d3bdbb6fd255be2203126aba6/b219ebc4b74543a9c6c7773a1c178a82b8011463.jpg"
-        },
-        {
-          "id": "1412618648882786306",
-          "name": "马云",
-          "role": "阿里巴巴集团创始人",
-          "head":
-              "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fdingyue.ws.126.net%2Fnphh%3DuwwDE2xHWCXTJ8peWswO1TSCvMzsb9QHDULPWXpV1560092282821.jpg&refer=http%3A%2F%2Fdingyue.ws.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628660434&t=4d49ece7c550e68f4872340218a232bf"
-        },
-        {
-          "id": "1412619182679273474",
-          "name": "任正非",
-          "role": "华为董事、CEO",
-          "head":
-              "https://www-file.huawei.com/-/media/corp2020/abouthuawei/executives/2020/renzhengfei-2020-detail.jpg"
-        },
-        {
-          "id": "1412619857827999746",
-          "name": "柳传志",
-          "role": "联想控股、联想集团创始人",
-          "head":
-              "https://bkimg.cdn.bcebos.com/pic/a50f4bfbfbedab64c1495f14fc36afc379311e2e?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2UyNzI=,g_7,xp_5,yp_5/format,f_auto"
-        },
-        {
-          "id": "1412659731360657409",
-          "name": "史玉柱",
-          "role": "商人、企业家",
-          "head":
-              "https://bkimg.cdn.bcebos.com/pic/6f061d950a7b02087bf4b2a03392e5d3572c11df6214?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2UxNTA=,g_7,xp_5,yp_5/format,f_auto"
-        },
-        {
-          "id": "1412660078254764034",
-          "name": "潘石屹",
-          "role": "SOHO中国董事长",
-          "head":
-              "http://static.ws.126.net/stock/2013/8/14/2013081411234803374.jpg"
-        },
-        {
-          "id": "1412660543440826370",
-          "name": "许家印",
-          "role": "中国恒大集团董事局主席、党委书记，管理学教授、博士生导师",
-          "head":
-              "https://bkimg.cdn.bcebos.com/pic/d043ad4bd11373f05b4756b0ad0f4bfbfbed04a0?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2U5Mg==,g_7,xp_5,yp_5/format,f_auto"
-        },
-        {
-          "id": "1412661073705709569",
-          "name": "比尔·盖茨",
-          "role": "微软董事长、CEO和首席软件设计师",
-          "head":
-              "https://bkimg.cdn.bcebos.com/pic/9c16fdfaaf51f3de36318c129beef01f3b2979c0?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2UxNTA=,g_7,xp_5,yp_5/format,f_auto"
-        }
-      ]
-    };
-
-    mData = JsonConvert.fromJsonAsT<List<BossInfoEntity>>(json["data"]);
-
+    mData = Get.arguments as List<BossInfoEntity>;
     listSelect = mData.map((e) => e.id).toList();
 
     controller = ScrollController();
@@ -172,17 +109,9 @@ class _GuidePageState extends State<GuidePage> {
   void followBoss() {
     BaseWidget.showLoadingAlert("搜寻并追踪...", context);
 
-    Global.user = Get.find<UserController>(tag: "user");
+    UserEntity entity = Global.user.user.value;
 
-    String tempId = BaseTool.createTempId();
-
-    UserEntity entity;
-    UserApi.ins().obtainTempLogin(tempId).flatMap((value) {
-      DataConfig.getIns().setTempId = tempId;
-      UserConfig.getIns().token = value.token;
-      entity = value.userInfo;
-      return BossApi.ins().obtainGuideFollowList(listSelect);
-    }).listen((event) {
+    BossApi.ins().obtainGuideFollowList(listSelect).listen((event) {
       entity.traceNum = listSelect.length;
       UserConfig.getIns().user = entity;
       Global.user.setUser(entity);

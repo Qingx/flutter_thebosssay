@@ -5,7 +5,10 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:get/get.dart';
@@ -19,7 +22,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  int currentTime = 3;
+  int currentTime = 5;
   StreamSubscription<int> mDispose;
 
   @override
@@ -66,25 +69,47 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    countTime();
+    DataConfig.getIns().doAfterCreated((sp) {
+      UserConfig.getIns().doAfterCreated((sp) {
+        Global.user = Get.find<UserController>(tag: "user");
 
-    bool loginStatus = UserConfig.getIns().loginStatus;
-    Global.user = Get.find<UserController>(tag: "user");
+        bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
-    if (loginStatus) {
-      UserApi.ins().obtainRefreshUser().listen((event) {
-        UserConfig.getIns().token = event.token;
-        UserConfig.getIns().user = event.userInfo;
-        Global.user.setUser(event.userInfo);
+        if (firstUseApp) {
+          String tempId = DataConfig.getIns().tempId;
+          UserApi.ins().obtainTempLogin(tempId).flatMap((value) {
+            DataConfig.getIns().setTempId = tempId;
+            UserConfig.getIns().token = value.token;
+            UserConfig.getIns().user = value.userInfo;
+            Global.user.setUser(value.userInfo);
+
+            return BossApi.ins().obtainGuideBoss();
+          }).listen((event) {
+            countTime(firstUseApp, list: event.records);
+          });
+        } else {
+          bool loginStatus = UserConfig.getIns().loginStatus;
+
+          if (loginStatus) {
+            UserApi.ins().obtainRefreshUser().listen((event) {
+              UserConfig.getIns().token = event.token;
+              UserConfig.getIns().user = event.userInfo;
+              Global.user.setUser(event.userInfo);
+            });
+          } else {
+            String tempId = DataConfig.getIns().tempId;
+            UserApi.ins().obtainTempLogin(tempId).listen((event) {
+              DataConfig.getIns().setTempId = tempId;
+              UserConfig.getIns().token = event.token;
+              UserConfig.getIns().user = event.userInfo;
+              Global.user.setUser(event.userInfo);
+            });
+          }
+
+          countTime(firstUseApp);
+        }
       });
-    } else {
-      String tempId = DataConfig.getIns().tempId;
-      UserApi.ins().obtainTempLogin(tempId).listen((event) {
-        UserConfig.getIns().token = event.token;
-        UserConfig.getIns().user = event.userInfo;
-        Global.user.setUser(event.userInfo);
-      });
-    }
+    });
   }
 
   @override
@@ -95,18 +120,23 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   ///倒计时
-  void countTime() {
+  void countTime(bool firstUse, {List<BossInfoEntity> list}) {
     if (mDispose != null) {
       mDispose.cancel();
     }
 
     mDispose = Observable.periodic(Duration(seconds: 1), (i) => i)
-        .take(4)
+        .take(6)
         .listen((event) {
-      print(countTime);
       currentTime--;
+
       if (currentTime < 0) {
-        Get.off(() => HomePage());
+        if (firstUse) {
+          Get.off(() => GuidePage(), arguments: list);
+        } else {
+          Get.off(() => HomePage());
+        }
+
         mDispose?.cancel();
       } else {
         setState(() {});
