@@ -46,6 +46,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   StreamSubscription<BaseEvent> eventDispose;
 
+  String searchText;
+
   @override
   void dispose() {
     super.dispose();
@@ -74,7 +76,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
     pageParam?.reset();
     mCurrentTab = Global.labelList[0].id;
-    return BossApi.ins().obtainAllBossList(pageParam, mCurrentTab)
+    return BossApi.ins()
+        .obtainAllBossList(pageParam, mCurrentTab)
         .doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
@@ -99,7 +102,12 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
       ///添加追踪boss后刷新
       if (event.obj == RefreshFollowEvent) {
-        controller.callRefresh();
+        if (widgetStatus == 0) {
+          controller.callRefresh();
+        } else {
+          builderFuture = loadSearchData(searchText);
+          setState(() {});
+        }
       }
     });
   }
@@ -126,6 +134,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   void onEditCleared() {
     if (!editingController.text.isNullOrEmpty()) {
+      searchText = "";
       editingController.clear();
       widgetStatus = 0;
       builderFuture = loadInitData();
@@ -135,6 +144,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   void onEditSubmitted(text) {
     widgetStatus = 1;
+    searchText = text;
     builderFuture = loadSearchData(text);
     setState(() {});
   }

@@ -14,7 +14,6 @@ import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({Key key}) : super(key: key);
@@ -50,7 +49,7 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   Future<WlPage.Page<HistoryEntity>> loadInitData() {
-    return UserApi.ins().obtainHistory(pageParam, true).doOnData((event) {
+    return UserApi.ins().obtainHistory(pageParam, false).doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
     }).last;
@@ -62,7 +61,7 @@ class _HistoryPageState extends State<HistoryPage>
       pageParam.reset();
     }
 
-    UserApi.ins().obtainHistory(pageParam, true).listen((event) {
+    UserApi.ins().obtainHistory(pageParam, false).listen((event) {
       hasData = event.hasData;
       concat(event.records, loadMore);
       setState(() {});
@@ -157,7 +156,10 @@ class _HistoryPageState extends State<HistoryPage>
       if (snapshot.hasData) {
         return contentWidget();
       } else
-        return Container(color: Colors.red);
+        return BaseWidget.errorWidget(() {
+          builderFuture = loadInitData();
+          setState(() {});
+        });
     } else {
       return BaseWidget.loadingWidget();
     }
@@ -288,7 +290,7 @@ class _HistoryPageState extends State<HistoryPage>
         ],
       ),
     ).onClick(() {
-      var data = {"id": entity.id, "collect": false};
+      var data = {"id": entity.articleId, "collect": false};
       Get.to(() => ArticlePage(), arguments: data);
     });
   }

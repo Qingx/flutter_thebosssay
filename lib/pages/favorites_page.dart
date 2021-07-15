@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
@@ -36,12 +40,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
   List<String> mSelectId = [];
   int numbers = Global.user.user.value.collectNum;
 
+  StreamSubscription<BaseEvent> eventDispose;
+
   @override
   void dispose() {
     super.dispose();
 
     controller?.dispose();
     scrollController?.dispose();
+    eventDispose?.cancel();
   }
 
   @override
@@ -52,15 +59,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+
+    eventBus();
+  }
+
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      ///刷新userInfo
+      if (event.obj == RefreshUserEvent) {
+        loadData();
+      }
+    });
   }
 
   ///初始化数据
   Future<List<FavoriteEntity>> loadInitData() {
     return UserApi.ins().obtainFavoriteList().doOnData((event) {
       mData = event;
-      mData.forEach((e) {
-        numbers = numbers + e.list.length;
-      });
     }).last;
   }
 
@@ -71,8 +86,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
       mSelectId.clear();
 
       numbers = 0;
-      mData.forEach((e) {
-        numbers = numbers + e.list.length;
+      event.forEach((element) {
+        numbers += element.list.length ?? 0;
       });
 
       setState(() {});
@@ -88,10 +103,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     BaseWidget.showLoadingAlert("尝试删除...", context);
     UserApi.ins().obtainRemoveFavorite(entity.id).listen((event) {
       mData.remove(entity);
-      numbers = 0;
-      mData.forEach((e) {
-        numbers = numbers + e.list.length;
-      });
+      numbers = numbers - entity.list.length ?? 0;
 
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 

@@ -3,7 +3,9 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -58,6 +60,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       hasData = event.hasData;
       concat(event.records, false);
       numbers = event.total;
+
       setState(() {});
     }).last;
   }
@@ -72,6 +75,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       hasData = event.hasData;
       numbers = event.total;
       concat(event.records, loadMore);
+
       setState(() {});
     }).onDone(() {
       if (loadMore) {
@@ -92,6 +96,12 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
 
       mData.removeAt(index);
       numbers--;
+
+      UserEntity entity = UserConfig.getIns().user;
+      entity.readNum = numbers;
+      UserConfig.getIns().user = entity;
+      Global.user.setUser(entity);
+
       setState(() {});
     }, onError: (res) {
       Get.back();
@@ -165,7 +175,10 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       if (snapshot.hasData) {
         return contentWidget();
       } else
-        return Container(color: Colors.red);
+        return  BaseWidget.errorWidget(() {
+          builderFuture = loadInitData();
+          setState(() {});
+        });
     } else {
       return BaseWidget.loadingWidget();
     }
@@ -296,7 +309,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
         ],
       ),
     ).onClick(() {
-      var data = {"id": entity.id, "collect": false};
+      var data = {"id": entity.articleId, "collect": false};
       Get.to(() => ArticlePage(), arguments: data);
     });
   }

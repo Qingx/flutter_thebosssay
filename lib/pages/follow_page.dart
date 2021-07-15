@@ -10,6 +10,7 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
@@ -156,6 +157,7 @@ class _FollowPageState extends State<FollowPage>
         totalArticleNumber = event.total;
         hasData = event.hasData;
         concat(event.records, loadMore);
+
         setState(() {});
       }).onDone(() {
         if (loadMore) {
