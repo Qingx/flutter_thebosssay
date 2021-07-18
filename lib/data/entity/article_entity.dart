@@ -15,4 +15,5 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   int collect; //收藏数
   int status; //审核状态
   String title; //标题
+
 }

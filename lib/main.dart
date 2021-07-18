@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
+import 'package:flutter_boss_says/test/page/test_splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 import 'package:get/get.dart';
 

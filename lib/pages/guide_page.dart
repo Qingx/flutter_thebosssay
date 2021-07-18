@@ -1,17 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
-import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -217,6 +213,7 @@ class _GuidePageState extends State<GuidePage> {
               removeBottom: true,
               context: context,
               child: GridView.builder(
+                padding: EdgeInsets.only(left: 8),
                 controller: controller,
                 scrollDirection: Axis.horizontal,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -425,6 +422,7 @@ class _GuidePageState extends State<GuidePage> {
                     removeBottom: true,
                     context: context,
                     child: GridView.builder(
+                      padding: EdgeInsets.only(left: 8),
                       controller: controller,
                       scrollDirection: Axis.horizontal,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -448,7 +446,7 @@ class _GuidePageState extends State<GuidePage> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
