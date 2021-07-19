@@ -10,9 +10,9 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/all_boss_page.dart';
@@ -116,7 +116,6 @@ class _FollowPageState extends State<FollowPage>
         return BossApi.ins().obtainFollowBossList(mCurrentTab, true);
       }).flatMap((value) {
         bossList = value;
-
         return BossApi.ins().obtainFollowArticle(pageParam);
       }).doOnData((event) {
         totalArticleNumber = event.total;
@@ -154,6 +153,8 @@ class _FollowPageState extends State<FollowPage>
 
         return BossApi.ins().obtainFollowArticle(pageParam);
       }).listen((event) {
+        BossDbProvider.getIns().insertListByBean(bossList);
+
         totalArticleNumber = event.total;
         hasData = event.hasData;
         concat(event.records, loadMore);

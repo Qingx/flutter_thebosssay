@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/pages/contact_us_page.dart';
@@ -148,8 +152,13 @@ class _MinePageState extends State<MinePage>
       case 2:
         onShare();
         break;
+      case 4:
+        break;
       case 5:
         Get.to(() => ContactUsPage());
+        break;
+      case 6:
+        get();
         break;
       case 7:
         onClickClear();
@@ -158,6 +167,12 @@ class _MinePageState extends State<MinePage>
         BaseTool.toast(msg: itemNames[index]);
         break;
     }
+  }
+
+  void get() {
+    BossDbProvider.getIns().getCollectBoss().then((value) {
+      print(value);
+    });
   }
 
   @override

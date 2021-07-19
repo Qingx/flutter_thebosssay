@@ -39,8 +39,8 @@ class BossApi extends BaseApi {
   }
 
   ///已追踪的boss列表 已追踪且有更新的boss列表
-  Observable<List<BossInfoEntity>> obtainFollowBossList(
-      String label, bool mustUpdate) {
+  Observable<List<BossInfoEntity>> obtainFollowBossList(String label,
+      bool mustUpdate) {
     var data = {
       "labels": label == "-1" ? null : [label],
       "mustUpdate": mustUpdate
@@ -62,8 +62,8 @@ class BossApi extends BaseApi {
   }
 
   ///获取boss列表
-  Observable<Page<BossInfoEntity>> obtainAllBossList(
-      PageParam pageParam, String label) {
+  Observable<Page<BossInfoEntity>> obtainAllBossList(PageParam pageParam,
+      String label) {
     final param = pageParam.toParam(doCreate: (map) {
       var data = {
         "labels": label == "-1" ? null : [label]
@@ -75,8 +75,8 @@ class BossApi extends BaseApi {
   }
 
   ///获取boss的文章列表
-  Observable<Page<ArticleEntity>> obtainBossArticleList(
-      PageParam pageParam, String bossId) {
+  Observable<Page<ArticleEntity>> obtainBossArticleList(PageParam pageParam,
+      String bossId) {
     final param = pageParam.toParam(doCreate: (map) {
       var data = {"bossId": bossId};
       map.addAll(data);
@@ -86,8 +86,8 @@ class BossApi extends BaseApi {
   }
 
   ///获取所有文章列表
-  Observable<Page<ArticleEntity>> obtainAllArticle(
-      PageParam pageParam, String label) {
+  Observable<Page<ArticleEntity>> obtainAllArticle(PageParam pageParam,
+      String label) {
     final param = pageParam.toParam(doCreate: (map) {
       var data = {
         "labels": label == "-1" ? null : [label]
@@ -99,8 +99,8 @@ class BossApi extends BaseApi {
   }
 
   ///搜索boss
-  Observable<Page<BossInfoEntity>> obtainSearchBossList(
-      PageParam pageParam, String search) {
+  Observable<Page<BossInfoEntity>> obtainSearchBossList(PageParam pageParam,
+      String search) {
     final param = pageParam.toParam(doCreate: (map) {
       var data = {"name": search};
       map.addAll(data);
@@ -110,8 +110,8 @@ class BossApi extends BaseApi {
   }
 
   ///搜索文章
-  Observable<Page<ArticleEntity>> obtainSearchArticleList(
-      PageParam pageParam, String search) {
+  Observable<Page<ArticleEntity>> obtainSearchArticleList(PageParam pageParam,
+      String search) {
     final param = pageParam.toParam(doCreate: (map) {
       var data = {"name": search};
       map.addAll(data);
@@ -128,5 +128,11 @@ class BossApi extends BaseApi {
   ///获取Boss详情
   Observable<BossInfoEntity> obtainBossDetail(String id) {
     return get<BossInfoEntity>("/api/boss/details/$id").rebase();
+  }
+
+  ///获取全部Boss详情
+  Observable<List<BossInfoEntity>> obtainAllBoss({int time}) {
+    return get<List<BossInfoEntity>>("/api/boss/all-list/${time ?? 1}")
+        .rebase();
   }
 }

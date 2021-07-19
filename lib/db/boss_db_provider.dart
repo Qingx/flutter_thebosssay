@@ -1,29 +1,30 @@
-import 'dart:convert' as convert;
-
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/db/base_db_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
 class BossDbProvider extends BaseDbProvider {
-  final String mTableName = "BossList";
+  ///表名
+  final String name = "BossInfo";
 
-  final String id = "";
-  final String name = ""; //boss名
-  final String head = ""; //boss头像
-  final String role = ""; //boss角色, 职务
-  final String info = ""; //boss描述
-  final int date = 0; //生日
-  final int isCollect = 0; //是否追踪 0：false 1：true
-  final int isPoint = 0; //是否点赞 0：false 1：true
-  final int deleted = 0; //是否被删除 0：false 1：true
-  final int point = 0; //点赞数
-  final int collect = 0; //收藏数
-  final int updateCount = 0; //更新数量
-  final int totalCount = 0; //发布文章总数
-  final int readCount = 0; //阅读数
-  final int updateTime = 0; //上次更新时间
-  final int createTime = 0; //创建时间
+  final String columnId = "id";
+  final String columnName = "name"; //boss名
+  final String columnHead = "head"; //boss头像
+  final String columnRole = "role"; //boss角色, 职务
+  final String columnInfo = "info"; //boss描述
+  final String columnDate = "date"; //生日
+  final String columnIsCollect = "isCollect"; //是否追踪 0：false 1：true
+  final String columnIsPoint = "isPoint"; //是否点赞 0：false 1：true
+  final String columnDeleted = "deleted"; //是否被删除 0：false 1：true
+  final String columnGuide = "guide"; //是否被推荐 0：false 1：true
+  final String columnPoint = "point"; //点赞数
+  final String columnCollect = "collect"; //收藏数
+  final String columnUpdateCount = "updateCount"; //更新数量
+  final String columnTotalCount = "totalCount"; //发布文章总数
+  final String columnReadCount = "readCount"; //阅读数
+  final String columnUpdateTime = "updateTime"; //上次更新时间
+  final String columnCreateTime = "createTime"; //创建时间
+  final String columnLabels = "labels"; //标签
 
   static BossDbProvider _mIns;
 
@@ -35,169 +36,144 @@ class BossDbProvider extends BaseDbProvider {
 
   @override
   tableName() {
-    return mTableName;
+    return name;
   }
 
   @override
   createTableString() {
     return '''
-        create table $mTableName (
-        $id text primary key,$name text,
-        $head text,$role text,
-        $info text,$date integer，
-        $isCollect integer,$isPoint integer,
-        $deleted integer,$point integer,
-        $collect integer,$updateCount integer,
-        $totalCount integer,$readCount integer,
-        $updateTime integer,$createTime integer,)
+        create table $name (
+        $columnId text primary key,$columnName text,
+        $columnHead text,$columnRole text,
+        $columnInfo text,$columnDate integer,
+        $columnIsCollect integer,$columnIsPoint integer,
+        $columnDeleted integer,$columnGuide integer,
+        $columnPoint integer,$columnCollect integer,
+        $columnUpdateCount integer,$columnTotalCount integer,
+        $columnReadCount integer,$columnUpdateTime integer,
+        $columnCreateTime integer,$columnLabels text)
       ''';
   }
 
-  ///查询数据库 by bossId
-  Future _getBossProviderById(Database db, String bossId) async {
+  ///查询列表对象byBossId
+  Future _getBossProvider(Database db, String bossId) async {
     List<Map<String, dynamic>> maps =
-        await db.rawQuery("select * from $name where $id = $bossId");
-    return maps;
+        await db.query(name, where: "$columnId = ?", whereArgs: [bossId]);
+    if (!maps.isNullOrEmpty()) {
+      return maps;
+    }
+    return null;
   }
 
-  ///插入到数据库
-  Future<void> insert(BossInfoEntity entity) async {
+  ///插入单个对象byBean
+  Future insertByBean(BossInfoEntity entity) async {
     Database db = await getDataBase();
-    var bossProvider = await _getBossProviderById(db, entity.id);
+    var bossProvider = await _getBossProvider(db, entity.id);
     if (bossProvider != null) {
       ///删除数据
-      await db.delete(name, where: "$id = ?", whereArgs: [entity.id]);
+      await db.delete(name, where: "$columnId = ?", whereArgs: [entity.id]);
     }
-    await db.insert(mTableName, entity.toMap(),
+    return await db.insert(name, entity.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  ///插入到数据库
-  Future<void> insertList(String bossJson) async {
-    Database db = await getDataBase();
-
-    List<dynamic> list = convert.json.decode(bossJson);
-
-    if (!list.isNullOrEmpty()) {
-      list.forEach((element) async {
-        element["isCollect"] = element["isCollect"] ? 1 : 0;
-        element["isPoint"] = element["isPoint"] ? 1 : 0;
-
-        await db.insert(mTableName, element,
-            conflictAlgorithm: ConflictAlgorithm.replace);
-      });
-    }
-  }
-
-  ///更新到数据库
-  Future<void> update(BossInfoEntity entity) async {
+  ///更新单个对象byBean
+  Future<void> updateByBean(BossInfoEntity entity) async {
     final db = await getDataBase();
     await db.update(
-      'dogs',
+      name,
       entity.toMap(),
-      where: 'id = ?',
+      where: '$columnId = ?',
       whereArgs: [entity.id],
     );
   }
 
-  ///获取单个对象 by bossId
+  ///获取单个对象byBossId
   Future<BossInfoEntity> getBossById(String bossId) async {
     Database db = await getDataBase();
-    List<Map<String, dynamic>> maps = await _getBossProviderById(db, bossId);
+    List<Map<String, dynamic>> maps = await _getBossProvider(db, bossId);
     if (!maps.isNullOrEmpty()) {
-      return _bossInfoEntityFromJson(BossInfoEntity(), maps[0]);
+      return BossInfoEntity().toBean(maps[0]);
     }
     return null;
   }
 
-  ///获取列表对象 by bossId
-  Future<List<BossInfoEntity>> getBossListById(String bossId) async {
+  ///插入对象列表byBean
+  void insertListByBean(List<BossInfoEntity> list) async {
+    List.generate(list.length, (index) => insertByBean(list[index]));
+  }
+
+  ///查询全部列表对象
+  Future<List<Map<String, dynamic>>> getAllBossMap() async {
     Database db = await getDataBase();
-    List<Map<String, dynamic>> maps = await _getBossProviderById(db, bossId);
+
+    List<Map<String, dynamic>> maps = await db.query(name);
+    return maps;
+  }
+
+  ///查询全部列表对象
+  Future<List<BossInfoEntity>> getAllBoss() async {
+    Database db = await getDataBase();
+
+    List<Map<String, dynamic>> maps = await db.query(name);
     if (!maps.isNullOrEmpty()) {
-      return List.generate(maps.length,
-          (index) => _bossInfoEntityFromJson(BossInfoEntity(), maps[index]));
+      return maps.map((e) => BossInfoEntity().toBean(e)).toList();
     }
     return null;
   }
 
-  ///获取已经追踪的boss列表
-  Future<List<BossInfoEntity>> getCollectBossList() async {
+  ///查询列表对象byBossIdList
+  Future<List<BossInfoEntity>> getBossListById(List<String> ids) async {
     Database db = await getDataBase();
 
     List<Map<String, dynamic>> maps =
-        await db.rawQuery("select * from $name where $isCollect = 0");
-
+        await db.query(name, where: "$columnId = ?", whereArgs: ids);
     if (!maps.isNullOrEmpty()) {
-      return List.generate(maps.length,
-          (index) => _bossInfoEntityFromJson(BossInfoEntity(), maps[index]));
+      return maps.map((e) => BossInfoEntity().toBean(e)).toList();
     }
     return null;
   }
 
-  ///json->bean
-  _bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
-    if (json['id'] != null) {
-      data.id = json['id'].toString();
+  ///查询全部列表对象byLabel
+  Future<List<BossInfoEntity>> getAllBossByLabel(String label) async {
+    Database db = await getDataBase();
+
+    List<Map<String, dynamic>> maps = await db.query(name);
+    if (!maps.isNullOrEmpty()) {
+      return maps
+          .map((e) => BossInfoEntity().toBean(e))
+          .toList()
+          .where((element) => element.labels.contains(label))
+          .toList();
     }
-    if (json['name'] != null) {
-      data.name = json['name'].toString();
+    return null;
+  }
+
+  ///查询追踪的boss列表
+  Future<List<BossInfoEntity>> getCollectBoss() async {
+    Database db = await getDataBase();
+
+    List<Map<String, dynamic>> maps =
+        await db.query(name, where: "$columnIsCollect = ?", whereArgs: [1]);
+    if (!maps.isNullOrEmpty()) {
+      return maps.map((e) => BossInfoEntity().toBean(e)).toList();
     }
-    if (json['head'] != null) {
-      data.head = json['head'].toString();
+    return null;
+  }
+
+  ///查询追踪的boss列表byLabel
+  Future<List<BossInfoEntity>> getCollectBossByLabel(String label) async {
+    Database db = await getDataBase();
+
+    List<Map<String, dynamic>> maps =
+        await db.query(name, where: "$columnIsCollect = ?", whereArgs: [1]);
+    if (!maps.isNullOrEmpty()) {
+      return maps
+          .map((e) => BossInfoEntity().toBean(e))
+          .toList()
+          .where((element) => element.labels.contains(label))
+          .toList();
     }
-    if (json['role'] != null) {
-      data.role = json['role'].toString();
-    }
-    if (json['info'] != null) {
-      data.info = json['info'].toString();
-    }
-    if (json['date'] != null) {
-      data.date = json['date'] is String
-          ? int.tryParse(json['date'])
-          : json['date'].toInt();
-    }
-    if (json['isCollect'] != null) {
-      data.isCollect = json['isCollect'] == 1;
-    }
-    if (json['isPoint'] != null) {
-      data.isPoint = json['isPoint'] == 1;
-    }
-    if (json['point'] != null) {
-      data.point = json['point'] is String
-          ? int.tryParse(json['point'])
-          : json['point'].toInt();
-    }
-    if (json['collect'] != null) {
-      data.collect = json['collect'] is String
-          ? int.tryParse(json['collect'])
-          : json['collect'].toInt();
-    }
-    if (json['updateCount'] != null) {
-      data.updateCount = json['updateCount'] is String
-          ? int.tryParse(json['updateCount'])
-          : json['updateCount'].toInt();
-    }
-    if (json['totalCount'] != null) {
-      data.totalCount = json['totalCount'] is String
-          ? int.tryParse(json['totalCount'])
-          : json['totalCount'].toInt();
-    }
-    if (json['readCount'] != null) {
-      data.readCount = json['readCount'] is String
-          ? int.tryParse(json['readCount'])
-          : json['readCount'].toInt();
-    }
-    if (json['updateTime'] != null) {
-      data.updateTime = json['updateTime'] is String
-          ? int.tryParse(json['updateTime'])
-          : json['updateTime'].toInt();
-    }
-    if (json['createTime'] != null) {
-      data.createTime = json['createTime'] is String
-          ? int.tryParse(json['createTime'])
-          : json['createTime'].toInt();
-    }
-    return data;
+    return null;
   }
 }
