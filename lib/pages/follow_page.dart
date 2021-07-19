@@ -153,7 +153,6 @@ class _FollowPageState extends State<FollowPage>
 
         return BossApi.ins().obtainFollowArticle(pageParam);
       }).listen((event) {
-        BossDbProvider.getIns().insertListByBean(bossList);
 
         totalArticleNumber = event.total;
         hasData = event.hasData;

@@ -158,7 +158,6 @@ class _MinePageState extends State<MinePage>
         Get.to(() => ContactUsPage());
         break;
       case 6:
-        get();
         break;
       case 7:
         onClickClear();
@@ -167,12 +166,6 @@ class _MinePageState extends State<MinePage>
         BaseTool.toast(msg: itemNames[index]);
         break;
     }
-  }
-
-  void get() {
-    BossDbProvider.getIns().getCollectBoss().then((value) {
-      print(value);
-    });
   }
 
   @override
