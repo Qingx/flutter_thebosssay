@@ -54,7 +54,6 @@ class _FollowPageState extends State<FollowPage>
   bool get wantKeepAlive => true;
 
   @override
-  @override
   void dispose() {
     super.dispose();
     controller?.dispose();

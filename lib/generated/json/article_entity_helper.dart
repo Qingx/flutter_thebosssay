@@ -18,9 +18,6 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	if (json['descContent'] != null) {
 		data.descContent = json['descContent'].toString();
 	}
-	if (json['files'] != null) {
-		data.files = (json['files'] as List).map((v) => v.toString()).toList().cast<String>();
-	}
 	if (json['isCollect'] != null) {
 		data.isCollect = json['isCollect'];
 	}
@@ -47,6 +44,9 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['status'])
 				: json['status'].toInt();
 	}
+	if (json['files'] != null) {
+		data.files = (json['files'] as List).map((v) => v.toString()).toList().cast<String>();
+	}
 	if (json['bossVO'] != null) {
 		data.bossVO = BossInfoEntity().fromJson(json['bossVO']);
 	}
@@ -60,13 +60,13 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['title'] = entity.title;
 	data['content'] = entity.content;
 	data['descContent'] = entity.descContent;
-	data['files'] = entity.files;
 	data['isCollect'] = entity.isCollect;
 	data['isPoint'] = entity.isPoint;
 	data['point'] = entity.point;
 	data['collect'] = entity.collect;
 	data['createTime'] = entity.createTime;
 	data['status'] = entity.status;
+	data['files'] = entity.files;
 	data['bossVO'] = entity.bossVO?.toJson();
 	return data;
 }

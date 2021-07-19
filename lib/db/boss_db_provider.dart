@@ -99,8 +99,21 @@ class BossDbProvider extends BaseDbProvider {
   }
 
   ///插入对象列表byBean
-  void insertListByBean(List<BossInfoEntity> list) async {
+  Future<void> insertListByBean(List<BossInfoEntity> list) async {
     List.generate(list.length, (index) => insertByBean(list[index]));
+  }
+
+  ///更新对象列表byBean
+  Future<void> updateListByBean(List<BossInfoEntity> list) async {
+    final db = await getDataBase();
+    List.generate(list.length, (index) async {
+      await db.update(
+        name,
+        list[index].toMap(),
+        where: '$columnId = ?',
+        whereArgs: [list[index].id],
+      );
+    });
   }
 
   ///查询全部列表对象
@@ -173,6 +186,18 @@ class BossDbProvider extends BaseDbProvider {
           .toList()
           .where((element) => element.labels.contains(label))
           .toList();
+    }
+    return null;
+  }
+
+  ///查询追踪的boss列表byLabel
+  Future<List<BossInfoEntity>> getRecommendBoss() async {
+    Database db = await getDataBase();
+
+    List<Map<String, dynamic>> maps =
+        await db.query(name, where: "$columnGuide = ?", whereArgs: [1]);
+    if (!maps.isNullOrEmpty()) {
+      return maps.map((e) => BossInfoEntity().toBean(e)).toList();
     }
     return null;
   }

@@ -31,6 +31,9 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 	if (json['deleted'] != null) {
 		data.deleted = json['deleted'];
 	}
+	if (json['guide'] != null) {
+		data.guide = json['guide'];
+	}
 	if (json['point'] != null) {
 		data.point = json['point'] is String
 				? int.tryParse(json['point'])
@@ -83,6 +86,7 @@ Map<String, dynamic> bossInfoEntityToJson(BossInfoEntity entity) {
 	data['isCollect'] = entity.isCollect;
 	data['isPoint'] = entity.isPoint;
 	data['deleted'] = entity.deleted;
+	data['guide'] = entity.guide;
 	data['point'] = entity.point;
 	data['collect'] = entity.collect;
 	data['updateCount'] = entity.updateCount;
