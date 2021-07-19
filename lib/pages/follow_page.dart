@@ -12,7 +12,6 @@ import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/all_boss_page.dart';
@@ -53,7 +52,6 @@ class _FollowPageState extends State<FollowPage>
   @override
   bool get wantKeepAlive => true;
 
-  @override
   @override
   void dispose() {
     super.dispose();

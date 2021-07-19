@@ -27,7 +27,8 @@ class _ChangePhoneState extends State<ChangePhone> {
   PageController mPageController;
 
   //验证之前手机号
-  String inputPhone;
+  String inputPhone = "";
+  String rnd = "";
 
   @override
   void dispose() {
@@ -40,7 +41,9 @@ class _ChangePhoneState extends State<ChangePhone> {
   void initState() {
     super.initState();
 
-    inputPhone = Get.arguments as String;
+    var data = Get.arguments as Map<String, dynamic>;
+    inputPhone = data["phoneNumber"];
+    rnd = data["rnd"];
 
     mCurrentIndex = 1;
     mPages = [confirmWidget(), ChangeWidget()];
@@ -50,7 +53,7 @@ class _ChangePhoneState extends State<ChangePhone> {
   ///验证当前手机号 提交code
   void onSubmitted(content) {
     BaseWidget.showLoadingAlert("正在验证...", context);
-    UserApi.ins().obtainConfirmPhone(inputPhone, content).listen((event) {
+    UserApi.ins().obtainConfirmPhone(inputPhone, content, rnd).listen((event) {
       BaseTool.toast(msg: "验证成功");
       Get.back();
       mCurrentIndex = 1;
@@ -190,6 +193,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
   ///新手机号
   String inputNumber;
   String phoneNumber;
+  String rnd;
 
   bool hasClickSend;
 
@@ -208,8 +212,9 @@ class _ChangeWidgetState extends State<ChangeWidget> {
   void initState() {
     super.initState();
 
-    count = 30;
-    countText = "30s";
+    rnd = "";
+    count = 60;
+    countText = "60s";
     hasClickSend = false;
   }
 
@@ -264,6 +269,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
     phoneNumber = inputNumber;
     BaseWidget.showLoadingAlert("正在发送验证码...", context);
     UserApi.ins().obtainSendCode(phoneNumber, 2).listen((event) {
+      rnd = event;
       countDown();
       hasClickSend = true;
       setState(() {});
@@ -283,11 +289,11 @@ class _ChangeWidgetState extends State<ChangeWidget> {
       mDispose?.cancel();
     }
     mDispose = Observable.periodic(Duration(seconds: 1), (i) => i)
-        .take(31)
+        .take(61)
         .listen((event) {
       count--;
       if (count < 0) {
-        count = 30;
+        count = 60;
         countText = "重新发送";
         mDispose?.cancel();
       } else {
@@ -302,7 +308,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
     UserEntity entity = Global.user.user.value;
 
     BaseWidget.showLoadingAlert("正在修改...", context);
-    UserApi.ins().obtainChangePhone(phoneNumber, content).listen((event) {
+    UserApi.ins().obtainChangePhone(phoneNumber, content, rnd).listen((event) {
       entity.phone = phoneNumber;
       UserConfig.getIns().user = entity;
       Global.user.setUser(entity);

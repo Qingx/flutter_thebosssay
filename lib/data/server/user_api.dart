@@ -22,17 +22,19 @@ class UserApi extends BaseApi {
   }
 
   ///发送验证码 type==>验证码类型: 0.登录; 1.确认当前手机号; 2.修改手机号
-  Observable<bool> obtainSendCode(String phone, int type) {
+  Observable<String> obtainSendCode(String phone, int type) {
     var data = {"call": phone, "type": type};
-    return post<bool>("/api/account/send-code", requestBody: data).success();
+    return post<String>("/api/account/send-code", requestBody: data).rebase();
   }
 
   ///验证码登录
-  Observable<TokenEntity> obtainSignPhone(String phone, String code) {
+  Observable<TokenEntity> obtainSignPhone(
+      String phone, String code, String rnd) {
     var data = {
       "call": phone,
       "code": code,
-      "deviceId": DataConfig.getIns().tempId
+      "deviceId": DataConfig.getIns().tempId,
+      "rnd": rnd,
     };
     return post<TokenEntity>("/api/account/sign-code", requestBody: data)
         .rebase();
@@ -45,15 +47,23 @@ class UserApi extends BaseApi {
   }
 
   ///验证当前手机号
-  Observable<bool> obtainConfirmPhone(String phone, String code) {
-    var data = {"call": phone, "code": code};
+  Observable<bool> obtainConfirmPhone(String phone, String code, String rnd) {
+    var data = {
+      "call": phone,
+      "code": code,
+      "rnd": rnd,
+    };
     return post<bool>("/api/account/check-current", requestBody: data)
         .success();
   }
 
   ///修改手机号
-  Observable<bool> obtainChangePhone(String phone, String code) {
-    var data = {"call": phone, "code": code};
+  Observable<bool> obtainChangePhone(String phone, String code, String rnd) {
+    var data = {
+      "call": phone,
+      "code": code,
+      "rnd": rnd,
+    };
     return post<bool>("/api/account/check-change", requestBody: data).success();
   }
 

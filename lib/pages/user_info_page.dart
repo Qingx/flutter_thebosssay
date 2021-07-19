@@ -58,9 +58,13 @@ class UserInfoPage extends StatelessWidget {
           Get.back();
         }, onConfirm: (phone) {
           if (isInputAvailable(phone)) {
+            BaseWidget.showLoadingAlert("正在发送验证码...", context);
             UserApi.ins().obtainSendCode(phone, 1).listen((event) {
-              Get.off(() => ChangePhone(), arguments: phone);
+              Get.back();
+              var data = {"phoneNumber": phone, "rnd": event};
+              Get.off(() => ChangePhone(), arguments: data);
             }, onError: (res) {
+              Get.back();
               BaseTool.toast(msg: "发送失败，${res.msg}");
             });
           }
