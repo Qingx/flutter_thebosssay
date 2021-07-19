@@ -185,7 +185,8 @@ class BaseApi {
   }
 
   /// 全局获取文件签名
-  static Observable<String> globalSign = ins.refreshSign().publish().refCount();
+  static Observable<String> globalSign =
+      ins.refreshSign().shareReplay(maxSize: 1);
 
   /// 刷新文件签名
   Observable<String> refreshSign() => post<String>("/api/file/sign").rebase();
@@ -196,7 +197,14 @@ class HttpInterceptor extends Interceptor {
   @override
   onRequest(RequestOptions options) async {
     options.headers['sign'] = UserConfig.getIns().sign;
-    options.headers['Authorization'] = UserConfig.getIns().token;
+
+    var token = UserConfig.getIns().token;
+
+    if (token == null || token.isEmpty || token.length < 25) {
+      token = "DEFAULT_TOKEN";
+    }
+
+    options.headers['Authorization'] = token;
     return super.onRequest(options);
   }
 }
@@ -206,6 +214,10 @@ class BaseMiss extends Error {
   String msg;
 
   BaseMiss({this.code = -1, this.msg = "服务异常, 请稍后再试"});
+}
+
+class TempUserMiss extends BaseMiss {
+  TempUserMiss() : super(code: -10, msg: "用户登录失效, 请重新登录");
 }
 
 class UserMiss extends BaseMiss {
@@ -223,46 +235,55 @@ class EmptyMiss extends BaseMiss {
 extension ObservableData<T> on Observable<BaseData<T>> {
   /// 转换接口调用成功后的数据
   Observable<T> rebase() {
-    return this.map((event) {
-      if (event.success) {
-        return event.data;
-      }
+    return this
+        .map((event) {
+          if (event.success) {
+            return event.data;
+          }
 
-      throw _resolveError(event);
-    }).delay(Duration(milliseconds: 800));
+          throw _resolveError(event);
+        })
+        .delay(Duration(milliseconds: 100))
+        .autoToken();
   }
 
   /// 判断接口是否调用成功, 成功这返回true, 否则抛出异常
   Observable<bool> success() {
-    return this.map((event) {
-      if (event.success) {
-        return true;
-      }
+    return this
+        .map((event) {
+          if (event.success) {
+            return true;
+          }
 
-      throw _resolveError(event);
-    }).delay(Duration(milliseconds: 800));
+          throw _resolveError(event);
+        })
+        .delay(Duration(milliseconds: 100))
+        .autoToken();
   }
 }
 
 extension ObservablePage<T> on Observable<BasePage<T>> {
   /// 转换接口调用成功后的数据
   Observable<Page<T>> rebase({PageParam pageParam}) {
-    return this.map((event) {
-      if (event.success) {
-        if (pageParam != null) {
-          if (event.data is Page) {
-            final page = event.data;
+    return this
+        .map((event) {
+          if (event.success) {
+            if (pageParam != null) {
+              if (event.data is Page) {
+                final page = event.data;
 
-            /// 自动驱动到下一页
-            pageParam.next(page.current);
+                /// 自动驱动到下一页
+                pageParam.next(page.current);
+              }
+            }
+
+            return event.data;
           }
-        }
 
-        return event.data;
-      }
-
-      throw _resolveError(event);
-    }).delay(Duration(milliseconds: 800));
+          throw _resolveError(event);
+        })
+        .delay(Duration(milliseconds: 100))
+        .autoToken();
   }
 }
 
@@ -283,8 +304,9 @@ extension ObservableEx<T> on Observable<T> {
   /// 自动刷新token
   Observable<T> autoToken() {
     Observable<T> source = this;
+
     return Observable.retryWhen(() => source, (e, s) {
-      if (e.runtimeType == UserMiss) {
+      if (e.runtimeType == UserMiss || e.runtimeType == TempUserMiss) {
         return AutoTokenEvent.ins().mErrorSource;
       }
       throw e;
@@ -316,6 +338,10 @@ class AutoTokenEvent {
 
 /// 确定业务异常
 Error _resolveError(DataSource event) {
+  if (event.code == -10) {
+    return TempUserMiss();
+  }
+
   if (event.code == -6) {
     return UserMiss();
   }
