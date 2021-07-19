@@ -22,11 +22,12 @@ class InputCodePage extends StatefulWidget {
 }
 
 class _InputCodePageState extends State<InputCodePage> {
-  int count = 30;
-  String countText = "30s";
+  int count = 60;
+  String countText = "60s";
   String codeNumber = "";
   StreamSubscription<int> mDispose;
   String phoneNumber;
+  String rnd = "";
 
   void onBack() {
     Get.back();
@@ -38,7 +39,9 @@ class _InputCodePageState extends State<InputCodePage> {
     if (isInputAvailable(true)) {
       BaseWidget.showLoadingAlert("正在尝试登录...", context);
 
-      UserApi.ins().obtainSignPhone(phoneNumber, codeNumber).listen((event) {
+      UserApi.ins().obtainSignPhone(phoneNumber, codeNumber, rnd).listen(
+          (event) {
+        Get.back();
         UserConfig.getIns().token = event.token;
         UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);
@@ -68,17 +71,30 @@ class _InputCodePageState extends State<InputCodePage> {
       mDispose?.cancel();
     }
     mDispose = Observable.periodic(Duration(seconds: 1), (i) => i)
-        .take(31)
+        .take(61)
         .listen((event) {
       count--;
       if (count < 0) {
-        count = 30;
+        count = 60;
         countText = "重新发送";
         mDispose?.cancel();
       } else {
         countText = "${count}s";
       }
       setState(() {});
+    });
+  }
+
+  ///尝试发送验证码
+  void trySendCode() {
+    BaseWidget.showLoadingAlert("正在发送验证码...", context);
+    UserApi.ins().obtainSendCode(phoneNumber, 2).listen((event) {
+      rnd = event;
+      countDown();
+      setState(() {});
+    }, onError: (res) {
+      print(res.msg);
+      BaseTool.toast(msg: "发送失败，${res.msg}");
     });
   }
 
@@ -92,7 +108,9 @@ class _InputCodePageState extends State<InputCodePage> {
   void initState() {
     super.initState();
 
-    phoneNumber = Get.arguments as String;
+    var data = Get.arguments as Map<String, dynamic>;
+    phoneNumber = data["phoneNumber"];
+    rnd = data["rnd"];
 
     countDown();
   }
@@ -195,7 +213,7 @@ class _InputCodePageState extends State<InputCodePage> {
       if (countText != "重新发送") {
         BaseTool.toast(msg: "操作频繁，请$count秒后再试！");
       } else {
-        countDown();
+        trySendCode();
       }
     });
   }
