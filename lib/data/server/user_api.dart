@@ -2,6 +2,7 @@ import 'package:flutter_boss_says/config/base_api.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
@@ -35,7 +36,7 @@ class UserApi extends BaseApi {
     var data = {
       "call": phone,
       "code": code,
-      "deviceId": DataConfig.getIns().tempId,
+      "deviceId": UserConfig.getIns().tempId,
       "rnd": rnd,
     };
     return autoToken(() =>

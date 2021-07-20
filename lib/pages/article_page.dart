@@ -3,14 +3,10 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
-import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
-import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
-import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -19,6 +15,7 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/html_parser.dart';
 import 'package:get/get.dart';
 import 'package:share/share.dart';
 
@@ -32,10 +29,7 @@ class ArticlePage extends StatefulWidget {
 }
 
 class _ArticlePageState extends State<ArticlePage> {
-  String articleId;
   bool hasCollect;
-
-  var builderFuture;
 
   ScrollController scrollController;
 
@@ -45,30 +39,17 @@ class _ArticlePageState extends State<ArticlePage> {
   void initState() {
     super.initState();
 
-    var map = Get.arguments as Map<String, dynamic>;
-    articleId = map["id"];
-    hasCollect = map["collect"];
+    mData = Get.arguments as ArticleEntity;
+    hasCollect = mData.isCollect;
 
     scrollController = ScrollController();
-
-    builderFuture = loadInitData();
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    Global.eventBus.fire(BaseEvent(RefreshUserEvent));
     scrollController?.dispose();
-  }
-
-  Future<ArticleEntity> loadInitData() {
-    print("文章id：$articleId");
-    return BossApi.ins().obtainArticleDetail(articleId).doOnData((event) {
-      hasCollect = event.isCollect;
-      mData = event;
-      setState(() {});
-    }).last;
   }
 
   void onShare() {
@@ -127,6 +108,7 @@ class _ArticlePageState extends State<ArticlePage> {
       hasCollect = true;
       mData.isCollect = true;
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      Global.eventBus.fire(BaseEvent(RefreshCollectEvent));
       setState(() {});
 
       BaseTool.toast(msg: "收藏成功");
@@ -148,6 +130,7 @@ class _ArticlePageState extends State<ArticlePage> {
       hasCollect = true;
       mData.isCollect = true;
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      Global.eventBus.fire(BaseEvent(RefreshCollectEvent));
       setState(() {});
 
       BaseTool.toast(msg: "收藏成功");
@@ -169,6 +152,7 @@ class _ArticlePageState extends State<ArticlePage> {
       hasCollect = false;
       mData.isCollect = false;
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      Global.eventBus.fire(BaseEvent(RefreshCollectEvent));
       setState(() {});
 
       BaseTool.toast(msg: "取消成功");
@@ -177,57 +161,6 @@ class _ArticlePageState extends State<ArticlePage> {
 
       print(res.msg);
       BaseTool.toast(msg: "取消失败，${res.msg}");
-    });
-  }
-
-  void onFollowChange() {
-    if (mData.bossVO.isCollect) {
-      cancelFollow(mData.bossVO);
-    } else {
-      doFollow(mData.bossVO);
-    }
-  }
-
-  void cancelFollow(BossInfoEntity entity) {
-    BaseWidget.showLoadingAlert("尝试取消...", context);
-    BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
-      Get.back();
-
-      entity.isCollect = false;
-      setState(() {});
-
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
-
-      showFollowCancelDialog(context, onDismiss: () {
-        Get.back();
-      });
-    }, onError: (res) {
-      Get.back();
-      BaseTool.toast(msg: " 取消失败，${res.msg}");
-    });
-  }
-
-  void doFollow(BossInfoEntity entity) {
-    BaseWidget.showLoadingAlert("尝试追踪...", context);
-
-    BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
-      Get.back();
-
-      entity.isCollect = true;
-      setState(() {});
-
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
-
-      showFollowSuccessDialog(context, onConfirm: () {
-        Get.back();
-      }, onDismiss: () {
-        Get.back();
-      });
-    }, onError: (res) {
-      Get.back();
-      BaseTool.toast(msg: " 追踪失败，${res.msg}");
     });
   }
 
@@ -274,34 +207,18 @@ class _ArticlePageState extends State<ArticlePage> {
               ),
             ),
             Expanded(
-              child: FutureBuilder(
-                builder: builderWidget,
-                future: builderFuture,
+              child: Stack(
+                children: [
+                  contentWidget()
+                      .positionOn(top: 0, bottom: 0, left: 0, right: 0),
+                  floatWidget().positionOn(bottom: 64, right: 16),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
-    if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasData) {
-        return Stack(
-          children: [
-            contentWidget().positionOn(top: 0, bottom: 0, left: 0, right: 0),
-            floatWidget().positionOn(bottom: 64, right: 16),
-          ],
-        );
-      } else
-        return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
-          setState(() {});
-        });
-    } else {
-      return BaseWidget.loadingArticleWidget(context);
-    }
   }
 
   Widget contentWidget() {
@@ -431,49 +348,13 @@ class _ArticlePageState extends State<ArticlePage> {
               ),
             ),
           ),
-          Container(
-            height: 32,
-            padding: EdgeInsets.only(left: 10, right: 10),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-              color: hasFollow ? BaseColor.loadBg : BaseColor.accent,
-            ),
-            child: hasFollow
-                ? Text(
-                    "已追踪",
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                    softWrap: false,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  )
-                : Row(
-                    children: [
-                      Icon(
-                        Icons.add,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        "追踪TA",
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                        softWrap: false,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ).marginOn(left: 4),
-                    ],
-                  ),
-          ).onClick(onFollowChange),
         ],
       ),
     );
   }
 
   Widget bodyWidget() {
-    String document =
-        "${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}${mData.content}";
+    String document = mData.content;
     return Container(
       child: Html(
         data: document,

@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_page.dart';
 import 'package:flutter_boss_says/pages/mine_page.dart';
 import 'package:flutter_boss_says/pages/talk_page.dart';
@@ -33,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
 
-    eventDispose.cancel();
+    eventDispose?.cancel();
   }
 
   @override
@@ -50,6 +52,8 @@ class _HomePageState extends State<HomePage> {
 
     mPageController = PageController();
 
+    doRefreshUser();
+
     eventBus();
   }
 
@@ -57,9 +61,26 @@ class _HomePageState extends State<HomePage> {
   void eventBus() {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
       if (event.obj == JumpBossEvent) {
-        mPageController.animateToPage(1,
-            duration: Duration(milliseconds: 240), curve: Curves.easeInOutExpo);
+        jumpToBoss();
       }
+
+      if (event.obj == RefreshUserEvent) {
+        doRefreshUser();
+      }
+    });
+  }
+
+  void jumpToBoss() {
+    mPageController.animateToPage(1,
+        duration: Duration(milliseconds: 240), curve: Curves.easeInOutExpo);
+  }
+
+  ///刷新userInfo
+  void doRefreshUser() {
+    UserApi.ins().obtainRefreshUser().listen((event) {
+      UserConfig.getIns().token = event.token;
+      UserConfig.getIns().user = event.userInfo;
+      Global.user.setUser(event.userInfo);
     });
   }
 

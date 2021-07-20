@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/all_boss_page.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/search_boss_page.dart';

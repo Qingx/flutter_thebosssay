@@ -1,18 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
-import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/all_boss_page.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
-import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
 import '../../r.dart';
@@ -27,16 +27,12 @@ class FollowContentPage extends StatefulWidget {
 }
 
 class _FollowContentPageState extends State<FollowContentPage>
-    with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
-  ScrollController scrollController;
-  EasyRefreshController controller;
-
+    with AutomaticKeepAliveClientMixin {
   var builderFuture;
 
-  bool hasData = false;
-  int totalArticleNumber;
-
   List<BossInfoEntity> bossList = []; //boss card列表数据
+
+  StreamSubscription<BaseEvent> eventDispose;
 
   @override
   bool get wantKeepAlive => true;
@@ -45,8 +41,7 @@ class _FollowContentPageState extends State<FollowContentPage>
   void dispose() {
     super.dispose();
 
-    controller?.dispose();
-    scrollController?.dispose();
+    eventDispose?.cancel();
   }
 
   @override
@@ -55,78 +50,49 @@ class _FollowContentPageState extends State<FollowContentPage>
 
     builderFuture = loadInitData();
 
-    scrollController = ScrollController();
-    controller = EasyRefreshController();
+    eventBus();
   }
 
-  Future<WlPage.Page<ArticleEntity>> loadInitData() {
+  Future<List<BossInfoEntity>> loadInitData() {
     return BossApi.ins()
         .obtainFollowBossList(widget.label, true)
-        .flatMap((value) {
-      bossList = value;
-
-      return BossApi.ins().obtainFollowArticle(pageParam);
-    }).doOnData((event) {
-      totalArticleNumber = event.total;
-      hasData = event.hasData;
-      concat(event.records, false);
+        .doOnData((event) {
+      bossList = event;
     }).doOnError((e) {
       print(e);
     }).last;
   }
 
-  @override
-  void loadData(bool loadMore) {
-    if (!loadMore) {
-      pageParam.reset();
+  void loadData() {
+    BossApi.ins().obtainFollowBossList(widget.label, true).listen((event) {
+      bossList = event;
+    }, onError: (e) {
+      print(e);
+    });
+  }
 
-      BossApi.ins().obtainFollowBossList(widget.label, true).flatMap((value) {
-        bossList = value;
-
-        return BossApi.ins().obtainFollowArticle(pageParam);
-      }).listen((event) {
-        totalArticleNumber = event.total;
-        hasData = event.hasData;
-        concat(event.records, loadMore);
-
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      if (event.obj == RefreshFollowEvent) {
+        builderFuture = loadInitData();
         setState(() {});
-      }).onDone(() {
-        if (loadMore) {
-          controller.finishLoad();
-        } else {
-          controller.resetLoadState();
-          controller.finishRefresh();
-        }
-      });
-    } else {
-      BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
-        hasData = event.hasData;
-        concat(event.records, loadMore);
-        setState(() {});
-      }).onDone(() {
-        if (loadMore) {
-          controller.finishLoad();
-        } else {
-          controller.resetLoadState();
-          controller.finishRefresh();
-        }
-      });
-    }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WlPage.Page<ArticleEntity>>(
+    return FutureBuilder<List<BossInfoEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context,
-      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
+  Widget builderWidget(
+      BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
-        return contentWidget();
+        return topWidget();
       } else
         return BaseWidget.errorWidget(() {
           builderFuture = loadInitData();
@@ -137,34 +103,8 @@ class _FollowContentPageState extends State<FollowContentPage>
     }
   }
 
-  Widget contentWidget() {
-    return Container(
-      color: BaseColor.pageBg,
-      child: BaseWidget.refreshWidgetPage(
-          slivers: [topWidget(), bodyWidget()],
-          controller: controller,
-          scrollController: scrollController,
-          hasData: hasData,
-          loadData: loadData),
-    );
-  }
-
   Widget topWidget() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          if (index == 0) {
-            if (bossList.isNullOrEmpty()) {
-              return emptyCardWidget();
-            } else
-              return cardWidget();
-          } else {
-            return titleWidget();
-          }
-        },
-        childCount: 2,
-      ),
-    );
+    return bossList.isNullOrEmpty() ? emptyCardWidget() : cardWidget();
   }
 
   Widget cardWidget() {
@@ -311,88 +251,6 @@ class _FollowContentPageState extends State<FollowContentPage>
     });
   }
 
-  Widget titleWidget() {
-    return Container(
-      color: BaseColor.pageBg,
-      height: 40,
-      padding: EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            "最近更新",
-            style: TextStyle(
-                color: BaseColor.textDark,
-                fontSize: 24,
-                fontWeight: FontWeight.bold),
-          ).marginOn(left: 16),
-          Text(
-            "共${totalArticleNumber ?? 0}篇",
-            style: TextStyle(color: BaseColor.textDark, fontSize: 14),
-          ).marginOn(left: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget bodyWidget() {
-    return mData.isNullOrEmpty()
-        ? SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return emptyBodyWidget();
-              },
-              childCount: 1,
-            ),
-          )
-        : SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                ArticleEntity entity = mData[index];
-
-                if (entity.files.isNullOrEmpty()) {
-                  return ArticleWidget.onlyTextWithContent(
-                      entity, index, context);
-                } else {
-                  return ArticleWidget.singleImgWithContent(
-                      entity, index, context);
-                }
-              },
-              childCount: mData.length,
-            ),
-          );
-  }
-
-  Widget emptyBodyWidget() {
-    String path = R.assetsImgEmptyBoss;
-    String content = "最近还没有更新哦～";
-    double height = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
-        392;
-    return Container(
-      height: height,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(path, width: 160, height: 160),
-            Flexible(
-              child: Text(
-                content,
-                style: TextStyle(fontSize: 18, color: BaseColor.textGray),
-                textAlign: TextAlign.center,
-              ).marginOn(top: 16),
-            ),
-          ],
-        ),
-      ),
-    ).onClick(() {
-      controller.callRefresh();
-    });
-  }
-
   Widget loadingWidget() {
     return Container(
       color: BaseColor.pageBg,
@@ -401,27 +259,6 @@ class _FollowContentPageState extends State<FollowContentPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           loadCardWidget(),
-          loadingItemWidget(0.7, 24),
-          loadingItemWidget(0.3, 8),
-          loadingItemWidget(1, 16),
-          loadingItemWidget(1, 8),
-          loadingItemWidget(1, 8),
-          loadingItemWidget(0.4, 8),
-          loadingItemWidget(0.6, 8),
-          Container(
-            margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-            height: 48,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SpinKitFadingCircle(
-                  color: Color(0xff0e1e1e1),
-                  size: 48,
-                  duration: Duration(milliseconds: 2000),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -460,18 +297,6 @@ class _FollowContentPageState extends State<FollowContentPage>
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       margin: EdgeInsets.only(left: left, right: right),
-    );
-  }
-
-  Widget loadingItemWidget(double width, double margin) {
-    return Container(
-      width: (MediaQuery.of(context).size.width - 32) * width,
-      height: 16,
-      margin: EdgeInsets.only(left: 16, right: 16, top: margin),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-        color: BaseColor.loadBg,
-      ),
     );
   }
 }

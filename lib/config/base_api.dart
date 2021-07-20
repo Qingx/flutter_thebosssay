@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_boss_says/config/base_data.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
@@ -202,12 +203,14 @@ class BaseApi {
   static Observable<String> globalSign =
       ins.refreshSign().shareReplay(maxSize: 1);
 
-
   static Observable<String> globalToken = Observable.defer(() {
-    var tempId = DataConfig.getIns().tempId;
+    var tempId = UserConfig.getIns().tempId;
 
     return UserApi.ins().obtainTempLogin(tempId).map((event) {
-      DataConfig.getIns().setTempId = tempId;
+      UserConfig.getIns().setTempId = tempId;
+      UserConfig.getIns().user = event.userInfo;
+      UserConfig.getIns().token = event.token;
+      Global.user.setUser(event.userInfo);
       return event.token;
     });
   }).shareReplay(maxSize: 1);

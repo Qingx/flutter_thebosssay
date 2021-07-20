@@ -309,8 +309,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
         ],
       ),
     ).onClick(() {
-      var data = {"id": entity.articleId, "collect": false};
-      Get.to(() => ArticlePage(), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity);
     });
   }
 

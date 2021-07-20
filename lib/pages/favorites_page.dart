@@ -9,6 +9,7 @@ import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
+import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -66,7 +67,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void eventBus() {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
       ///刷新userInfo
-      if (event.obj == RefreshUserEvent) {
+      if (event.obj == RefreshCollectEvent) {
         loadData();
       }
     });
@@ -463,8 +464,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ],
       ),
     ).onClick(() {
-      var data = {"id": entity.id, "collect": true};
-      Get.to(() => ArticlePage(), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity);
     });
   }
 

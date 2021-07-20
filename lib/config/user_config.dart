@@ -1,4 +1,5 @@
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 
 import 'data_config.dart';
 
@@ -34,10 +35,18 @@ class UserConfig extends BaseConfig {
   /// 获取用户token
   String get token =>
       spInstance.getString(UserKeys.K_HTTP_TOKEN, defaultVal: "empty_token");
+
+  set setTempId(String tempId) =>
+      spInstance.putString(UserKeys.K_TEMP_ID, tempId);
+
+  /// 获取tempId
+  String get tempId => spInstance.getString(UserKeys.K_TEMP_ID,
+      defaultVal: BaseTool.createTempId());
 }
 
 class UserKeys {
   static const K_USER_DATA = "K_USER_DATA";
   static const K_HTTP_SIGN = "K_HTTP_SIGN";
   static const K_HTTP_TOKEN = "K_HTTP_TOKEN";
+  static const K_TEMP_ID = "K_YK_ID";
 }

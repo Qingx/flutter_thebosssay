@@ -260,7 +260,7 @@ class _MinePageState extends State<MinePage>
                 Obx(
                   () => Text(
                     controller.user.value.type == BaseEmpty.emptyUser.type
-                        ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
+                        ? "游客：${UserConfig.getIns().tempId.substring(0, 12)}..."
                         : "ID：${controller.user.value.id}",
                     style: TextStyle(fontSize: 16, color: BaseColor.textGray),
                     softWrap: false,

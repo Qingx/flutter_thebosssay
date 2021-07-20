@@ -239,7 +239,7 @@ class UserInfoPage extends StatelessWidget {
                           : index == 1
                               ? Global.user.user.value.type ==
                                       BaseEmpty.emptyUser.type
-                                  ? "游客：${DataConfig.getIns().tempId.substring(0, 12)}..."
+                                  ? "游客：${UserConfig.getIns().tempId.substring(0, 12)}..."
                                   : Global.user.user.value.id
                               : Global.user.user.value.type ==
                                       BaseEmpty.emptyUser.type

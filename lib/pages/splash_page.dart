@@ -6,6 +6,7 @@ import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
@@ -96,6 +97,9 @@ class _SplashPageState extends State<SplashPage> {
           BossApi.ins()
               .obtainAllBoss(DataConfig.getIns().updateTime)
               .listen((event) {
+            UserEntity entity = UserConfig.getIns().user;
+            Global.user.setUser(entity);
+
             if (!event.isNullOrEmpty()) {
               BossDbProvider.getIns().updateListByBean(event);
               DataConfig.getIns().setUpdateTime =

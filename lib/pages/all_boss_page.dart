@@ -169,6 +169,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       entity.isCollect = false;
       setState(() {});
 
+      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
       Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
 
       showFollowCancelDialog(context, onDismiss: () {
@@ -188,8 +189,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       entity.isCollect = true;
       setState(() {});
 
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
 
       showFollowSuccessDialog(context, onConfirm: () {
         Get.back();

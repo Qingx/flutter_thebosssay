@@ -209,6 +209,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       setState(() {});
 
       Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 
       showFollowCancelDialog(context, onDismiss: () {
         Get.back();
@@ -228,8 +229,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       entity.isCollect = true;
       setState(() {});
 
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
 
       showFollowSuccessDialog(context, onConfirm: () {
         Get.back();

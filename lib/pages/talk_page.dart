@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
 import 'package:flutter_boss_says/r.dart';

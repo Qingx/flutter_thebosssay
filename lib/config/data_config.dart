@@ -20,13 +20,6 @@ class DataConfig extends BaseConfig {
   String get firstUserApp =>
       spInstance.getString(DataKeys.K_FIRST_USE, defaultVal: "empty");
 
-  set setTempId(String tempId) =>
-      spInstance.putString(DataKeys.K_TEMP_ID, tempId);
-
-  /// 获取tempId
-  String get tempId => spInstance.getString(DataKeys.K_TEMP_ID,
-      defaultVal: BaseTool.createTempId());
-
   set setBossLabels(List<BossLabelEntity> list) =>
       spInstance.putObject<List<BossLabelEntity>>(DataKeys.K_BOSS_LABELS, list);
 
@@ -44,7 +37,6 @@ class DataConfig extends BaseConfig {
 
 class DataKeys {
   static const K_FIRST_USE = "K_FIRST_USE";
-  static const K_TEMP_ID = "K_YK_ID";
   static const K_BOSS_LABELS = "K_BOSS_LABELS";
   static const K_UPDATE_TIME = "K_UPDATE_TIME";
 }
