@@ -48,6 +48,8 @@ class _GuidePageState extends State<GuidePage> {
   void initState() {
     super.initState();
 
+    BossDbProvider.getIns().getAllBoss().then((value) => print(value));
+
     mData = Get.arguments as List<BossInfoEntity>;
     listSelect = mData.map((e) => e.id).toList();
 

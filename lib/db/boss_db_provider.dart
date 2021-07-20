@@ -100,7 +100,18 @@ class BossDbProvider extends BaseDbProvider {
 
   ///插入对象列表byBean
   Future<void> insertListByBean(List<BossInfoEntity> list) async {
-    List.generate(list.length, (index) => insertByBean(list[index]));
+    Database db = await getDataBase();
+
+    List.generate(list.length, (index) async {
+      var bossProvider = await _getBossProvider(db, list[index].id);
+      if (bossProvider != null) {
+        ///删除数据
+        await db
+            .delete(name, where: "$columnId = ?", whereArgs: [list[index].id]);
+      }
+      return await db.insert(name, list[index].toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    });
   }
 
   ///更新对象列表byBean

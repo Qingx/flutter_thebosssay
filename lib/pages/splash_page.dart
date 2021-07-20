@@ -7,11 +7,14 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key key}) : super(key: key);
@@ -75,11 +78,31 @@ class _SplashPageState extends State<SplashPage> {
         bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
         if (firstUseApp) {
-          BossApi.ins().obtainGuideBoss().listen((event) {
-            countTime(true, list: event.records);
+          BossApi.ins().obtainBossLabels().flatMap((value) {
+            value = [BaseEmpty.emptyLabel, ...value];
+            DataConfig.getIns().setBossLabels = value;
+
+            return BossApi.ins().obtainAllBoss(DataConfig.getIns().updateTime);
+          }).listen((event) {
+            DataConfig.getIns().setUpdateTime =
+                DateTime.now().millisecondsSinceEpoch;
+
+            BossDbProvider.getIns().insertListByBean(event);
+
+            countTime(true,
+                list: event.where((element) => element.guide).toList());
           });
         } else {
-          countTime(false);
+          BossApi.ins()
+              .obtainAllBoss(DataConfig.getIns().updateTime)
+              .listen((event) {
+            if (!event.isNullOrEmpty()) {
+              BossDbProvider.getIns().updateListByBean(event);
+              DataConfig.getIns().setUpdateTime =
+                  DateTime.now().millisecondsSinceEpoch;
+            }
+            countTime(false);
+          });
         }
       });
     });

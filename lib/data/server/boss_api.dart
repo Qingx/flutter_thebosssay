@@ -140,12 +140,13 @@ class BossApi extends BaseApi {
 
   ///获取Boss详情
   Observable<BossInfoEntity> obtainBossDetail(String id) {
-    return get<BossInfoEntity>("/api/boss/details/$id").rebase();
+    return autoToken(
+        () => get<BossInfoEntity>("/api/boss/details/$id").rebase());
   }
 
   ///获取全部Boss详情
-  Observable<List<BossInfoEntity>> obtainAllBoss({int time}) {
+  Observable<List<BossInfoEntity>> obtainAllBoss(int time) {
     return autoToken(() =>
-        get<List<BossInfoEntity>>("/api/boss/all-list/${time ?? 1}").rebase());
+        get<List<BossInfoEntity>>("/api/boss/all-list/$time").rebase());
   }
 }
