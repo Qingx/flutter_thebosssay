@@ -17,25 +17,29 @@ class BossApi extends BaseApi {
   ///引导页boss列表
   Observable<BossEntity> obtainGuideBoss() {
     var data = {"page": 1, "pageSize": 12};
-    return post<BossEntity>("/api/boss/recommend", requestBody: data).rebase();
+    return autoToken(() =>
+        post<BossEntity>("/api/boss/recommend", requestBody: data).rebase());
   }
 
   ///追踪单个boss
   Observable<bool> obtainFollowBoss(String id) {
     var data = {"sourceId": id, "type": 1, "target": true};
-    return post<bool>("/api/boss/options", requestBody: data).success();
+    return autoToken(
+        () => post<bool>("/api/boss/options", requestBody: data).success());
   }
 
   ///取消追踪boss
   Observable<bool> obtainNoFollowBoss(String id) {
     var data = {"sourceId": id, "type": 1, "target": false};
-    return post<bool>("/api/boss/options", requestBody: data).success();
+    return autoToken(
+        () => post<bool>("/api/boss/options", requestBody: data).success());
   }
 
   ///引导页追踪多个boss
   Observable<bool> obtainGuideFollowList(List<String> ids) {
     var data = {"sourceIds": ids, "type": 1, "target": true, "forced": true};
-    return post<bool>("/api/boss/options", requestBody: data).success();
+    return autoToken(
+        () => post<bool>("/api/boss/options", requestBody: data).success());
   }
 
   ///已追踪的boss列表 已追踪且有更新的boss列表
@@ -45,20 +49,23 @@ class BossApi extends BaseApi {
       "labels": label == "-1" ? null : [label],
       "mustUpdate": mustUpdate
     };
-    return post<List<BossInfoEntity>>("/api/boss/collected", requestBody: data)
-        .rebase();
+    return autoToken(() =>
+        post<List<BossInfoEntity>>("/api/boss/collected", requestBody: data)
+            .rebase());
   }
 
   ///获取追踪 最近更新文章
   Observable<Page<ArticleEntity>> obtainFollowArticle(PageParam pageParam) {
     final param = pageParam.toParam();
-    return postPage<ArticleEntity>("/api/article/recommend", requestBody: param)
-        .rebase(pageParam: pageParam);
+    return autoToken(() =>
+        postPage<ArticleEntity>("/api/article/recommend", requestBody: param)
+            .rebase(pageParam: pageParam));
   }
 
   ///获取boss标签列表
   Observable<List<BossLabelEntity>> obtainBossLabels() {
-    return get<List<BossLabelEntity>>("/api/boss/labels").rebase();
+    return autoToken(
+        () => get<List<BossLabelEntity>>("/api/boss/labels").rebase());
   }
 
   ///获取boss列表
@@ -70,8 +77,9 @@ class BossApi extends BaseApi {
       };
       map.addAll(data);
     });
-    return postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
-        .rebase(pageParam: pageParam);
+    return autoToken(() =>
+        postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
+            .rebase(pageParam: pageParam));
   }
 
   ///获取boss的文章列表
@@ -81,8 +89,9 @@ class BossApi extends BaseApi {
       var data = {"bossId": bossId};
       map.addAll(data);
     });
-    return postPage<ArticleEntity>("/api/article/list", requestBody: param)
-        .rebase(pageParam: pageParam);
+    return autoToken(() =>
+        postPage<ArticleEntity>("/api/article/list", requestBody: param)
+            .rebase(pageParam: pageParam));
   }
 
   ///获取所有文章列表
@@ -94,8 +103,9 @@ class BossApi extends BaseApi {
       };
       map.addAll(data);
     });
-    return postPage<ArticleEntity>("/api/article/list", requestBody: param)
-        .rebase(pageParam: pageParam);
+    return autoToken(() =>
+        postPage<ArticleEntity>("/api/article/list", requestBody: param)
+            .rebase(pageParam: pageParam));
   }
 
   ///搜索boss
@@ -105,8 +115,9 @@ class BossApi extends BaseApi {
       var data = {"name": search};
       map.addAll(data);
     });
-    return postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
-        .rebase(pageParam: pageParam);
+    return autoToken(() =>
+        postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
+            .rebase(pageParam: pageParam));
   }
 
   ///搜索文章
@@ -116,13 +127,15 @@ class BossApi extends BaseApi {
       var data = {"name": search};
       map.addAll(data);
     });
-    return postPage<ArticleEntity>("/api/article/list", requestBody: param)
-        .rebase(pageParam: pageParam);
+    return autoToken(() =>
+        postPage<ArticleEntity>("/api/article/list", requestBody: param)
+            .rebase(pageParam: pageParam));
   }
 
   ///获取文章详情
   Observable<ArticleEntity> obtainArticleDetail(String id) {
-    return get<ArticleEntity>("/api/article/details/$id").rebase();
+    return autoToken(
+        () => get<ArticleEntity>("/api/article/details/$id").rebase());
   }
 
   ///获取Boss详情
@@ -131,7 +144,8 @@ class BossApi extends BaseApi {
   }
 
   ///获取全部Boss详情
-  Observable<List<BossInfoEntity>> obtainAllBoss(int time) {
-    return get<List<BossInfoEntity>>("/api/boss/all-list/$time").rebase();
+  Observable<List<BossInfoEntity>> obtainAllBoss({int time}) {
+    return autoToken(() =>
+        get<List<BossInfoEntity>>("/api/boss/all-list/${time ?? 1}").rebase());
   }
 }

@@ -7,15 +7,11 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key key}) : super(key: key);
@@ -79,69 +75,11 @@ class _SplashPageState extends State<SplashPage> {
         bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
         if (firstUseApp) {
-          String tempId = DataConfig.getIns().tempId;
-          UserApi.ins().obtainTempLogin(tempId).flatMap((value) {
-            DataConfig.getIns().setTempId = tempId;
-            UserConfig.getIns().token = value.token;
-            UserConfig.getIns().user = value.userInfo;
-            Global.user.setUser(value.userInfo);
-
-            return BossApi.ins().obtainBossLabels();
-          }).flatMap((value) {
-            value = [BaseEmpty.emptyLabel, ...value];
-            DataConfig.getIns().setBossLabels = value;
-
-            return BossApi.ins().obtainAllBoss(DataConfig.getIns().updateTime);
-          }).listen((event) {
-            DataConfig.getIns().setUpdateTime =
-                DateTime.now().millisecondsSinceEpoch;
-
-            BossDbProvider.getIns().insertListByBean(event).then((value) {
-              countTime(true,
-                  list:
-                      event.where((element) => element.guide == true).toList());
-            });
+          BossApi.ins().obtainGuideBoss().listen((event) {
+            countTime(true, list: event.records);
           });
         } else {
-          bool loginStatus = UserConfig.getIns().loginStatus;
-
-          if (loginStatus) {
-            UserApi.ins().obtainRefreshUser().flatMap((value) {
-              UserConfig.getIns().token = value.token;
-              UserConfig.getIns().user = value.userInfo;
-              Global.user.setUser(value.userInfo);
-
-              return BossApi.ins()
-                  .obtainAllBoss(DataConfig.getIns().updateTime);
-            }).listen((event) {
-              if (!event.isNullOrEmpty()) {
-                BossDbProvider.getIns()
-                    .updateListByBean(event)
-                    .then((value) => countTime(false));
-              } else {
-                countTime(false);
-              }
-            });
-          } else {
-            String tempId = DataConfig.getIns().tempId;
-            UserApi.ins().obtainTempLogin(tempId).flatMap((value) {
-              DataConfig.getIns().setTempId = tempId;
-              UserConfig.getIns().token = value.token;
-              UserConfig.getIns().user = value.userInfo;
-              Global.user.setUser(value.userInfo);
-
-              return BossApi.ins()
-                  .obtainAllBoss(DataConfig.getIns().updateTime);
-            }).listen((event) {
-              if (!event.isNullOrEmpty()) {
-                BossDbProvider.getIns()
-                    .updateListByBean(event)
-                    .then((value) => countTime(false));
-              } else {
-                countTime(false);
-              }
-            });
-          }
+          countTime(false);
         }
       });
     });
