@@ -7,7 +7,6 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -76,37 +75,11 @@ class _SplashPageState extends State<SplashPage> {
         bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
         if (firstUseApp) {
-          String tempId = DataConfig.getIns().tempId;
-          UserApi.ins().obtainTempLogin(tempId).flatMap((value) {
-            DataConfig.getIns().setTempId = tempId;
-            UserConfig.getIns().token = value.token;
-            UserConfig.getIns().user = value.userInfo;
-            Global.user.setUser(value.userInfo);
-
-            return BossApi.ins().obtainGuideBoss();
-          }).listen((event) {
-            countTime(firstUseApp, list: event.records);
+          BossApi.ins().obtainGuideBoss().listen((event) {
+            countTime(true, list: event.records);
           });
         } else {
-          bool loginStatus = UserConfig.getIns().loginStatus;
-
-          if (loginStatus) {
-            UserApi.ins().obtainRefreshUser().listen((event) {
-              UserConfig.getIns().token = event.token;
-              UserConfig.getIns().user = event.userInfo;
-              Global.user.setUser(event.userInfo);
-            });
-          } else {
-            String tempId = DataConfig.getIns().tempId;
-            UserApi.ins().obtainTempLogin(tempId).listen((event) {
-              DataConfig.getIns().setTempId = tempId;
-              UserConfig.getIns().token = event.token;
-              UserConfig.getIns().user = event.userInfo;
-              Global.user.setUser(event.userInfo);
-            });
-          }
-
-          countTime(firstUseApp);
+          countTime(false);
         }
       });
     });

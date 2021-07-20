@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter_boss_says/config/base_data.dart';
 import 'package:flutter_boss_says/config/base_page.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BaseApi {
@@ -50,6 +52,18 @@ class BaseApi {
     dio.interceptors.add(HttpInterceptor());
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
     return dio;
+  }
+
+  Observable<T> autoToken<T>(Observable<T> call()) {
+    return Observable.retryWhen(() => call(), (e, s) {
+      if (e.runtimeType == TempUserMiss) {
+        return BaseApi.globalToken.doOnData((event) {
+          UserConfig.getIns().token = event;
+        });
+      } else {
+        return Observable.error(e);
+      }
+    });
   }
 
   /// 发起Get请求
@@ -188,6 +202,16 @@ class BaseApi {
   static Observable<String> globalSign =
       ins.refreshSign().shareReplay(maxSize: 1);
 
+
+  static Observable<String> globalToken = Observable.defer(() {
+    var tempId = DataConfig.getIns().tempId;
+
+    return UserApi.ins().obtainTempLogin(tempId).map((event) {
+      DataConfig.getIns().setTempId = tempId;
+      return event.token;
+    });
+  }).shareReplay(maxSize: 1);
+
   /// 刷新文件签名
   Observable<String> refreshSign() => post<String>("/api/file/sign").rebase();
 }
@@ -235,55 +259,45 @@ class EmptyMiss extends BaseMiss {
 extension ObservableData<T> on Observable<BaseData<T>> {
   /// 转换接口调用成功后的数据
   Observable<T> rebase() {
-    return this
-        .map((event) {
-          if (event.success) {
-            return event.data;
-          }
+    return this.map((event) {
+      if (event.success) {
+        return event.data;
+      }
 
-          throw _resolveError(event);
-        })
-        .delay(Duration(milliseconds: 100))
-        .autoToken();
+      throw _resolveError(event);
+    }).delay(Duration(milliseconds: 100));
   }
 
   /// 判断接口是否调用成功, 成功这返回true, 否则抛出异常
   Observable<bool> success() {
-    return this
-        .map((event) {
-          if (event.success) {
-            return true;
-          }
+    return this.map((event) {
+      if (event.success) {
+        return true;
+      }
 
-          throw _resolveError(event);
-        })
-        .delay(Duration(milliseconds: 100))
-        .autoToken();
+      throw _resolveError(event);
+    }).delay(Duration(milliseconds: 100));
   }
 }
 
 extension ObservablePage<T> on Observable<BasePage<T>> {
   /// 转换接口调用成功后的数据
   Observable<Page<T>> rebase({PageParam pageParam}) {
-    return this
-        .map((event) {
-          if (event.success) {
-            if (pageParam != null) {
-              if (event.data is Page) {
-                final page = event.data;
+    return this.map((event) {
+      if (event.success) {
+        if (pageParam != null) {
+          if (event.data is Page) {
+            final page = event.data;
 
-                /// 自动驱动到下一页
-                pageParam.next(page.current);
-              }
-            }
-
-            return event.data;
+            /// 自动驱动到下一页
+            pageParam.next(page.current);
           }
+        }
+        return event.data;
+      }
 
-          throw _resolveError(event);
-        })
-        .delay(Duration(milliseconds: 100))
-        .autoToken();
+      throw _resolveError(event);
+    }).delay(Duration(milliseconds: 100));
   }
 }
 
@@ -293,7 +307,7 @@ extension ObservableEx<T> on Observable<T> {
     int errorCount = 0;
     return Observable.retryWhen(() => this, (e, s) {
       if (e.runtimeType != SignMiss || errorCount++ > 2) {
-        throw e;
+        return Observable.error(e);
       }
       return BaseApi.globalSign.doOnData((event) {
         UserConfig.getIns().sign = event;
@@ -306,33 +320,14 @@ extension ObservableEx<T> on Observable<T> {
     Observable<T> source = this;
 
     return Observable.retryWhen(() => source, (e, s) {
-      if (e.runtimeType == UserMiss || e.runtimeType == TempUserMiss) {
-        return AutoTokenEvent.ins().mErrorSource;
+      if (e.runtimeType == TempUserMiss) {
+        return BaseApi.globalToken.doOnData((event) {
+          UserConfig.getIns().token = event;
+        });
+      } else {
+        return Observable.error(e);
       }
-      throw e;
     });
-  }
-}
-
-class AutoTokenEvent {
-  static AutoTokenEvent mIns;
-
-  Observable<dynamic> mErrorSource;
-
-  AutoTokenEvent._() {
-    mErrorSource = Observable.timer(1, Duration(milliseconds: 500))
-        .doOnData((event) {
-          print(event);
-        })
-        .publishReplay(maxSize: 1)
-        .refCount();
-  }
-
-  factory AutoTokenEvent.ins() {
-    if (mIns == null) {
-      mIns = AutoTokenEvent._();
-    }
-    return mIns;
   }
 }
 

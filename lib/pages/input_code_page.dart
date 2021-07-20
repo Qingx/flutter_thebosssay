@@ -89,10 +89,12 @@ class _InputCodePageState extends State<InputCodePage> {
   void trySendCode() {
     BaseWidget.showLoadingAlert("正在发送验证码...", context);
     UserApi.ins().obtainSendCode(phoneNumber, 2).listen((event) {
+      Get.back();
       rnd = event;
       countDown();
       setState(() {});
     }, onError: (res) {
+      Get.back();
       print(res.msg);
       BaseTool.toast(msg: "发送失败，${res.msg}");
     });
