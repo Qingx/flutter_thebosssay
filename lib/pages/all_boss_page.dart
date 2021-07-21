@@ -32,7 +32,6 @@ class AllBossPage extends StatefulWidget {
 }
 
 class _AllBossPageState extends State<AllBossPage> with BasePageController {
-  String hintText;
   TextEditingController editingController;
 
   var builderFuture;
@@ -63,8 +62,6 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   @override
   void initState() {
     super.initState();
-    hintText = "大家都在搜莉莉娅";
-
     eventBus();
 
     editingController = TextEditingController();
@@ -77,7 +74,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
     pageParam?.reset();
-    mCurrentTab =labels[0].id;
+    mCurrentTab = labels[0].id;
     return BossApi.ins()
         .obtainAllBossList(pageParam, mCurrentTab)
         .doOnData((event) {
@@ -237,38 +234,39 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
             Get.back();
           }),
           Expanded(
-            child: TextField(
-              controller: editingController,
-              cursorColor: BaseColor.accent,
-              maxLines: 1,
-              textAlign: TextAlign.start,
-              autofocus: false,
-              style: TextStyle(fontSize: 16, color: BaseColor.textDark),
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: TextStyle(fontSize: 16, color: BaseColor.textGray),
-                fillColor: BaseColor.loadBg,
-                filled: true,
-                isCollapsed: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
-                ),
-                suffixIcon: Icon(
-                  Icons.clear,
-                  size: 24,
-                  color: BaseColor.textDark,
-                ).onClick(onEditCleared),
-                prefixIcon: Icon(
-                  Icons.search,
-                  size: 24,
-                  color: BaseColor.textDark,
-                ),
-                border: InputBorder.none,
-              ),
-              onChanged: onEditChanged,
-              onSubmitted: onEditSubmitted,
-            ).marginOn(left: 20),
+            child: Obx(() => TextField(
+                  controller: editingController,
+                  cursorColor: BaseColor.accent,
+                  maxLines: 1,
+                  textAlign: TextAlign.start,
+                  autofocus: false,
+                  style: TextStyle(fontSize: 16, color: BaseColor.textDark),
+                  decoration: InputDecoration(
+                    hintText: Global.hint.hint.value,
+                    hintStyle:
+                        TextStyle(fontSize: 16, color: BaseColor.textGray),
+                    fillColor: BaseColor.loadBg,
+                    filled: true,
+                    isCollapsed: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    suffixIcon: Icon(
+                      Icons.clear,
+                      size: 24,
+                      color: BaseColor.textDark,
+                    ).onClick(onEditCleared),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      size: 24,
+                      color: BaseColor.textDark,
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: onEditChanged,
+                  onSubmitted: onEditSubmitted,
+                )).marginOn(left: 20),
           ),
         ],
       ),

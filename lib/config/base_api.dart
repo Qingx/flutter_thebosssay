@@ -59,8 +59,12 @@ class BaseApi {
     var count = 0;
     return Observable.retryWhen(() => call(), (e, s) {
       print(e.toString());
-      if (count++ < 2 && e.runtimeType == TempUserMiss) {
+      if (e.runtimeType == TempUserMiss && count++ < 2) {
         return BaseApi.globalToken.doOnData((event) {
+          UserConfig.getIns().token = event;
+        });
+      } else if (e.runtimeType == UserMiss && count++ < 2) {
+        return BaseApi.globalRefresh.doOnData((event) {
           UserConfig.getIns().token = event;
         });
       } else {
@@ -97,7 +101,6 @@ class BaseApi {
       }
 
       BaseData<T> data = json2WLData<T>(response.data);
-
       return data;
     } catch (error) {
       print(error);
@@ -213,6 +216,17 @@ class BaseApi {
       UserConfig.getIns().user = event.userInfo;
       UserConfig.getIns().token = event.token;
       Global.user.setUser(event.userInfo);
+
+      return event.token;
+    });
+  }).shareReplay(maxSize: 1);
+
+  static Observable<String> globalRefresh = Observable.defer(() {
+    return UserApi.ins().obtainRefreshUser().map((event) {
+      UserConfig.getIns().user = event.userInfo;
+      UserConfig.getIns().token = event.token;
+      Global.user.setUser(event.userInfo);
+
       return event.token;
     });
   }).shareReplay(maxSize: 1);

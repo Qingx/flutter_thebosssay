@@ -119,6 +119,7 @@ class _GuidePageState extends State<GuidePage> {
 
       BaseTool.toast(msg: "追踪成功");
       DataConfig.getIns().firstUseApp = "false";
+      DataConfig.getIns().setUpdateTime = DateTime.now().millisecondsSinceEpoch;
       Get.off(() => HomePage());
     }, onError: (res) {
       Get.back();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
@@ -20,7 +21,6 @@ class SearchArticlePage extends StatefulWidget {
 
 class _SearchArticlePageState extends State<SearchArticlePage>
     with BasePageController<ArticleEntity> {
-  String hintText;
   String searchText;
 
   var builderFuture;
@@ -42,7 +42,6 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   @override
   void initState() {
     super.initState();
-    hintText = "大家都在搜莉莉娅";
     searchText = "";
 
     editingController = TextEditingController();
@@ -145,37 +144,39 @@ class _SearchArticlePageState extends State<SearchArticlePage>
             Get.back();
           }),
           Expanded(
-            child: TextField(
-              controller: editingController,
-              cursorColor: BaseColor.accent,
-              maxLines: 1,
-              textAlign: TextAlign.start,
-              autofocus: false,
-              style: TextStyle(fontSize: 16, color: BaseColor.textDark),
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: TextStyle(fontSize: 16, color: BaseColor.textGray),
-                fillColor: BaseColor.loadBg,
-                filled: true,
-                isCollapsed: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 8,
+            child: Obx(
+              () => TextField(
+                controller: editingController,
+                cursorColor: BaseColor.accent,
+                maxLines: 1,
+                textAlign: TextAlign.start,
+                autofocus: false,
+                style: TextStyle(fontSize: 16, color: BaseColor.textDark),
+                decoration: InputDecoration(
+                  hintText: Global.hint.hint.value,
+                  hintStyle: TextStyle(fontSize: 16, color: BaseColor.textGray),
+                  fillColor: BaseColor.loadBg,
+                  filled: true,
+                  isCollapsed: true,
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
+                  suffixIcon: Icon(
+                    Icons.clear,
+                    size: 24,
+                    color: BaseColor.textDark,
+                  ).onClick(onEditCleared),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    size: 24,
+                    color: BaseColor.textDark,
+                  ),
+                  border: InputBorder.none,
                 ),
-                suffixIcon: Icon(
-                  Icons.clear,
-                  size: 24,
-                  color: BaseColor.textDark,
-                ).onClick(onEditCleared),
-                prefixIcon: Icon(
-                  Icons.search,
-                  size: 24,
-                  color: BaseColor.textDark,
-                ),
-                border: InputBorder.none,
+                onChanged: onEditChanged,
+                onSubmitted: onEditSubmitted,
               ),
-              onChanged: onEditChanged,
-              onSubmitted: onEditSubmitted,
             ).marginOn(left: 20),
           ),
         ],

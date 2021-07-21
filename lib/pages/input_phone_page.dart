@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/input_code_page.dart';
+import 'package:flutter_boss_says/pages/service_privacy_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -19,15 +21,23 @@ class InputPhonePage extends StatefulWidget {
 class _InputPhonePageState extends State<InputPhonePage> {
   String phoneNumber = "";
   bool hasChecked = false;
+  TapGestureRecognizer serviceTap;
+  TapGestureRecognizer privacyTap;
 
   @override
   void initState() {
     super.initState();
+
+    serviceTap = TapGestureRecognizer();
+    privacyTap = TapGestureRecognizer();
   }
 
   @override
   void dispose() {
     super.dispose();
+
+    serviceTap?.dispose();
+    privacyTap?.dispose();
   }
 
   void onBack() {
@@ -37,6 +47,14 @@ class _InputPhonePageState extends State<InputPhonePage> {
   void onChanged(content) {
     phoneNumber = content;
     setState(() {});
+  }
+
+  void showService() {
+    Get.to(() => ServicePrivacyPage(), arguments: "0");
+  }
+
+  void showPrivacy() {
+    Get.to(() => ServicePrivacyPage(), arguments: "1");
   }
 
   void trySendCode() {
@@ -126,20 +144,20 @@ class _InputPhonePageState extends State<InputPhonePage> {
                       style: TextStyle(color: BaseColor.textGray, fontSize: 12),
                       children: [
                         TextSpan(
-                          text: "《服务条款》",
-                          style:
-                              TextStyle(color: BaseColor.accent, fontSize: 12),
-                        ),
+                            text: "《服务条款》",
+                            style: TextStyle(
+                                color: BaseColor.accent, fontSize: 12),
+                            recognizer: serviceTap..onTap = showService),
                         TextSpan(
                           text: "和",
                           style:
                               TextStyle(color: BaseColor.accent, fontSize: 12),
                         ),
                         TextSpan(
-                          text: "《隐私政策》",
-                          style:
-                              TextStyle(color: BaseColor.accent, fontSize: 12),
-                        ),
+                            text: "《隐私政策》",
+                            style: TextStyle(
+                                color: BaseColor.accent, fontSize: 12),
+                            recognizer: privacyTap..onTap = showPrivacy),
                       ],
                     ),
                   ),

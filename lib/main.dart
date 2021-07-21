@@ -38,8 +38,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     BaseSP.init();
     Get.lazyPut(() => Global.user, tag: "user");
+    Get.lazyPut(() => Global.hint, tag: "hint");
 
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(backgroundColor: Colors.white),
       home: SplashPage(),
     );

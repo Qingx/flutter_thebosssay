@@ -59,6 +59,8 @@ class _HomePageState extends State<HomePage> {
     eventBus();
 
     onJPushCallback();
+
+    doRefreshUser();
   }
 
   ///eventBus
@@ -85,6 +87,11 @@ class _HomePageState extends State<HomePage> {
       UserConfig.getIns().token = event.token;
       UserConfig.getIns().user = event.userInfo;
       Global.user.setUser(event.userInfo);
+
+      ///极光推送设置别名
+      Global.jPush.setAlias(event.userInfo.id).then((value) {
+        print("jPush.setAlias:$value");
+      });
     });
   }
 
@@ -94,10 +101,11 @@ class _HomePageState extends State<HomePage> {
       onReceiveMessage: (msg) async {
         //消息回调
         print('message:$msg');
+        Global.hint.setHint(msg["content"]);
         setState(() {});
       },
       onReceiveNotification: (msg) async {
-        //自定义通知
+        //通知回调
         print('notification:$msg');
         setState(() {});
       },

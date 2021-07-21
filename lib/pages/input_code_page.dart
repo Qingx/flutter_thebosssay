@@ -46,6 +46,11 @@ class _InputCodePageState extends State<InputCodePage> {
         UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);
 
+        ///极光推送设置别名
+        Global.jPush.setAlias(event.userInfo.id).then((value) {
+          print("jPush.setAlias:$value");
+        });
+
         BaseTool.toast(msg: "登录成功");
         Get.offAll(() => HomePage());
       }, onError: (res) {

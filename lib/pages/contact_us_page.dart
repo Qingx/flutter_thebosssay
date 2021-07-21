@@ -102,7 +102,7 @@ class ContactUsPage extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              "xxxxxxx@.com",
+                              "cd1369@1369net.com",
                               style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.white,

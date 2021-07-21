@@ -57,17 +57,10 @@ class BossApi extends BaseApi {
   ///获取追踪 最近更新文章
   Observable<Page<ArticleEntity>> obtainFollowArticle(PageParam pageParam) {
     final param = pageParam.toParam();
-    var isB = true;
     return autoToken(() =>
         postPage<ArticleEntity>("/api/article/recommend", requestBody: param)
             .rebase(pageParam: pageParam)
             .map((value) {
-          // isB = !isB;
-          // if (isB) {
-          //   return value;
-          // } else {
-          //   throw new TempUserMiss();
-          // }
           return value;
         }));
   }
