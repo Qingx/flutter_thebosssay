@@ -13,7 +13,11 @@ class BasePage<T> extends DataSource {
     msg = json['msg'].toString();
     timestamps = json['timestamps'];
     status = int.parse(json['status']);
-    data = Page.fromJson(json['data']);
+
+    var temp = json['data'];
+    if (temp != null) {
+      data = Page.fromJson(temp);
+    }
   }
 
   Map<String, dynamic> toJson() {

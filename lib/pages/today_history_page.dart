@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
@@ -7,8 +9,10 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -37,6 +41,18 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
 
   int numbers = Global.user.user.value.readNum;
 
+  StreamSubscription<BaseEvent> eventDispose;
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    controller?.dispose();
+    scrollController?.dispose();
+
+    eventDispose?.cancel();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -45,14 +61,8 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
     controller = EasyRefreshController();
 
     builderFuture = loadInitData();
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
-
-    controller?.dispose();
-    scrollController?.dispose();
+    eventBus();
   }
 
   Future<WlPage.Page<HistoryEntity>> loadInitData() {
@@ -83,6 +93,14 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       } else {
         controller.resetLoadState();
         controller.finishRefresh();
+      }
+    });
+  }
+
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      if (event.obj == RefreshCollectEvent) {
+        // controller.callRefresh();
       }
     });
   }
@@ -175,7 +193,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       if (snapshot.hasData) {
         return contentWidget();
       } else
-        return  BaseWidget.errorWidget(() {
+        return BaseWidget.errorWidget(() {
           builderFuture = loadInitData();
           setState(() {});
         });
@@ -309,7 +327,8 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.articleId};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 

@@ -11,6 +11,7 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
+import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
@@ -108,8 +109,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   @override
   void dispose() {
     super.dispose();
+
     scrollController?.dispose();
     controller?.dispose();
+
     eventDispose?.cancel();
   }
 
@@ -134,6 +137,11 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
           entity = event;
           setState(() {});
         });
+      }
+
+      ///添加收藏文章后刷新
+      if (event.obj == RefreshCollectEvent) {
+        // controller?.callRefresh();
       }
     });
   }

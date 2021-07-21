@@ -137,4 +137,9 @@ class UserApi extends BaseApi {
   Observable<bool> obtainDeleteHistory(String id) {
     return autoToken(() => get<bool>("/api/article/del-read/$id").success());
   }
+
+  ///阅读文章
+  Observable<bool> obtainReadArticle(String id) {
+    return autoToken(() => get<bool>("/api/article/read/$id").success());
+  }
 }

@@ -8,9 +8,9 @@ import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
-import 'package:flutter_boss_says/event/refresh_user_event.dart';
-import 'package:flutter_boss_says/test/page/follow_content_page.dart';
+import 'package:flutter_boss_says/pages/follow_content_page.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -19,19 +19,20 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import '../../r.dart';
+import '../r.dart';
 
-class TestFollowPage extends StatefulWidget {
-  const TestFollowPage({Key key}) : super(key: key);
+class FollowPage extends StatefulWidget {
+  const FollowPage({Key key}) : super(key: key);
 
   @override
-  _TestFollowPageState createState() => _TestFollowPageState();
+  _FollowPageState createState() => _FollowPageState();
 }
 
-class _TestFollowPageState extends State<TestFollowPage>
+class _FollowPageState extends State<FollowPage>
     with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
   int mCurrentIndex;
   PageController mPageController;
+
   ScrollController scrollController;
   EasyRefreshController controller;
 
@@ -111,6 +112,9 @@ class _TestFollowPageState extends State<TestFollowPage>
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
       if (event.obj == RefreshFollowEvent) {
         controller.callRefresh();
+      }
+      if (event.obj == RefreshCollectEvent) {
+        // controller.callRefresh();
       }
     });
   }

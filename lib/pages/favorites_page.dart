@@ -49,6 +49,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
     controller?.dispose();
     scrollController?.dispose();
+
     eventDispose?.cancel();
   }
 
@@ -66,9 +67,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   void eventBus() {
     eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      ///刷新userInfo
       if (event.obj == RefreshCollectEvent) {
-        loadData();
+        controller?.callRefresh();
       }
     });
   }
@@ -464,7 +464,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.id};
+      Get.to(() => ArticlePage(entity: entity), arguments: data);
     });
   }
 

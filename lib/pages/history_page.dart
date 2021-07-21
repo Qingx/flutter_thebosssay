@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/pages/article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -30,12 +35,16 @@ class _HistoryPageState extends State<HistoryPage>
   EasyRefreshController controller;
   bool hasData = false;
 
+  StreamSubscription<BaseEvent> eventDispose;
+
   @override
   void dispose() {
     super.dispose();
 
     controller?.dispose();
     scrollController?.dispose();
+
+    eventDispose?.cancel();
   }
 
   @override
@@ -46,6 +55,16 @@ class _HistoryPageState extends State<HistoryPage>
     controller = EasyRefreshController();
 
     builderFuture = loadInitData();
+
+    eventBus();
+  }
+
+  void eventBus() {
+    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
+      if (event.obj == RefreshCollectEvent) {
+        // controller?.callRefresh();
+      }
+    });
   }
 
   Future<WlPage.Page<HistoryEntity>> loadInitData() {
@@ -290,8 +309,8 @@ class _HistoryPageState extends State<HistoryPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
-
+      var data = {"articleId": entity.articleId};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 

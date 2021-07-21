@@ -7,6 +7,7 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
+import 'package:flutter_boss_says/pages/article_page.dart';
 import 'package:flutter_boss_says/pages/boss_page.dart';
 import 'package:flutter_boss_says/pages/mine_page.dart';
 import 'package:flutter_boss_says/pages/talk_page.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -29,11 +31,13 @@ class _HomePageState extends State<HomePage> {
   List<Widget> mPages;
 
   PageController mPageController;
+
   StreamSubscription<BaseEvent> eventDispose;
 
   @override
   void dispose() {
     super.dispose();
+    mPageController?.dispose();
 
     eventDispose?.cancel();
   }
@@ -52,9 +56,9 @@ class _HomePageState extends State<HomePage> {
 
     mPageController = PageController();
 
-    doRefreshUser();
-
     eventBus();
+
+    onJPushCallback();
   }
 
   ///eventBus
@@ -82,6 +86,31 @@ class _HomePageState extends State<HomePage> {
       UserConfig.getIns().user = event.userInfo;
       Global.user.setUser(event.userInfo);
     });
+  }
+
+  void onJPushCallback() {
+    ///极光推送回调
+    Global.jPush.addEventHandler(
+      onReceiveMessage: (msg) async {
+        //消息回调
+        print('message:$msg');
+        setState(() {});
+      },
+      onReceiveNotification: (msg) async {
+        //自定义通知
+        print('notification:$msg');
+        setState(() {});
+      },
+      onOpenNotification: (Map<String, dynamic> message) async {
+        //点击通知
+        print("onOpenNotification:$message");
+
+        if (message["extras"]["articleId"] != null) {
+          var data = {"articleId": message["extras"]["articleId"]};
+          Get.to(() => ArticlePage(), arguments: data);
+        }
+      },
+    );
   }
 
   @override

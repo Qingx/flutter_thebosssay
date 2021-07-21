@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
@@ -15,41 +17,78 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/html_parser.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
 
 import 'input_phone_page.dart';
 
 class ArticlePage extends StatefulWidget {
-  const ArticlePage({Key key}) : super(key: key);
+  ArticleEntity entity;
+
+  ArticlePage({Key key, this.entity}) : super(key: key);
 
   @override
   _ArticlePageState createState() => _ArticlePageState();
 }
 
-class _ArticlePageState extends State<ArticlePage> {
-  bool hasCollect;
-
+class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   ScrollController scrollController;
 
+  Map<String, dynamic> map;
   ArticleEntity mData;
+  String articleId;
+  bool hasCollect = false;
+
+  var builderFuture;
 
   @override
   void initState() {
     super.initState();
 
-    mData = Get.arguments as ArticleEntity;
-    hasCollect = mData.isCollect;
+    WidgetsBinding.instance.addObserver(this);
+
+    map = Get.arguments as Map<String, dynamic>;
+    articleId = map["articleId"];
+
+    builderFuture = loadInitData();
 
     scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      doReadArticle();
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
 
     scrollController?.dispose();
+  }
+
+  ///初始化数据
+  Future<ArticleEntity> loadInitData() {
+    if (widget.entity == null) {
+      return BossApi.ins().obtainArticleDetail(articleId).doOnData((event) {
+        mData = event;
+        hasCollect = mData.isCollect;
+
+        setState(() {});
+      }).last;
+    } else {
+      return Observable<ArticleEntity>.just(widget.entity).doOnData((event) {
+        mData = event;
+        hasCollect = mData.isCollect;
+        setState(() {});
+      }).last;
+    }
+  }
+
+  ///阅读文章
+  void doReadArticle() {
+    UserApi.ins().obtainReadArticle(articleId).listen((event) {});
   }
 
   void onShare() {
@@ -207,17 +246,38 @@ class _ArticlePageState extends State<ArticlePage> {
               ),
             ),
             Expanded(
-              child: Stack(
-                children: [
-                  contentWidget()
-                      .positionOn(top: 0, bottom: 0, left: 0, right: 0),
-                  floatWidget().positionOn(bottom: 64, right: 16),
-                ],
-              ),
+              child: futureWidget(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget futureWidget() {
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<ArticleEntity> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            return Stack(
+              children: [
+                contentWidget()
+                    .positionOn(top: 0, bottom: 0, left: 0, right: 0),
+                floatWidget().positionOn(
+                    bottom: MediaQuery.of(context).padding.bottom + 64,
+                    right: 16),
+              ],
+            );
+          } else
+            return BaseWidget.errorWidget(() {
+              loadInitData();
+              setState(() {});
+            });
+        } else {
+          return BaseWidget.loadingWidget();
+        }
+      },
+      future: builderFuture,
     );
   }
 
@@ -283,7 +343,6 @@ class _ArticlePageState extends State<ArticlePage> {
   }
 
   Widget bossWidget() {
-    bool hasFollow = mData.bossVO.isCollect;
     return Container(
       height: 64,
       child: Row(

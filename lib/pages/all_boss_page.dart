@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
@@ -38,6 +39,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   ScrollController scrollController;
   EasyRefreshController controller;
   bool hasData = false;
+  List<BossLabelEntity> labels = DataConfig.getIns().bossLabels;
 
   String mCurrentTab;
 
@@ -75,7 +77,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
     pageParam?.reset();
-    mCurrentTab = Global.labelList[0].id;
+    mCurrentTab =labels[0].id;
     return BossApi.ins()
         .obtainAllBossList(pageParam, mCurrentTab)
         .doOnData((event) {
@@ -328,13 +330,13 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
         context: context,
         child: ListView.builder(
           itemBuilder: (context, index) {
-            return typeItemWidget(Global.labelList[index], index).onClick(() {
-              mCurrentTab = Global.labelList[index].id;
+            return typeItemWidget(labels[index], index).onClick(() {
+              mCurrentTab = labels[index].id;
               controller.callRefresh();
               setState(() {});
             });
           },
-          itemCount: Global.labelList.length,
+          itemCount: labels.length,
         ),
       ),
     );

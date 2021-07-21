@@ -71,6 +71,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    //极光申请推送权限
+    Global.jPush.applyPushAuthority();
 
     DataConfig.getIns().doAfterCreated((sp) {
       UserConfig.getIns().doAfterCreated((sp) {
@@ -108,6 +110,11 @@ class _SplashPageState extends State<SplashPage> {
             countTime(false);
           });
         }
+
+        ///极光推送设置别名
+        Global.jPush.setAlias(UserConfig.getIns().user.id).then((value) {
+          print("jPush.setAlias:$value");
+        });
       });
     });
   }

@@ -8,6 +8,27 @@ void main() {
   runApp(MyApp());
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  registerJiGuang();
+}
+
+///注册极光推送
+void registerJiGuang() {
+  Global.jPush.setup(
+      appKey: "f98cfa8459c6510944ebbefd",
+      channel: "developer-default",
+      production: false,
+      debug: false);
+
+  ///极光推送注册成功回调id
+  Global.jPush.getRegistrationID().then((value) {
+    print('registerJPush:$value');
+  });
+
+  ///极光推送通知权限回调
+  Global.jPush.isNotificationEnabled().then((value) {
+    print("isJPushOpen:$value");
+  });
 }
 
 class MyApp extends StatelessWidget {

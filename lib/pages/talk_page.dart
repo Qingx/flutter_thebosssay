@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/test/page/test_follow_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -37,7 +37,7 @@ class _TalkPageState extends State<TalkPage>
 
     mCurrentIndex = 0;
     mTitles = ["追踪", "广场"];
-    mPages = [TestFollowPage(), SquarePage()];
+    mPages = [FollowPage(), SquarePage()];
     mPageController = PageController();
   }
 

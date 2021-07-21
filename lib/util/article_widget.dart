@@ -115,7 +115,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.id};
+      Get.to(() => ArticlePage(entity: entity), arguments: data);
     });
   }
 
@@ -257,7 +258,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.id};
+      Get.to(() => ArticlePage(entity: entity), arguments: data);
     });
   }
 
@@ -316,7 +318,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.id};
+      Get.to(() => ArticlePage(entity: entity), arguments: data);
     });
   }
 
@@ -417,7 +420,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.id};
+      Get.to(() => ArticlePage(entity: entity), arguments: data);
     });
   }
 
@@ -490,7 +494,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity);
+      var data = {"articleId": entity.id};
+      Get.to(() => ArticlePage(entity: entity), arguments: data);
     });
   }
 }

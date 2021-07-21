@@ -93,4 +93,15 @@ class ArticleDbProvider extends BaseDbProvider {
   void insertListByBean(List<ArticleEntity> list) async {
     List.generate(list.length, (index) => insertByBean(list[index]));
   }
+
+  ///查询全部列表对象
+  Future<List<ArticleEntity>> getAllArticle() async {
+    Database db = await getDataBase();
+
+    List<Map<String, dynamic>> maps = await db.query(name);
+    if (!maps.isNullOrEmpty()) {
+      return maps.map((e) => ArticleEntity().toBean(e)).toList();
+    }
+    return null;
+  }
 }

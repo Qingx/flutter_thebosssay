@@ -56,8 +56,10 @@ class BaseApi {
   }
 
   Observable<T> autoToken<T>(Observable<T> call()) {
+    var count = 0;
     return Observable.retryWhen(() => call(), (e, s) {
-      if (e.runtimeType == TempUserMiss) {
+      print(e.toString());
+      if (count++ < 2 && e.runtimeType == TempUserMiss) {
         return BaseApi.globalToken.doOnData((event) {
           UserConfig.getIns().token = event;
         });
