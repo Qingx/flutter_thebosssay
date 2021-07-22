@@ -15,6 +15,7 @@ import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
@@ -186,9 +187,13 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     ).onClick(() {
-      mCurrentIndex = index;
-      mPageController.jumpToPage(mCurrentIndex);
-      setState(() {});
+      if (Global.hint.canUse.value) {
+        mCurrentIndex = index;
+        mPageController.jumpToPage(mCurrentIndex);
+        setState(() {});
+      } else {
+        BaseTool.toast(msg: "应用出错了");
+      }
     });
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
@@ -86,9 +87,11 @@ class _TalkPageState extends State<TalkPage>
           fontSize: fontSize, color: fontColor, fontWeight: FontWeight.bold),
       textAlign: TextAlign.start,
     ).onClick(() {
-      mCurrentIndex = index;
-      mPageController.jumpToPage(index);
-      setState(() {});
+      if (Global.hint.canUse.value) {
+        mCurrentIndex = index;
+        mPageController.jumpToPage(index);
+        setState(() {});
+      }
     });
   }
 
@@ -108,6 +111,8 @@ class _TalkPageState extends State<TalkPage>
   }
 
   void onSearchClick() {
-    Get.to(() => SearchArticlePage());
+    if (Global.hint.canUse.value) {
+      Get.to(() => SearchArticlePage());
+    }
   }
 }

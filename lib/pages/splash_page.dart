@@ -56,38 +56,30 @@ class _SplashPageState extends State<SplashPage> {
 
         bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
-        if (firstUseApp) {
-          BossApi.ins().obtainBossLabels().flatMap((value) {
-            value = [BaseEmpty.emptyLabel, ...value];
-            DataConfig.getIns().setBossLabels = value;
+        BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+          value = [BaseEmpty.emptyLabel, ...value];
+          DataConfig.getIns().setBossLabels = value;
 
-            return BossApi.ins().obtainAllBoss(DataConfig.getIns().updateTime);
-          }).listen((event) {
+          return BossApi.ins()
+              .obtainAllBoss(DataConfig.getIns().updateTime)
+              .onErrorReturn([]);
+        }).listen((event) {
+          if (!event.isNullOrEmpty()) {
             BossDbProvider.getIns().insertListByBean(event);
+          }
 
+          if (firstUseApp && !event.isNullOrEmpty()) {
             jumpPage(true,
                 list: event.where((element) => element.guide).toList());
-          },onError: (res){
-            jumpPage(false);
-          });
-        } else {
-          BossApi.ins()
-              .obtainAllBoss(DataConfig.getIns().updateTime)
-              .listen((event) {
+          } else {
             UserEntity entity = UserConfig.getIns().user;
             Global.user.setUser(entity);
 
-            if (!event.isNullOrEmpty()) {
-              BossDbProvider.getIns().updateListByBean(event);
-              DataConfig.getIns().setUpdateTime =
-                  DateTime.now().millisecondsSinceEpoch;
-            }
-
+            DataConfig.getIns().setUpdateTime =
+                DateTime.now().millisecondsSinceEpoch;
             jumpPage(false);
-          },onError:(res){
-            jumpPage(false);
-          });
-        }
+          }
+        });
       });
     });
   }
