@@ -67,6 +67,8 @@ class _SplashPageState extends State<SplashPage> {
 
             jumpPage(true,
                 list: event.where((element) => element.guide).toList());
+          },onError: (res){
+            jumpPage(false);
           });
         } else {
           BossApi.ins()
@@ -81,6 +83,8 @@ class _SplashPageState extends State<SplashPage> {
                   DateTime.now().millisecondsSinceEpoch;
             }
 
+            jumpPage(false);
+          },onError:(res){
             jumpPage(false);
           });
         }
