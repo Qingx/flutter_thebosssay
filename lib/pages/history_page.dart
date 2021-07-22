@@ -114,7 +114,7 @@ class _HistoryPageState extends State<HistoryPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BaseColor.pageBg,
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         child: Column(
           children: [

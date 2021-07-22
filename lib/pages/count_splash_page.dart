@@ -35,7 +35,7 @@ class _SplashPageState extends State<SplashPage> {
     Color timeBg = Color(0x4d000000);
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         alignment: Alignment.topRight,
         decoration: BoxDecoration(

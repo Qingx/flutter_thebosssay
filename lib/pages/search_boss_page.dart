@@ -111,7 +111,7 @@ class _SearchBossPageState extends State<SearchBossPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BaseColor.pageBg,
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         child: Column(
           children: [

@@ -125,7 +125,7 @@ class _InputCodePageState extends State<InputCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: BaseColor.pageBg,
       body: Container(
         child: Column(

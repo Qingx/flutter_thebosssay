@@ -69,7 +69,7 @@ class _ChangePhoneState extends State<ChangePhone> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BaseColor.pageBg,
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         child: Column(
           children: [

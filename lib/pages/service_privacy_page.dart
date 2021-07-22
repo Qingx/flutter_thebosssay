@@ -35,7 +35,7 @@ class _ServicePrivacyPageState extends State<ServicePrivacyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Container(
         child: Column(

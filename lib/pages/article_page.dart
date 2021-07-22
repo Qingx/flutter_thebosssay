@@ -206,7 +206,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: BaseColor.pageBg,
       body: Container(
         child: Column(

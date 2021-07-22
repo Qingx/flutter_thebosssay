@@ -205,7 +205,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: BaseColor.pageBg,
       body: Container(
         child: Column(

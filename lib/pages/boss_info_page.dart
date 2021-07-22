@@ -18,7 +18,7 @@ class BossInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: BaseColor.pageBg,
       body: Container(
         child: Stack(

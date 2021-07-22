@@ -131,7 +131,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: BaseColor.pageBg,
       body: Container(
         child: Column(

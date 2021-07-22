@@ -131,7 +131,7 @@ class _GuidePageState extends State<GuidePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         color: BaseColor.pageBg,
         child: Column(

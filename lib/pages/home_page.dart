@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
     print("loginStatus ===>> ${UserConfig.getIns().loginStatus}");
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: pageWidget(),
       bottomNavigationBar: bottomWidget(),
