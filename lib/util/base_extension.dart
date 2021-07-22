@@ -11,6 +11,10 @@ extension FunList on List {
   bool isNullOrEmpty() {
     return !(this != null && this.length > 0);
   }
+
+  bool isLabelEmpty() {
+    return !(this != null && this.length > 1);
+  }
 }
 
 extension StringList on List<String> {

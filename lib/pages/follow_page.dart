@@ -56,7 +56,7 @@ class _FollowPageState extends State<FollowPage>
   }
 
   Future<List<dynamic>> loadInitData() {
-    if (DataConfig.getIns().bossLabels.length <= 1) {
+    if (DataConfig.getIns().bossLabels.isLabelEmpty()) {
       return BossApi.ins()
           .obtainBossLabels()
           .onErrorReturn([]).doOnData((event) {
@@ -66,6 +66,9 @@ class _FollowPageState extends State<FollowPage>
         mPages = labels.map((e) => FollowContentPage(e.id)).toList();
       }).last;
     } else {
+      labels = DataConfig.getIns().bossLabels;
+      mPages = labels.map((e) => FollowContentPage(e.id)).toList();
+
       return Observable.just([0, 1, 2]).last;
     }
   }
@@ -81,7 +84,7 @@ class _FollowPageState extends State<FollowPage>
   Widget builderWidget(
       BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasData && snapshot.data.length > 2) {
+      if (snapshot.hasData && !labels.isLabelEmpty()) {
         Global.hint.setCanUse(true);
         return contentWidget();
       } else {
