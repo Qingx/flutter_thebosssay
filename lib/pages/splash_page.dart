@@ -66,6 +66,8 @@ class _SplashPageState extends State<SplashPage> {
         }).listen((event) {
           if (!event.isNullOrEmpty()) {
             BossDbProvider.getIns().insertListByBean(event);
+            DataConfig.getIns().setUpdateTime =
+                DateTime.now().millisecondsSinceEpoch;
           }
 
           if (firstUseApp && !event.isNullOrEmpty()) {
@@ -75,8 +77,6 @@ class _SplashPageState extends State<SplashPage> {
             UserEntity entity = UserConfig.getIns().user;
             Global.user.setUser(entity);
 
-            DataConfig.getIns().setUpdateTime =
-                DateTime.now().millisecondsSinceEpoch;
             jumpPage(false);
           }
         });

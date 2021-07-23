@@ -150,9 +150,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget bottomWidget() {
     return Container(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       color: Colors.white,
-      height: 84,
+      alignment: Alignment.topCenter,
+      height: 50 + MediaQuery.of(context).padding.bottom,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -170,7 +170,7 @@ class _HomePageState extends State<HomePage> {
     String mCurrentIcon = mIcons[index][mCurrentIndex == index ? 1 : 0];
 
     return Container(
-      height: 84 - MediaQuery.of(context).padding.bottom,
+      height: 50,
       color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.max,

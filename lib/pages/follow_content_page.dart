@@ -372,11 +372,16 @@ class _FollowContentPageState extends State<FollowContentPage>
   }
 
   Widget emptyBodyWidget() {
+    print(MediaQuery.of(context).padding.bottom);
+    print(MediaQuery.of(context).size.height);
+    print(MediaQuery.of(context).padding.top);
+
     String path = R.assetsImgEmptyBoss;
     String content = "最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
         392;
+
     return Container(
       height: height,
       child: Center(
