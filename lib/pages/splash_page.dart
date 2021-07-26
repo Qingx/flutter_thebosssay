@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
@@ -26,6 +28,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  StreamSubscription connectDis;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,8 +50,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    //极光申请推送权限
-    Global.jPush.applyPushAuthority();
 
     DataConfig.getIns().doAfterCreated((sp) {
       UserConfig.getIns().doAfterCreated((sp) {
@@ -60,15 +62,24 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void initData() {
-    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
-      value = [BaseEmpty.emptyLabel, ...value];
-      DataConfig.getIns().setBossLabels = value;
+    connectDis = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      print('ConnectivityResult：$result');
+      if (result != ConnectivityResult.none) {
+        BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+          value = [BaseEmpty.emptyLabel, ...value];
+          DataConfig.getIns().setBossLabels = value;
 
-      return BossApi.ins()
-          .obtainAllBoss(DataConfig.getIns().updateTime)
-          .onErrorReturn([]);
-    }).listen((event) {
-      onData(event);
+          return BossApi.ins()
+              .obtainAllBoss(DataConfig.getIns().updateTime)
+              .onErrorReturn([]);
+        }).listen((event) {
+          onData(event);
+        });
+      } else {
+        jumpPage(false);
+      }
     });
   }
 
@@ -93,6 +104,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void dispose() {
     super.dispose();
+
+    connectDis?.cancel();
   }
 
   void jumpPage(bool firstUse, {List<BossInfoEntity> list}) {
