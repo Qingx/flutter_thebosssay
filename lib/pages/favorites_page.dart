@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
-import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
@@ -92,10 +90,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
       });
 
       setState(() {});
+
+      controller.finishRefresh(success: true);
     }, onError: (res) {
-      print(res.msg);
-    }, onDone: () {
-      controller.finishRefresh();
+      controller.finishRefresh(success: false);
     });
   }
 

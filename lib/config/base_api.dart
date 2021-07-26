@@ -102,9 +102,13 @@ class BaseApi {
 
       BaseData<T> data = json2WLData<T>(response.data);
       return data;
-    } catch (error) {
+    } on DioError catch (error) {
       print(error);
-      return Future.error(BaseMiss());
+      if (error.message.startsWith("SocketException")) {
+        return Future.error(SocketMiss());
+      } else {
+        return Future.error(BaseMiss());
+      }
     }
   }
 
@@ -138,7 +142,12 @@ class BaseApi {
       BasePage<T> data = json2WLPage(response.data);
       return data;
     } on DioError catch (error) {
-      return Future.error(error);
+      print(error);
+      if (error.message.startsWith("SocketException")) {
+        return Future.error(SocketMiss());
+      } else {
+        return Future.error(BaseMiss());
+      }
     }
   }
 
@@ -258,6 +267,10 @@ class BaseMiss extends Error {
   String msg;
 
   BaseMiss({this.code = -1, this.msg = "服务异常, 请稍后再试"});
+}
+
+class SocketMiss extends BaseMiss {
+  SocketMiss() : super(code: -100, msg: "网络异常，请检查网络设置");
 }
 
 class TempUserMiss extends BaseMiss {

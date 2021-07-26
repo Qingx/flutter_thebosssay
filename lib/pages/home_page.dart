@@ -18,8 +18,6 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:talkingdata_appanalytics_plugin/talkingdata_appanalytics_plugin.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -73,7 +71,6 @@ class _HomePageState extends State<HomePage> {
     TalkingApi.ins().obtainDeviceId().listen((event) {
       print('TalkingData:deviceId：$event');
     });
-
   }
 
   ///eventBus

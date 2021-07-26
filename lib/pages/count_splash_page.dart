@@ -13,9 +13,9 @@ import 'package:flutter_boss_says/pages/guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key key}) : super(key: key);

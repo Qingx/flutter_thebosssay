@@ -54,34 +54,40 @@ class _SplashPageState extends State<SplashPage> {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
-
-        BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
-          value = [BaseEmpty.emptyLabel, ...value];
-          DataConfig.getIns().setBossLabels = value;
-
-          return BossApi.ins()
-              .obtainAllBoss(DataConfig.getIns().updateTime)
-              .onErrorReturn([]);
-        }).listen((event) {
-          if (!event.isNullOrEmpty()) {
-            BossDbProvider.getIns().insertListByBean(event);
-            DataConfig.getIns().setUpdateTime =
-                DateTime.now().millisecondsSinceEpoch;
-          }
-
-          if (firstUseApp && !event.isNullOrEmpty()) {
-            jumpPage(true,
-                list: event.where((element) => element.guide).toList());
-          } else {
-            UserEntity entity = UserConfig.getIns().user;
-            Global.user.setUser(entity);
-
-            jumpPage(false);
-          }
-        });
+        initData();
       });
     });
+  }
+
+  void initData() {
+    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      DataConfig.getIns().setBossLabels = value;
+
+      return BossApi.ins()
+          .obtainAllBoss(DataConfig.getIns().updateTime)
+          .onErrorReturn([]);
+    }).listen((event) {
+      onData(event);
+    });
+  }
+
+  void onData(List<BossInfoEntity> event) {
+    bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
+
+    if (!event.isNullOrEmpty()) {
+      BossDbProvider.getIns().insertListByBean(event);
+      DataConfig.getIns().setUpdateTime = DateTime.now().millisecondsSinceEpoch;
+    }
+
+    if (firstUseApp && !event.isNullOrEmpty()) {
+      jumpPage(true, list: event.where((element) => element.guide).toList());
+    } else {
+      UserEntity entity = UserConfig.getIns().user;
+      Global.user.setUser(entity);
+
+      jumpPage(false);
+    }
   }
 
   @override

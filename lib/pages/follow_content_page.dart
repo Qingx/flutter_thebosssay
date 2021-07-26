@@ -100,9 +100,10 @@ class _FollowContentPageState extends State<FollowContentPage>
         hasData = event.hasData;
         concat(event.records, loadMore);
         setState(() {});
-      }).onDone(() {
-        controller.resetLoadState();
-        controller.finishRefresh();
+
+        controller.finishRefresh(success: true);
+      }, onError: (res) {
+        controller.finishRefresh(success: false);
       });
     } else {
       BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
@@ -110,8 +111,10 @@ class _FollowContentPageState extends State<FollowContentPage>
         hasData = event.hasData;
         concat(event.records, loadMore);
         setState(() {});
-      }).onDone(() {
-        controller.finishLoad();
+
+        controller.finishLoad(success: true);
+      }, onError: (res, s) {
+        controller.finishLoad(success: false);
       });
     }
   }
