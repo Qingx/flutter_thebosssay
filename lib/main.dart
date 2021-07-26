@@ -27,7 +27,7 @@ void registerJiGuang() {
       production: false,
       debug: false);
 
-  //极光申请推送权限
+  ///极光申请推送权限
   Global.jPush.applyPushAuthority();
 
   ///极光推送注册成功回调id

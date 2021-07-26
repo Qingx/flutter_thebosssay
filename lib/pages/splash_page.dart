@@ -56,34 +56,49 @@ class _SplashPageState extends State<SplashPage> {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        initData();
+        initNetWork();
       });
     });
   }
 
-  void initData() {
-    connectDis = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      print('ConnectivityResult：$result');
-      if (result != ConnectivityResult.none) {
-        BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
-          value = [BaseEmpty.emptyLabel, ...value];
-          DataConfig.getIns().setBossLabels = value;
+  void initNetWork() {
+    bool firstInit = DataConfig.getIns().firstInitApp;
+    if (firstInit) {
+      connectDis = Connectivity()
+          .onConnectivityChanged
+          .listen((ConnectivityResult result) {
+        if (result != ConnectivityResult.none) {
+          initData();
+        } else {
+          jumpPage(false);
+        }
+        DataConfig.getIns().firstInitApp = false;
+      });
+    } else {
+      Connectivity().checkConnectivity().then((result) {
+        if (result != ConnectivityResult.none) {
+          initData();
+        } else {
+          jumpPage(false);
+        }
+      });
+    }
+  }
 
-          return BossApi.ins()
-              .obtainAllBoss(DataConfig.getIns().updateTime)
-              .onErrorReturn([]);
-        }).listen((event) {
-          onData(event);
-        });
-      } else {
-        jumpPage(false);
-      }
+  void initData() {
+    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      DataConfig.getIns().setBossLabels = value;
+
+      return BossApi.ins()
+          .obtainAllBoss(DataConfig.getIns().updateTime)
+          .onErrorReturn([]);
+    }).listen((event) {
+      doOnData(event);
     });
   }
 
-  void onData(List<BossInfoEntity> event) {
+  void doOnData(List<BossInfoEntity> event) {
     bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
     if (!event.isNullOrEmpty()) {
