@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
@@ -26,6 +28,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  StreamSubscription connectDis;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,16 +50,23 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    //极光申请推送权限
-    Global.jPush.applyPushAuthority();
 
     DataConfig.getIns().doAfterCreated((sp) {
       UserConfig.getIns().doAfterCreated((sp) {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
+        initData();
+      });
+    });
+  }
 
+  void initData() {
+    connectDis = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      print('ConnectivityResult：$result');
+      if (result != ConnectivityResult.none) {
         BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
           value = [BaseEmpty.emptyLabel, ...value];
           DataConfig.getIns().setBossLabels = value;
@@ -64,29 +75,37 @@ class _SplashPageState extends State<SplashPage> {
               .obtainAllBoss(DataConfig.getIns().updateTime)
               .onErrorReturn([]);
         }).listen((event) {
-          if (!event.isNullOrEmpty()) {
-            BossDbProvider.getIns().insertListByBean(event);
-          }
-
-          if (firstUseApp && !event.isNullOrEmpty()) {
-            jumpPage(true,
-                list: event.where((element) => element.guide).toList());
-          } else {
-            UserEntity entity = UserConfig.getIns().user;
-            Global.user.setUser(entity);
-
-            DataConfig.getIns().setUpdateTime =
-                DateTime.now().millisecondsSinceEpoch;
-            jumpPage(false);
-          }
+          onData(event);
         });
-      });
+      } else {
+        jumpPage(false);
+      }
     });
+  }
+
+  void onData(List<BossInfoEntity> event) {
+    bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
+
+    if (!event.isNullOrEmpty()) {
+      BossDbProvider.getIns().insertListByBean(event);
+      DataConfig.getIns().setUpdateTime = DateTime.now().millisecondsSinceEpoch;
+    }
+
+    if (firstUseApp && !event.isNullOrEmpty()) {
+      jumpPage(true, list: event.where((element) => element.guide).toList());
+    } else {
+      UserEntity entity = UserConfig.getIns().user;
+      Global.user.setUser(entity);
+
+      jumpPage(false);
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
+
+    connectDis?.cancel();
   }
 
   void jumpPage(bool firstUse, {List<BossInfoEntity> list}) {

@@ -7,7 +7,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   String bossId; //bossId
   String title; //标题
   String content; //内容
-  String descContent; //摘要
+  String descContent=""; //摘要
   bool isCollect; //是否收藏
   bool isPoint; //是否点赞
   int point; //点赞数

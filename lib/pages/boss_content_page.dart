@@ -88,10 +88,10 @@ class _BossContentPageState extends State<BossContentPage>
     BossApi.ins().obtainFollowBossList(widget.label, false).listen((event) {
       mData = event;
       setState(() {});
-    }, onDone: () {
-      controller.finishRefresh();
+
+      controller.finishRefresh(success: true);
     }, onError: (res) {
-      print(res.msg);
+      controller.finishRefresh(success: false);
     });
   }
 

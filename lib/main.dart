@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,12 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   registerJiGuang();
+
+  doNetWork();
+}
+
+void doNetWork() {
+  UserApi.ins().obtainSendCode("1111", 1).listen((event) {});
 }
 
 ///注册极光推送
@@ -19,6 +26,9 @@ void registerJiGuang() {
       channel: "developer-default",
       production: false,
       debug: false);
+
+  //极光申请推送权限
+  Global.jPush.applyPushAuthority();
 
   ///极光推送注册成功回调id
   Global.jPush.getRegistrationID().then((value) {

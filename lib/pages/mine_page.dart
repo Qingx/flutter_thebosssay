@@ -1,19 +1,15 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
-import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
-import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/pages/contact_us_page.dart';
 import 'package:flutter_boss_says/pages/favorites_page.dart';
 import 'package:flutter_boss_says/pages/history_page.dart';
 import 'package:flutter_boss_says/pages/input_phone_page.dart';
 import 'package:flutter_boss_says/pages/today_history_page.dart';
+import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';

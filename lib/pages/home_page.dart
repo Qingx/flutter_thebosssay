@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
@@ -62,6 +63,14 @@ class _HomePageState extends State<HomePage> {
     onJPushCallback();
 
     doRefreshUser();
+
+    doDeviceID();
+  }
+
+  void doDeviceID() async {
+    TalkingApi.ins().obtainDeviceId().listen((event) {
+      print('TalkingData:deviceId：$event');
+    });
   }
 
   ///eventBus
@@ -150,9 +159,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget bottomWidget() {
     return Container(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       color: Colors.white,
-      height: 84,
+      alignment: Alignment.topCenter,
+      height: 50 + MediaQuery.of(context).padding.bottom,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -170,7 +179,7 @@ class _HomePageState extends State<HomePage> {
     String mCurrentIcon = mIcons[index][mCurrentIndex == index ? 1 : 0];
 
     return Container(
-      height: 84 - MediaQuery.of(context).padding.bottom,
+      height: 50,
       color: Colors.white,
       child: Column(
         mainAxisSize: MainAxisSize.max,

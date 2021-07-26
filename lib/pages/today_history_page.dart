@@ -87,12 +87,17 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       concat(event.records, loadMore);
 
       setState(() {});
-    }).onDone(() {
+
       if (loadMore) {
-        controller.finishLoad();
+        controller.finishLoad(success: true);
       } else {
-        controller.resetLoadState();
-        controller.finishRefresh();
+        controller.finishRefresh(success: true);
+      }
+    }).onError((res) {
+      if (loadMore) {
+        controller.finishLoad(success: false);
+      } else {
+        controller.finishRefresh(success: false);
       }
     });
   }

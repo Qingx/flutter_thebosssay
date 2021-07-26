@@ -4,11 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter_boss_says/config/base_data.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -102,9 +102,13 @@ class BaseApi {
 
       BaseData<T> data = json2WLData<T>(response.data);
       return data;
-    } catch (error) {
+    } on DioError catch (error) {
       print(error);
-      return Future.error(BaseMiss());
+      if (error.message.startsWith("SocketException")) {
+        return Future.error(SocketMiss());
+      } else {
+        return Future.error(BaseMiss());
+      }
     }
   }
 
@@ -138,7 +142,12 @@ class BaseApi {
       BasePage<T> data = json2WLPage(response.data);
       return data;
     } on DioError catch (error) {
-      return Future.error(error);
+      print(error);
+      if (error.message.startsWith("SocketException")) {
+        return Future.error(SocketMiss());
+      } else {
+        return Future.error(BaseMiss());
+      }
     }
   }
 
@@ -217,6 +226,7 @@ class BaseApi {
       UserConfig.getIns().token = event.token;
       Global.user.setUser(event.userInfo);
 
+      TalkingApi.ins().obtainRegister(tempId);
       return event.token;
     });
   }).shareReplay(maxSize: 1);
@@ -257,6 +267,10 @@ class BaseMiss extends Error {
   String msg;
 
   BaseMiss({this.code = -1, this.msg = "服务异常, 请稍后再试"});
+}
+
+class SocketMiss extends BaseMiss {
+  SocketMiss() : super(code: -100, msg: "网络异常，请检查网络设置");
 }
 
 class TempUserMiss extends BaseMiss {
