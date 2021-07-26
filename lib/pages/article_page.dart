@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
@@ -88,7 +88,12 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
 
   ///阅读文章
   void doReadArticle() {
-    UserApi.ins().obtainReadArticle(articleId).listen((event) {});
+    UserApi.ins().obtainReadArticle(articleId).listen((event) {
+      UserEntity user = Global.user.user.value;
+      user.readNum++;
+      Global.user.setUser(user);
+      UserConfig.getIns().user = user;
+    });
   }
 
   void onShare() {

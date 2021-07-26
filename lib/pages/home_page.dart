@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
@@ -17,6 +18,8 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:talkingdata_appanalytics_plugin/talkingdata_appanalytics_plugin.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -62,6 +65,15 @@ class _HomePageState extends State<HomePage> {
     onJPushCallback();
 
     doRefreshUser();
+
+    doDeviceID();
+  }
+
+  void doDeviceID() async {
+    TalkingApi.ins().obtainDeviceId().listen((event) {
+      print('TalkingData:deviceId：$event');
+    });
+
   }
 
   ///eventBus

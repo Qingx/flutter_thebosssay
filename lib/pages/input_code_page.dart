@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -50,6 +51,8 @@ class _InputCodePageState extends State<InputCodePage> {
         Global.jPush.setAlias(event.userInfo.id).then((value) {
           print("jPush.setAlias:$value");
         });
+
+        TalkingApi.ins().obtainLogin(event.userInfo.id);
 
         BaseTool.toast(msg: "登录成功");
         Get.offAll(() => HomePage());
