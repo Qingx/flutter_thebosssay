@@ -9,4 +9,5 @@ class Global {
   static EventBus eventBus = EventBus();
   static JPush jPush = JPush();
   static String hintText = "请输入内容";
+  static String version = "1.0.2";
 }

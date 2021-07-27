@@ -15,6 +15,8 @@ class R {
   static final String assetsImgItemContact = 'assets/img/itemContact.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingWhite.png)
   static final String assetsImgSettingWhite = 'assets/img/settingWhite.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/aboutUsLogo.png)
+  static final String assetsImgAboutUsLogo = 'assets/img/aboutUsLogo.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemShare.png)
   static final String assetsImgItemShare = 'assets/img/itemShare.png';
   /// ![](http://127.0.0.1:11111111/assets/img/emptySearch.png)
@@ -65,6 +67,8 @@ class R {
   static final String assetsImgItemFavorite = 'assets/img/itemFavorite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossHandLeft.png)
   static final String assetsImgBossHandLeft = 'assets/img/bossHandLeft.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/aboutUsBg.png)
+  static final String assetsImgAboutUsBg = 'assets/img/aboutUsBg.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossLabel.png)
   static final String assetsImgBossLabel = 'assets/img/bossLabel.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareWhite.png)

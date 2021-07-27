@@ -112,6 +112,7 @@ flutter:
     - assets/img/itemAbout.png
     - assets/img/itemContact.png
     - assets/img/settingWhite.png
+    - assets/img/aboutUsLogo.png
     - assets/img/itemShare.png
     - assets/img/emptySearch.png
     - assets/img/testPhoto.png
@@ -137,6 +138,7 @@ flutter:
     - assets/img/itemClear.png
     - assets/img/itemFavorite.png
     - assets/img/bossHandLeft.png
+    - assets/img/aboutUsBg.png
     - assets/img/bossLabel.png
     - assets/img/shareWhite.png
     - assets/img/contact1.png

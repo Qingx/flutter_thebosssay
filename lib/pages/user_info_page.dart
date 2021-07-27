@@ -5,7 +5,7 @@ import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
 import 'package:flutter_boss_says/dialog/change_phone_dialog.dart';
-import 'package:flutter_boss_says/pages/change_phone.dart';
+import 'package:flutter_boss_says/pages/change_phone_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -48,7 +48,7 @@ class UserInfoPage extends StatelessWidget {
             UserApi.ins().obtainSendCode(phone, 1).listen((event) {
               Get.back();
               var data = {"phoneNumber": phone, "rnd": event};
-              Get.off(() => ChangePhone(), arguments: data);
+              Get.off(() => ChangePhonePage(), arguments: data);
             }, onError: (res) {
               Get.back();
               BaseTool.toast(msg: "发送失败，${res.msg}");

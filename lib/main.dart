@@ -10,7 +10,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   registerJiGuang();
-
 }
 
 ///注册极光推送
