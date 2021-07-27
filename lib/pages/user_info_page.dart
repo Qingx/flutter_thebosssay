@@ -40,23 +40,32 @@ class UserInfoPage extends StatelessWidget {
         });
         break;
       default:
-        showPhoneName(context, onDismiss: () {
-          Get.back();
-        }, onConfirm: (phone) {
-          if (isInputAvailable(phone)) {
-            BaseWidget.showLoadingAlert("正在发送验证码...", context);
-            UserApi.ins().obtainSendCode(phone, 1).listen((event) {
-              Get.back();
-              var data = {"phoneNumber": phone, "rnd": event};
-              Get.off(() => ChangePhonePage(), arguments: data);
-            }, onError: (res) {
-              Get.back();
-              BaseTool.toast(msg: "发送失败，${res.msg}");
-            });
-          }
-        });
+        if (Global.user.user.value.type != BaseEmpty.emptyUser.type &&
+            Global.user.user.value.phone != null) {
+          tryChangePhone(context);
+        } else {
+          BaseTool.toast(msg: "微信用户暂不支持修改");
+        }
         break;
     }
+  }
+
+  void tryChangePhone(context) {
+    showPhoneName(context, onDismiss: () {
+      Get.back();
+    }, onConfirm: (phone) {
+      if (isInputAvailable(phone)) {
+        BaseWidget.showLoadingAlert("正在发送验证码...", context);
+        UserApi.ins().obtainSendCode(phone, 1).listen((event) {
+          Get.back();
+          var data = {"phoneNumber": phone, "rnd": event};
+          Get.off(() => ChangePhonePage(), arguments: data);
+        }, onError: (res) {
+          Get.back();
+          BaseTool.toast(msg: "发送失败，${res.msg}");
+        });
+      }
+    });
   }
 
   bool isInputAvailable(String content) {
@@ -243,8 +252,12 @@ class UserInfoPage extends StatelessWidget {
                               : Global.user.user.value.type ==
                                       BaseEmpty.emptyUser.type
                                   ? "ID：${Global.user.user.value.id}"
-                                  : Global.user.user.value.phone
-                                      .hidePhoneNumber(),
+                                  : Global.user.user.value.type !=
+                                              BaseEmpty.emptyUser.type &&
+                                          Global.user.user.value.phone != null
+                                      ? Global.user.user.value.phone
+                                          .hidePhoneNumber()
+                                      : "微信用户暂无手机号",
                       style: TextStyle(fontSize: 14, color: BaseColor.accent),
                       softWrap: false,
                       textAlign: TextAlign.end,

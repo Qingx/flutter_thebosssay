@@ -397,7 +397,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           return Image.asset(
-            R.assetsImgTestPhoto,
+            R.assetsImgTestBanner,
             height: 100,
             fit: BoxFit.cover,
           ).marginOn(bottom: 16);

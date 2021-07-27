@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/about_us_page.dart';
 import 'package:flutter_boss_says/pages/contact_us_page.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_boss_says/pages/input_phone_page.dart';
 import 'package:flutter_boss_says/pages/today_history_page.dart';
 import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -20,7 +20,6 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:share/share.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({Key key}) : super(key: key);
@@ -74,7 +73,21 @@ class _MinePageState extends State<MinePage>
   }
 
   void onShare() {
-    Share.share(Global.shareUrl);
+    showShareDialog(context, onDismiss: () {
+      Get.back();
+    }, doClick: (index) {
+      switch (index) {
+        case 0:
+          BaseTool.shareToSession();
+          break;
+        case 1:
+          BaseTool.shareToTimeline();
+          break;
+        default:
+          BaseTool.shareCopyLink();
+          break;
+      }
+    });
   }
 
   void onSetting() {

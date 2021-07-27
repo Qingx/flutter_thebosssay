@@ -43,6 +43,17 @@ class UserApi extends BaseApi {
             .rebase());
   }
 
+  ///微信登录
+  Observable<TokenEntity> obtainWechatLogin(String code) {
+    var data = {
+      "code": code,
+      "deviceId": UserConfig.getIns().tempId,
+    };
+    return autoToken(() =>
+        post<TokenEntity>("/api/account/wechat/sign", requestBody: data)
+            .rebase());
+  }
+
   ///修改用户信息
   Observable<bool> obtainChangeName(String nickName) {
     var data = {"nickName": nickName};

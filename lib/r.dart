@@ -7,6 +7,8 @@ class R {
   static final String assetsImgWeChatLogo = 'assets/img/weChatLogo.png';
   /// ![](http://127.0.0.1:11111111/assets/img/favoriteDark.png)
   static final String assetsImgFavoriteDark = 'assets/img/favoriteDark.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/shareLink.png)
+  static final String assetsImgShareLink = 'assets/img/shareLink.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSelect.png)
   static final String assetsImgBossSelect = 'assets/img/bossSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossTopHead.png)
@@ -15,6 +17,8 @@ class R {
   static final String assetsImgItemAbout = 'assets/img/itemAbout.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemContact.png)
   static final String assetsImgItemContact = 'assets/img/itemContact.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/testBanner.png)
+  static final String assetsImgTestBanner = 'assets/img/testBanner.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingWhite.png)
   static final String assetsImgSettingWhite = 'assets/img/settingWhite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/aboutUsLogo.png)
@@ -73,6 +77,8 @@ class R {
   static final String assetsImgAboutUsBg = 'assets/img/aboutUsBg.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossLabel.png)
   static final String assetsImgBossLabel = 'assets/img/bossLabel.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/shareWechat.png)
+  static final String assetsImgShareWechat = 'assets/img/shareWechat.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareWhite.png)
   static final String assetsImgShareWhite = 'assets/img/shareWhite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/contact1.png)
@@ -89,6 +95,8 @@ class R {
   static final String assetsImgLaunchImage = 'assets/img/launchImage.png';
   /// ![](http://127.0.0.1:11111111/assets/img/contact3.png)
   static final String assetsImgContact3 = 'assets/img/contact3.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/shareTimeline.png)
+  static final String assetsImgShareTimeline = 'assets/img/shareTimeline.png';
   /// ![](http://127.0.0.1:11111111/assets/img/talkSelect.png)
   static final String assetsImgTalkSelect = 'assets/img/talkSelect.png';
   /// ![](http://127.0.0.1:11111111/assets/img/aim.png)
@@ -101,6 +109,8 @@ class R {
   static final String assetsImgContact4 = 'assets/img/contact4.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testSplash.png)
   static final String assetsImgTestSplash = 'assets/img/testSplash.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossSetting.png)
+  static final String assetsImgBossSetting = 'assets/img/bossSetting.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderSelect.png)
   static final String assetsImgBossOrderSelect = 'assets/img/bossOrderSelect.png';
 }
