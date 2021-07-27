@@ -3,7 +3,7 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
-import 'package:fluwx/fluwx.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:get/get.dart';
 
 void main() {
@@ -11,9 +11,9 @@ void main() {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  registerWeChat();
-
   registerJiGuang();
+
+  registerWeChat();
 
   doNetWork();
 }
@@ -24,7 +24,7 @@ void doNetWork() {
 
 ///注册微信
 void registerWeChat() {
-  registerWxApi(
+  fluwx.registerWxApi(
           appId: "wx5fd9da0bd24efe83",
           universalLink: "https://file.tianjiemedia.com/",
           doOnIOS: true,
