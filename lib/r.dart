@@ -3,6 +3,8 @@ class R {
   static final String assetsImgEmptyLine = 'assets/img/emptyLine.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareDark.png)
   static final String assetsImgShareDark = 'assets/img/shareDark.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/weChatLogo.png)
+  static final String assetsImgWeChatLogo = 'assets/img/weChatLogo.png';
   /// ![](http://127.0.0.1:11111111/assets/img/favoriteDark.png)
   static final String assetsImgFavoriteDark = 'assets/img/favoriteDark.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSelect.png)

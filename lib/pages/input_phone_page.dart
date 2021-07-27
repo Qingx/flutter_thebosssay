@@ -60,7 +60,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
         if (result) {
           fluwx
               .sendWeChatAuth(
-                  scope: "snsapi_userinfo", state: "flutter_roam_car")
+                  scope: "snsapi_userinfo", state: "flutter_boss_says")
               .then((value) {
             print("jumpToWx:$value");
           }).catchError((error) {
@@ -338,7 +338,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            R.assetsImgAboutUsLogo,
+            R.assetsImgWeChatLogo,
             width: 32,
             height: 32,
           ),

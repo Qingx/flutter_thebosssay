@@ -107,6 +107,7 @@ flutter:
     # assets/img/*
     - assets/img/emptyLine.png
     - assets/img/shareDark.png
+    - assets/img/weChatLogo.png
     - assets/img/favoriteDark.png
     - assets/img/bossSelect.png
     - assets/img/bossTopHead.png
