@@ -8,7 +8,8 @@ import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/hint_controller.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/db/boss_db_provider.dart';
@@ -56,22 +57,30 @@ class _SplashPageState extends State<SplashPage> {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        UserApi.ins().obtainRefreshUser().listen((event) {},
-            onDone: () {
-          testInit();
-        });
+        testInit();
       });
     });
   }
 
   void testInit() {
-    Connectivity().checkConnectivity().then((result) {
-      if (result != ConnectivityResult.none) {
-        initData();
-      } else {
-        jumpPage(false);
-      }
-    });
+    if (DataConfig.getIns().firstInitApp) {
+      DataConfig.getIns().firstInitApp = false;
+      Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+        if (result != ConnectivityResult.none) {
+          initData();
+        } else {
+          jumpPage(false);
+        }
+      });
+    } else {
+      Connectivity().checkConnectivity().then((result) {
+        if (result != ConnectivityResult.none) {
+          initData();
+        } else {
+          jumpPage(false);
+        }
+      });
+    }
   }
 
   void initData() {

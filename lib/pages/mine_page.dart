@@ -74,7 +74,7 @@ class _MinePageState extends State<MinePage>
   }
 
   void onShare() {
-    Share.share('https://www.bilibili.com/');
+    Share.share(Global.shareUrl);
   }
 
   void onSetting() {
