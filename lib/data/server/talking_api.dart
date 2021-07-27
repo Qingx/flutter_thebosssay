@@ -1,6 +1,7 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:talkingdata_appanalytics_plugin/talkingdata_appanalytics_plugin.dart';
 
+///TalkingData数据监测
 class TalkingApi {
   TalkingApi._();
 

@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
+import 'package:flutter_boss_says/pages/about_us_page.dart';
 import 'package:flutter_boss_says/pages/contact_us_page.dart';
 import 'package:flutter_boss_says/pages/favorites_page.dart';
 import 'package:flutter_boss_says/pages/history_page.dart';
@@ -11,6 +11,7 @@ import 'package:flutter_boss_says/pages/input_phone_page.dart';
 import 'package:flutter_boss_says/pages/today_history_page.dart';
 import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -149,6 +150,7 @@ class _MinePageState extends State<MinePage>
         onShare();
         break;
       case 4:
+        Get.to(() => AboutUsPage());
         break;
       case 5:
         Get.to(() => ContactUsPage());

@@ -13,14 +13,14 @@ import 'package:flutter_verification_box/verification_box.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
-class ChangePhone extends StatefulWidget {
-  const ChangePhone({Key key}) : super(key: key);
+class ChangePhonePage extends StatefulWidget {
+  const ChangePhonePage({Key key}) : super(key: key);
 
   @override
-  _ChangePhoneState createState() => _ChangePhoneState();
+  _ChangePhonePageState createState() => _ChangePhonePageState();
 }
 
-class _ChangePhoneState extends State<ChangePhone> {
+class _ChangePhonePageState extends State<ChangePhonePage> {
   int mCurrentIndex;
   List<Widget> mPages;
 

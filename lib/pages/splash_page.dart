@@ -8,9 +8,9 @@ import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/hint_controller.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/dialog/service_privacy_dialog.dart';
 import 'package:flutter_boss_says/pages/guide_page.dart';
@@ -56,34 +56,38 @@ class _SplashPageState extends State<SplashPage> {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        initData();
+        UserApi.ins().obtainRefreshUser().listen((event) {},
+            onDone: () {
+          testInit();
+        });
       });
     });
   }
 
-  void initData() {
-    connectDis = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      print('ConnectivityResult：$result');
+  void testInit() {
+    Connectivity().checkConnectivity().then((result) {
       if (result != ConnectivityResult.none) {
-        BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
-          value = [BaseEmpty.emptyLabel, ...value];
-          DataConfig.getIns().setBossLabels = value;
-
-          return BossApi.ins()
-              .obtainAllBoss(DataConfig.getIns().updateTime)
-              .onErrorReturn([]);
-        }).listen((event) {
-          onData(event);
-        });
+        initData();
       } else {
         jumpPage(false);
       }
     });
   }
 
-  void onData(List<BossInfoEntity> event) {
+  void initData() {
+    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      DataConfig.getIns().setBossLabels = value;
+
+      return BossApi.ins()
+          .obtainAllBoss(DataConfig.getIns().updateTime)
+          .onErrorReturn([]);
+    }).listen((event) {
+      doOnData(event);
+    });
+  }
+
+  void doOnData(List<BossInfoEntity> event) {
     bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
 
     if (!event.isNullOrEmpty()) {

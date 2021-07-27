@@ -1,39 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boss_says/config/boss_service_privacy.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ServicePrivacyPage extends StatefulWidget {
-  const ServicePrivacyPage({Key key}) : super(key: key);
+class TestPage extends StatefulWidget {
+  const TestPage({Key key}) : super(key: key);
 
   @override
-  _ServicePrivacyPageState createState() => _ServicePrivacyPageState();
+  _TestPageState createState() => _TestPageState();
 }
 
-class _ServicePrivacyPageState extends State<ServicePrivacyPage> {
-  String code;
-  String title;
-  String url;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    code = Get.arguments as String;
-    title = code == "0" ? "服务条款" : "隐私政策";
-    url = code == "0"
-        ? "http://file.tianjiemedia.com/serviceProtocol.html"
-        : "http://file.tianjiemedia.com/privacyService.html";
-  }
-
+class _TestPageState extends State<TestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,11 +22,9 @@ class _ServicePrivacyPageState extends State<ServicePrivacyPage> {
         child: Column(
           children: [
             Container(
-              color: Colors.white,
               child: BaseWidget.statusBar(context, true),
             ),
             Container(
-              color: Colors.white,
               height: 44,
               padding: EdgeInsets.only(left: 12, right: 16),
               child: Row(
@@ -64,7 +41,7 @@ class _ServicePrivacyPageState extends State<ServicePrivacyPage> {
                       margin: EdgeInsets.only(right: 28),
                       alignment: Alignment.center,
                       child: Text(
-                        title,
+                        "测试页面",
                         style: TextStyle(
                             fontSize: 16,
                             color: BaseColor.textDark,
@@ -80,17 +57,21 @@ class _ServicePrivacyPageState extends State<ServicePrivacyPage> {
               ),
             ),
             Expanded(
-              child: WebView(
-                initialUrl: url,
-                javascriptMode: JavascriptMode.unrestricted,
-                onPageFinished: (s) {
-                  print('onPageFinished:$s');
-                },
-              ),
+              child: webWidget(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget webWidget() {
+    return WebView(
+      initialUrl: "http://file.tianjiemedia.com/privacyService.html",
+      javascriptMode: JavascriptMode.unrestricted,
+      onPageFinished: (s){
+        print('onPageFinished:$s');
+      },
     );
   }
 }
