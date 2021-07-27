@@ -10,6 +10,7 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 
 class InputPhonePage extends StatefulWidget {
   const InputPhonePage({Key key}) : super(key: key);
@@ -30,6 +31,8 @@ class _InputPhonePageState extends State<InputPhonePage> {
 
     serviceTap = TapGestureRecognizer();
     privacyTap = TapGestureRecognizer();
+
+    weChatCallback();
   }
 
   @override
@@ -38,6 +41,39 @@ class _InputPhonePageState extends State<InputPhonePage> {
 
     serviceTap?.dispose();
     privacyTap?.dispose();
+  }
+
+  void weChatCallback() {
+    ///微信登录回调
+    fluwx.weChatResponseEventHandler.distinct((a, b) => a == b).listen((resp) {
+      if (mounted) {}
+      if (resp is fluwx.WeChatAuthResponse) {
+        print('wxAuthCode:${resp.code}');
+      }
+    });
+  }
+
+  ///尝试跳转微信授权
+  Future<void> tryJumpWechat() async {
+    if (hasChecked) {
+      await fluwx.isWeChatInstalled.then((result) {
+        if (result) {
+          fluwx
+              .sendWeChatAuth(
+                  scope: "snsapi_userinfo", state: "flutter_roam_car")
+              .then((value) {
+            print("jumpToWx:$value");
+          }).catchError((error) {
+            print('jumpToWx:$error');
+          });
+        } else {
+          print('jumpToWx:未安装微信应用');
+          BaseTool.toast(msg: "请先下载并安装微信");
+        }
+      });
+    } else {
+      BaseTool.toast(msg: "请先阅读并同意《法律声明及隐私政策》");
+    }
   }
 
   void onBack() {
@@ -164,7 +200,14 @@ class _InputPhonePageState extends State<InputPhonePage> {
                 ],
               ),
             ),
-            confirmWidget(),
+            Expanded(
+              child: Column(
+                children: [
+                  confirmWidget(),
+                ],
+              ),
+            ),
+            weChatWidget(),
           ],
         ),
       ),
@@ -285,5 +328,31 @@ class _InputPhonePageState extends State<InputPhonePage> {
         overflow: TextOverflow.ellipsis,
       ),
     ).onClick(trySendCode);
+  }
+
+  Widget weChatWidget() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 64),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            R.assetsImgAboutUsLogo,
+            width: 32,
+            height: 32,
+          ),
+          Text(
+            "微信一键登录",
+            style: TextStyle(fontSize: 14, color: BaseColor.textDark),
+            softWrap: false,
+            maxLines: 1,
+            textAlign: TextAlign.start,
+          ).marginOn(left: 8),
+        ],
+      ),
+    ).onClick(() {
+      tryJumpWechat();
+    });
   }
 }

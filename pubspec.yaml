@@ -54,6 +54,7 @@ dependencies:
   talkingdata_appanalytics_plugin:
     path: appanalytics library root
   webview_flutter: ^1.0.7
+  fluwx: ^2.6.2
 
 dev_dependencies:
   flutter_test:

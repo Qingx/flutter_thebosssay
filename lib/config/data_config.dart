@@ -20,6 +20,14 @@ class DataConfig extends BaseConfig {
   String get firstUserApp =>
       spInstance.getString(DataKeys.K_FIRST_USE, defaultVal: "empty");
 
+  /// 设置是否为第一次使用APP
+  set firstInitApp(bool result) =>
+      spInstance.putBool(DataKeys.K_FIRST_INIT, false);
+
+  /// 检查是否为第一次使用APP
+  bool get firstInitApp =>
+      spInstance.getBool(DataKeys.K_FIRST_INIT, defaultVal: true);
+
   set setBossLabels(List<BossLabelEntity> list) =>
       spInstance.putObject<List<BossLabelEntity>>(DataKeys.K_BOSS_LABELS, list);
 
@@ -37,6 +45,7 @@ class DataConfig extends BaseConfig {
 
 class DataKeys {
   static const K_FIRST_USE = "K_FIRST_USE";
+  static const K_FIRST_INIT = "K_FIRST_INIT";
   static const K_BOSS_LABELS = "K_BOSS_LABELS";
   static const K_UPDATE_TIME = "K_UPDATE_TIME";
 }

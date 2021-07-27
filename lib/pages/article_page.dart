@@ -97,7 +97,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   }
 
   void onShare() {
-    Share.share('https://www.bilibili.com/');
+    Share.share(Global.shareUrl);
   }
 
   void onFavoriteChange() {

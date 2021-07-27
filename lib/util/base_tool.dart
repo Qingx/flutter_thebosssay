@@ -1,4 +1,5 @@
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:uuid/uuid.dart';
 
 class BaseTool {
@@ -19,7 +20,9 @@ class BaseTool {
 
   ///获取boss最近更新文章时间
   static String getUpdateTime(int startTime) {
-    int endTime = DateTime.now().millisecondsSinceEpoch;
+    int endTime = DateTime
+        .now()
+        .millisecondsSinceEpoch;
 
     if (endTime >= startTime) {
       int diff = endTime - startTime;
@@ -41,5 +44,9 @@ class BaseTool {
     } else {
       return "时间戳异常";
     }
+  }
+
+  Future<bool> isWeChatInstalled() {
+    return fluwx.isWeChatInstalled;
   }
 }

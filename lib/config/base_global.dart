@@ -10,4 +10,5 @@ class Global {
   static JPush jPush = JPush();
   static String hintText = "请输入内容";
   static String version = "1.0.2";
+  static String shareUrl = "http://index.tianjiemedia.com/";
 }

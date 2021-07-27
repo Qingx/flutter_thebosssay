@@ -8,6 +8,7 @@ import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
@@ -50,7 +51,7 @@ class BossHomePage extends StatelessWidget {
   }
 
   void onShare() {
-    Share.share('https://www.bilibili.com/');
+    Share.share(Global.shareUrl);
   }
 
   void onSetting(BuildContext context) {
@@ -114,6 +115,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     controller?.dispose();
 
     eventDispose?.cancel();
+
+    TalkingApi.ins().obtainPageEnd("BossHomePage");
   }
 
   @override
@@ -125,6 +128,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     controller = EasyRefreshController();
 
     builderFuture = loadInitData();
+
+    TalkingApi.ins().obtainPageStart("BossHomePage");
 
     eventBus();
   }
