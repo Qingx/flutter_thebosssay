@@ -56,7 +56,7 @@ class _SplashPageState extends State<SplashPage> {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        UserApi.ins().obtainSendCode("177", 2).listen((event) {},
+        UserApi.ins().obtainRefreshUser().listen((event) {},
             onDone: () {
           testInit();
         });

@@ -39,6 +39,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
+
+    doPageEnd();
+
     mPageController?.dispose();
 
     eventDispose?.cancel();
@@ -65,6 +68,16 @@ class _HomePageState extends State<HomePage> {
     doRefreshUser();
 
     doDeviceID();
+
+    doPageStart();
+  }
+
+  void doPageStart() {
+    TalkingApi.ins().obtainPageStart("HomePage");
+  }
+
+  void doPageEnd() {
+    TalkingApi.ins().obtainPageStart("HomePage");
   }
 
   void doDeviceID() async {
