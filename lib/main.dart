@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 import 'package:get/get.dart';
@@ -12,11 +11,6 @@ void main() {
 
   registerJiGuang();
 
-  doNetWork();
-}
-
-void doNetWork() {
-  UserApi.ins().obtainSendCode("1111", 1).listen((event) {});
 }
 
 ///注册极光推送

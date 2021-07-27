@@ -53,6 +53,7 @@ dependencies:
   connectivity: ^2.0.2
   talkingdata_appanalytics_plugin:
     path: appanalytics library root
+  webview_flutter: ^1.0.7
 
 dev_dependencies:
   flutter_test:
