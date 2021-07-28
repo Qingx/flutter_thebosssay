@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class TalkPage extends StatefulWidget {
   const TalkPage({Key key}) : super(key: key);
@@ -40,6 +42,15 @@ class _TalkPageState extends State<TalkPage>
     mTitles = ["追踪", "广场"];
     mPages = [FollowPage(), SquarePage()];
     mPageController = PageController();
+
+    getShangjia();
+  }
+
+  ///获取上架状态
+  void getShangjia() {
+    Observable.just(false).listen((event) {
+      DataConfig.getIns().isShangjia = event;
+    });
   }
 
   @override

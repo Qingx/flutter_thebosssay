@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
@@ -240,7 +241,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
                 ],
               ),
             ),
-            weChatWidget(),
+            DataConfig.getIns().isShangjia ? weChatWidget() : SizedBox(),
           ],
         ),
       ),
