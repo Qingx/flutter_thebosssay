@@ -152,4 +152,9 @@ class UserApi extends BaseApi {
   Observable<bool> obtainReadArticle(String id) {
     return autoToken(() => get<bool>("/api/article/read/$id").success());
   }
+
+  ///检查服务
+  Observable<bool> obtainCheckServer() {
+    return get<bool>("/api/user/check-server").success();
+  }
 }
