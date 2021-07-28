@@ -18,9 +18,9 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/style.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:share/share.dart';
 
 import 'input_phone_page.dart';
 
@@ -437,6 +437,15 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
     return Container(
       child: Html(
         data: document,
+        style: {
+          "body": Style(
+            fontSize: FontSize(17),
+            lineHeight: 30,
+            letterSpacing: 1,
+            color: BaseColor.textDarkLight,
+            textAlign: TextAlign.start,
+          ),
+        },
       ),
     );
   }
