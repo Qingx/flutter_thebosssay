@@ -109,10 +109,12 @@ flutter:
     - assets/img/shareDark.png
     - assets/img/weChatLogo.png
     - assets/img/favoriteDark.png
+    - assets/img/shareLink.png
     - assets/img/bossSelect.png
     - assets/img/bossTopHead.png
     - assets/img/itemAbout.png
     - assets/img/itemContact.png
+    - assets/img/testBanner.png
     - assets/img/settingWhite.png
     - assets/img/aboutUsLogo.png
     - assets/img/itemShare.png
@@ -142,6 +144,7 @@ flutter:
     - assets/img/bossHandLeft.png
     - assets/img/aboutUsBg.png
     - assets/img/bossLabel.png
+    - assets/img/shareWechat.png
     - assets/img/shareWhite.png
     - assets/img/contact1.png
     - assets/img/bossHandRight.png
@@ -150,10 +153,12 @@ flutter:
     - assets/img/settingDark.png
     - assets/img/launchImage.png
     - assets/img/contact3.png
+    - assets/img/shareTimeline.png
     - assets/img/talkSelect.png
     - assets/img/aim.png
     - assets/img/mineSelect.png
     - assets/img/likeSelect.png
     - assets/img/contact4.png
     - assets/img/testSplash.png
+    - assets/img/bossSetting.png
     - assets/img/bossOrderSelect.png

@@ -118,7 +118,6 @@ class _GuidePageState extends State<GuidePage> {
       Global.user.setUser(entity);
 
       BaseTool.toast(msg: "追踪成功");
-      DataConfig.getIns().firstUseApp = "false";
       Get.off(() => HomePage());
     }, onError: (res) {
       Get.back();
@@ -194,7 +193,6 @@ class _GuidePageState extends State<GuidePage> {
                 overflow: TextOverflow.ellipsis,
               ).onClick(() {
                 if (countText == "跳过") {
-                  DataConfig.getIns().firstUseApp = "false";
                   Get.off(() => HomePage());
                 }
               }),

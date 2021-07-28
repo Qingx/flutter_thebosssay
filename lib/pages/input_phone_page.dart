@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/pages/input_code_page.dart';
 import 'package:flutter_boss_says/pages/service_privacy_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -26,6 +30,14 @@ class _InputPhonePageState extends State<InputPhonePage> {
   TapGestureRecognizer privacyTap;
 
   @override
+  void dispose() {
+    super.dispose();
+
+    serviceTap?.dispose();
+    privacyTap?.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
 
@@ -35,20 +47,41 @@ class _InputPhonePageState extends State<InputPhonePage> {
     weChatCallback();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  ///尝试微信登录
+  void tryWechatLogin(String code) {
+    if (hasChecked) {
+      BaseWidget.showLoadingAlert("正在尝试登录...", context);
 
-    serviceTap?.dispose();
-    privacyTap?.dispose();
+      UserApi.ins().obtainWechatLogin(code).listen((event) {
+        UserConfig.getIns().token = event.token;
+        UserConfig.getIns().user = event.userInfo;
+        Global.user.setUser(event.userInfo);
+
+        ///极光推送设置别名
+        Global.jPush.setAlias(event.userInfo.id).then((value) {
+          print("jPush.setAlias:$value");
+        });
+
+        TalkingApi.ins().obtainLogin(event.userInfo.id);
+
+        BaseTool.toast(msg: "登录成功");
+        Get.offAll(() => HomePage());
+      }, onError: (res) {
+        Get.back();
+        BaseTool.toast(msg: "登录失败,${res.msg}");
+      });
+    } else {
+      BaseTool.toast(msg: "请阅读并同意《服务条款》和《隐私政策》");
+    }
   }
 
+  ///微信登录回调
   void weChatCallback() {
-    ///微信登录回调
     fluwx.weChatResponseEventHandler.distinct((a, b) => a == b).listen((resp) {
       if (mounted) {}
       if (resp is fluwx.WeChatAuthResponse) {
         print('wxAuthCode:${resp.code}');
+        tryWechatLogin(resp.code);
       }
     });
   }
@@ -56,7 +89,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
   ///尝试跳转微信授权
   Future<void> tryJumpWechat() async {
     if (hasChecked) {
-      await fluwx.isWeChatInstalled.then((result) {
+      BaseTool.isWeChatInstalled().then((result) {
         if (result) {
           fluwx
               .sendWeChatAuth(
@@ -72,7 +105,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
         }
       });
     } else {
-      BaseTool.toast(msg: "请先阅读并同意《法律声明及隐私政策》");
+      BaseTool.toast(msg: "请阅读并同意《服务条款》和《隐私政策》");
     }
   }
 
@@ -343,7 +376,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
             height: 32,
           ),
           Text(
-            "微信一键登录",
+            "微信授权登录",
             style: TextStyle(fontSize: 14, color: BaseColor.textDark),
             softWrap: false,
             maxLines: 1,

@@ -19,9 +19,18 @@ Future<dynamic> showBossSettingDialog(BuildContext context,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(R.assetsImgTestPhoto,
-                        height: 96, width: 96, fit: BoxFit.cover)
-                    .marginOn(top: 24),
+                Container(
+                  margin: EdgeInsets.only(top: 24),
+                  alignment: Alignment.center,
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0x1a2343C2),
+                  ),
+                  child: Image.asset(R.assetsImgBossSetting,
+                      height: 64, width: 64, fit: BoxFit.cover),
+                ),
                 Text(
                   "是否需要对他开启单独推送？",
                   style: TextStyle(fontSize: 16, color: BaseColor.textDark),

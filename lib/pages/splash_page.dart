@@ -19,6 +19,7 @@ import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
 
 class SplashPage extends StatefulWidget {
@@ -34,16 +35,12 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
-      body: Container(
-        alignment: Alignment.topRight,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(R.assetsImgTestSplash),
-            alignment: Alignment.center,
-            fit: BoxFit.cover,
-          ),
-        ),
+      body: Image.asset(
+        R.assetsImgSplash,
+        width: double.infinity,
+        height: double.infinity,
       ),
     );
   }
@@ -57,32 +54,34 @@ class _SplashPageState extends State<SplashPage> {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
 
-        testInit();
+        bool firstUseApp = DataConfig.getIns().firstUserApp;
+
+        if (firstUseApp) {
+          firstUse();
+        } else {
+          initData();
+        }
       });
     });
   }
 
-  void testInit() {
-    if (DataConfig.getIns().firstInitApp) {
-      DataConfig.getIns().firstInitApp = false;
-      Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-        if (result != ConnectivityResult.none) {
+  ///第一次使用进入app
+  void firstUse() {
+    UserApi.ins().obtainCheckServer().listen((event) {}, onDone: () {
+      showServicePrivacyDialog(context, onDismiss: () {
+        exit(0);
+      }, onConfirm: () {
+        Connectivity().checkConnectivity().then((result) {
+          if (result == ConnectivityResult.none) {
+            BaseTool.toast(msg: "网络异常，请开启网络权限");
+          }
           initData();
-        } else {
-          jumpPage(false);
-        }
+        });
       });
-    } else {
-      Connectivity().checkConnectivity().then((result) {
-        if (result != ConnectivityResult.none) {
-          initData();
-        } else {
-          jumpPage(false);
-        }
-      });
-    }
+    });
   }
 
+  ///初始化数据
   void initData() {
     BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
       value = [BaseEmpty.emptyLabel, ...value];
@@ -96,21 +95,23 @@ class _SplashPageState extends State<SplashPage> {
     });
   }
 
+  ///处理数据
   void doOnData(List<BossInfoEntity> event) {
-    bool firstUseApp = DataConfig.getIns().firstUserApp == "empty";
-
     if (!event.isNullOrEmpty()) {
-      BossDbProvider.getIns().insertListByBean(event);
       DataConfig.getIns().setUpdateTime = DateTime.now().millisecondsSinceEpoch;
+      BossDbProvider.getIns().insertListByBean(event);
     }
 
-    if (firstUseApp && !event.isNullOrEmpty()) {
-      jumpPage(true, list: event.where((element) => element.guide).toList());
+    if (DataConfig.getIns().firstUserApp && !event.isNullOrEmpty()) {
+      DataConfig.getIns().firstUseApp = false;
+      var list = event.where((element) => element.guide).toList();
+
+      Get.offAll(() => GuidePage(), arguments: list);
     } else {
       UserEntity entity = UserConfig.getIns().user;
       Global.user.setUser(entity);
 
-      jumpPage(false);
+      Get.offAll(() => HomePage());
     }
   }
 
@@ -119,17 +120,5 @@ class _SplashPageState extends State<SplashPage> {
     super.dispose();
 
     connectDis?.cancel();
-  }
-
-  void jumpPage(bool firstUse, {List<BossInfoEntity> list}) {
-    if (firstUse) {
-      showServicePrivacyDialog(context, onDismiss: () {
-        exit(0);
-      }, onConfirm: () {
-        Get.offAll(() => GuidePage(), arguments: list);
-      });
-    } else {
-      Get.offAll(() => HomePage());
-    }
   }
 }

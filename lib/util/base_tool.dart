@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:uuid/uuid.dart';
@@ -20,9 +22,7 @@ class BaseTool {
 
   ///获取boss最近更新文章时间
   static String getUpdateTime(int startTime) {
-    int endTime = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    int endTime = DateTime.now().millisecondsSinceEpoch;
 
     if (endTime >= startTime) {
       int diff = endTime - startTime;
@@ -46,7 +46,45 @@ class BaseTool {
     }
   }
 
-  Future<bool> isWeChatInstalled() {
+  static Future<bool> isWeChatInstalled() {
     return fluwx.isWeChatInstalled;
+  }
+
+  ///分享至微信会话
+  static void shareToSession() {
+    String url = "http://index.tianjiemedia.com/";
+    String title = "Boss说-追踪老板的言论";
+    String des = "深度学习大佬的言论文章，找寻你的成功暗门";
+    fluwx.WeChatShareWebPageModel model = fluwx.WeChatShareWebPageModel(
+      url,
+      title: title,
+      description: des,
+      scene: fluwx.WeChatScene.SESSION,
+      thumbnail: fluwx.WeChatImage.asset(R.assetsImgAboutUsLogo),
+    );
+    fluwx.shareToWeChat(model);
+  }
+
+  ///分享至微信朋友圈
+  static void shareToTimeline() {
+    String url = "http://index.tianjiemedia.com/";
+    String title = "Boss说-追踪老板的言论";
+    String des = "深度学习大佬的言论文章，找寻你的成功暗门";
+    fluwx.WeChatShareWebPageModel model = fluwx.WeChatShareWebPageModel(
+      url,
+      title: title,
+      description: des,
+      scene: fluwx.WeChatScene.TIMELINE,
+      thumbnail: fluwx.WeChatImage.asset(R.assetsImgAboutUsLogo),
+    );
+    fluwx.shareToWeChat(model);
+  }
+
+  ///分享复制链接
+  static void shareCopyLink() {
+    String url = "http://index.tianjiemedia.com/";
+
+    Clipboard.setData(ClipboardData(text: url))
+        .then((value) => BaseTool.toast(msg: "复制成功"));
   }
 }

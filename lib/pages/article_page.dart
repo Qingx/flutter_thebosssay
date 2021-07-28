@@ -8,6 +8,7 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
+import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -97,7 +98,21 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   }
 
   void onShare() {
-    Share.share(Global.shareUrl);
+    showShareDialog(context, onDismiss: () {
+      Get.back();
+    }, doClick: (index) {
+      switch (index) {
+        case 0:
+          BaseTool.shareToSession();
+          break;
+        case 1:
+          BaseTool.shareToTimeline();
+          break;
+        default:
+          BaseTool.shareCopyLink();
+          break;
+      }
+    });
   }
 
   void onFavoriteChange() {

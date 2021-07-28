@@ -13,19 +13,11 @@ class DataConfig extends BaseConfig {
   }
 
   /// 设置是否为第一次使用APP
-  set firstUseApp(String used) =>
-      spInstance.putString(DataKeys.K_FIRST_USE, used);
+  set firstUseApp(bool result) =>
+      spInstance.putBool(DataKeys.K_FIRST_INIT, result);
 
   /// 检查是否为第一次使用APP
-  String get firstUserApp =>
-      spInstance.getString(DataKeys.K_FIRST_USE, defaultVal: "empty");
-
-  /// 设置是否为第一次使用APP
-  set firstInitApp(bool result) =>
-      spInstance.putBool(DataKeys.K_FIRST_INIT, false);
-
-  /// 检查是否为第一次使用APP
-  bool get firstInitApp =>
+  bool get firstUserApp =>
       spInstance.getBool(DataKeys.K_FIRST_INIT, defaultVal: true);
 
   set setBossLabels(List<BossLabelEntity> list) =>

@@ -12,6 +12,7 @@ import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
+import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
@@ -25,7 +26,6 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
-import 'package:share/share.dart';
 
 class BossHomePage extends StatelessWidget {
   BossHomePage({Key key}) : super(key: key);
@@ -50,8 +50,22 @@ class BossHomePage extends StatelessWidget {
     Get.back();
   }
 
-  void onShare() {
-    Share.share(Global.shareUrl);
+  void onShare(context) {
+    showShareDialog(context, onDismiss: () {
+      Get.back();
+    }, doClick: (index) {
+      switch (index) {
+        case 0:
+          BaseTool.shareToSession();
+          break;
+        case 1:
+          BaseTool.shareToTimeline();
+          break;
+        default:
+          BaseTool.shareCopyLink();
+          break;
+      }
+    });
   }
 
   void onSetting(BuildContext context) {
@@ -77,7 +91,9 @@ class BossHomePage extends StatelessWidget {
           Expanded(child: SizedBox()),
           Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
               .marginOn(right: 20)
-              .onClick(onShare),
+              .onClick(() {
+            onShare(context);
+          }),
           Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
               .marginOn(right: 16)
               .onClick(() {
