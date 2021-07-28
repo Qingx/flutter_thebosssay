@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/follow_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/square_page.dart';
@@ -48,8 +49,10 @@ class _TalkPageState extends State<TalkPage>
 
   ///获取上架状态
   void getShangjia() {
-    Observable.just(false).listen((event) {
+    UserApi.ins().obtainCheckShangjia().listen((event) {
       DataConfig.getIns().isShangjia = event;
+    }, onError: (res) {
+      DataConfig.getIns().isShangjia = false;
     });
   }
 
