@@ -8,6 +8,6 @@ class BaseColor {
   static Color textDarkLight = Color(0xff595959);
   static Color textGray = Color(0xff979797);
   static Color line = Color(0x1a000000);
-  static Color pageBg = Color(0xfff5f5f5);
+  static Color pageBg = Color(0xfffafafa);
   static Color loadBg = Color(0xffe8e8e8);
 }

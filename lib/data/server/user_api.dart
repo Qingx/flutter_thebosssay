@@ -157,4 +157,9 @@ class UserApi extends BaseApi {
   Observable<bool> obtainCheckServer() {
     return get<bool>("/api/user/check-server").success();
   }
+
+  ///检查上架状态
+  Observable<bool> obtainCheckShangjia() {
+    return get<bool>("/api/status/get").rebase();
+  }
 }
