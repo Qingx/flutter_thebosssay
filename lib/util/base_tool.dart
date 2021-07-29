@@ -51,8 +51,8 @@ class BaseTool {
   }
 
   ///分享至微信会话
-  static void shareToSession() {
-    String url = "http://index.tianjiemedia.com/";
+  static void shareToSession({String mUrl}) {
+    String url = mUrl ?? "http://index.tianjiemedia.com/";
     String title = "Boss说-追踪老板的言论";
     String des = "深度学习大佬的言论文章，找寻你的成功暗门";
     fluwx.WeChatShareWebPageModel model = fluwx.WeChatShareWebPageModel(
@@ -66,8 +66,8 @@ class BaseTool {
   }
 
   ///分享至微信朋友圈
-  static void shareToTimeline() {
-    String url = "http://index.tianjiemedia.com/";
+  static void shareToTimeline({String mUrl}) {
+    String url = mUrl ?? "http://index.tianjiemedia.com/";
     String title = "Boss说-追踪老板的言论";
     String des = "深度学习大佬的言论文章，找寻你的成功暗门";
     fluwx.WeChatShareWebPageModel model = fluwx.WeChatShareWebPageModel(

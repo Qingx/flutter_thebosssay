@@ -307,7 +307,6 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
       removeBottom: true,
       context: context,
       child: ListView(
-        padding: EdgeInsets.all(16),
         scrollDirection: Axis.vertical,
         controller: scrollController,
         children: [
@@ -322,7 +321,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
             maxLines: 2,
             softWrap: true,
             overflow: TextOverflow.ellipsis,
-          ),
+          ).marginOn(left: 16, right: 16, top: 16),
           Container(
             margin: EdgeInsets.only(top: 8),
             child: Row(
@@ -354,9 +353,10 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
                 ),
               ],
             ),
-          ),
+          ).marginOn(left: 16, right: 16),
           bossWidget(),
           bodyWidget(),
+          copyRightWidget(),
         ],
       ),
     );
@@ -365,6 +365,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   Widget bossWidget() {
     return Container(
       height: 64,
+      margin: EdgeInsets.only(left: 16, right: 15),
       child: Row(
         children: [
           ClipOval(
@@ -435,6 +436,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   Widget bodyWidget() {
     String document = mData.content;
     return Container(
+      margin: EdgeInsets.only(left: 16, right: 16),
       child: Html(
         data: document,
         style: {
@@ -476,5 +478,77 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
       scrollController.position
           .moveTo(scrollController.position.minScrollExtent);
     });
+  }
+
+  Widget copyRightWidget() {
+    return Container(
+      margin: EdgeInsets.only(top: 24),
+      padding: EdgeInsets.only(
+        top: 16,
+        bottom: 16 + MediaQuery.of(context).padding.bottom,
+      ),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(16),
+            topLeft: Radius.circular(16),
+          ),
+          color: BaseColor.loadBg),
+      child: Column(
+        children: [
+          Container(
+            height: 48,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: EdgeInsets.only(left: 40),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: BaseColor.accent,
+                  ),
+                ),
+                Text(
+                  "小编仅搜罗该boss的全网文章，并作整理归纳，\n如若浏览文章请见原文链接：${widget.entity.originLink ?? "暂无"}",
+                  style: TextStyle(
+                    color: BaseColor.textDarkLight,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.start,
+                  softWrap: true,
+                ).marginOn(left: 12),
+              ],
+            ),
+          ),
+          Container(
+            height: 48,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: EdgeInsets.only(left: 40),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: BaseColor.accent,
+                  ),
+                ),
+                Text(
+                  "如有侵权，请发送邮件至cd1369@1369net.com，\n确认后我们将尽快删除。",
+                  style: TextStyle(
+                    color: BaseColor.textDarkLight,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.start,
+                  softWrap: true,
+                ).marginOn(left: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

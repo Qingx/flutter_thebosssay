@@ -7,7 +7,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   String bossId; //bossId
   String title; //标题
   String content; //内容
-  String descContent=""; //摘要
+  String descContent = ""; //摘要
   bool isCollect; //是否收藏
   bool isPoint; //是否点赞
   int point; //点赞数
@@ -15,6 +15,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   int createTime; //创建时间
   int status; //审核状态
   List<String> files = []; //图片列表
+  String originLink; //原文链接
   BossInfoEntity bossVO;
 
   Map<String, dynamic> toMap() {

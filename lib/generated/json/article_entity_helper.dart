@@ -47,6 +47,9 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	if (json['files'] != null) {
 		data.files = (json['files'] as List).map((v) => v.toString()).toList().cast<String>();
 	}
+	if (json['originLink'] != null) {
+		data.originLink = json['originLink'].toString();
+	}
 	if (json['bossVO'] != null) {
 		data.bossVO = BossInfoEntity().fromJson(json['bossVO']);
 	}
@@ -67,6 +70,7 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['createTime'] = entity.createTime;
 	data['status'] = entity.status;
 	data['files'] = entity.files;
+	data['originLink'] = entity.originLink;
 	data['bossVO'] = entity.bossVO?.toJson();
 	return data;
 }
