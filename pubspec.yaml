@@ -49,7 +49,6 @@ dependencies:
   sqflite: ^1.3.2+4
   path: ^1.7.0
   jpush_flutter: ^0.6.3
-  permission_handler: ^5.1.0+2
   connectivity: ^2.0.2
   talkingdata_appanalytics_plugin:
     path: appanalytics library root
