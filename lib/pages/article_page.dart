@@ -440,7 +440,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
         style: {
           "body": Style(
             fontSize: FontSize(17),
-            lineHeight: 30,
+            // lineHeight: 30,
             letterSpacing: 1,
             color: BaseColor.textDarkLight,
             textAlign: TextAlign.start,

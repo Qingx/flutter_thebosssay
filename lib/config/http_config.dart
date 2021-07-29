@@ -42,7 +42,7 @@ class DevEnv extends IEnv {
   @override
   String get baseUrl {
     // return "http://192.168.1.106:8087/"; //李
-    return "http://192.168.1.142:8087/"; //熊
+    // return "http://192.168.1.142:8087/"; //熊
     return "http://api.tianjiemedia.com/"; //阿里云
   }
 
