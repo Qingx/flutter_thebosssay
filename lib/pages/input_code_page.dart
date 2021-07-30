@@ -53,7 +53,7 @@ class _InputCodePageState extends State<InputCodePage> {
         TalkingApi.ins().obtainLogin(event.userInfo.id);
 
         BaseTool.toast(msg: "登录成功");
-        Get.offAll(() => HomePage(), transition: Transition.fadeIn);
+        Get.offAll(() => HomePage());
       }, onError: (res) {
         Get.back();
         print(res);

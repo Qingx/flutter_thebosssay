@@ -10,7 +10,6 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class TalkPage extends StatefulWidget {
   const TalkPage({Key key}) : super(key: key);
@@ -78,8 +77,8 @@ class _TalkPageState extends State<TalkPage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          titleWidget(0).marginOn(left: 16, bottom: 2),
-          titleWidget(1).marginOn(left: 28, bottom: 2),
+          titleWidget(0).marginOn(left: 16),
+          titleWidget(1).marginOn(left: 28),
           Expanded(child: SizedBox()),
           Image.asset(
             R.assetsImgSearch,

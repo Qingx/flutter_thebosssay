@@ -325,7 +325,6 @@ class _FollowContentPageState extends State<FollowContentPage>
   Widget titleWidget() {
     return Container(
       color: BaseColor.pageBg,
-      height: 40,
       padding: EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,

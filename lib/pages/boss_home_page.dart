@@ -388,7 +388,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
             ),
             child: Text(
               hasFollow ? "已追踪" : "追踪",
-              style: TextStyle(color: Colors.white, fontSize: 14),
+              style: TextStyle(color: Colors.white, fontSize: 13),
               softWrap: false,
               maxLines: 1,
               textAlign: TextAlign.center,
@@ -449,7 +449,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   Widget numberWidget() {
     return Container(
-      height: 56,
       padding: EdgeInsets.only(left: 16, top: 12, bottom: 12, right: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,

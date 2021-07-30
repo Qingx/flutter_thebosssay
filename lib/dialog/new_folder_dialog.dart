@@ -16,8 +16,8 @@ Future<dynamic> showNewFolderDialog(BuildContext context,
           borderRadius: BorderRadius.all(Radius.circular(12)),
           child: Container(
             width: 264,
-            height: 196,
-            padding: EdgeInsets.only(left: 24, right: 24, top: 36, bottom: 24),
+            height: 192,
+            padding: EdgeInsets.only(left: 24, right: 24, top: 36),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +64,7 @@ Future<dynamic> showNewFolderDialog(BuildContext context,
                       child: Container(
                         height: 36,
                         alignment: Alignment.center,
-                        margin: EdgeInsets.only(top: 28),
+                        margin: EdgeInsets.only(top: 24),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(4)),
                           color: BaseColor.loadBg,

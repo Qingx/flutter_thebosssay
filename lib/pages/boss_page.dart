@@ -87,7 +87,7 @@ class _BossPageState extends State<BossPage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          titleWidget().marginOn(left: 16, bottom: 2),
+          titleWidget().marginOn(left: 16),
           Expanded(child: SizedBox()),
           Image.asset(
             R.assetsImgSearch,
