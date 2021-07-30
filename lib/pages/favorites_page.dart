@@ -82,7 +82,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     UserApi.ins().obtainFavoriteList().listen((event) {
       mData = event;
       mSelectId.clear();
-
       setState(() {});
 
       controller.finishRefresh(success: true);

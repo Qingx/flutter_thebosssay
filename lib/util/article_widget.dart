@@ -208,7 +208,11 @@ class ArticleWidget {
                     ],
                   ),
                 ),
-                ClipOval(
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.circular(6),
+                  ),
+                  clipBehavior: Clip.antiAlias,
                   child: Image.network(
                     HttpConfig.fullUrl(entity.files[0]),
                     width: 96,
@@ -299,7 +303,11 @@ class ArticleWidget {
               ],
             ),
           ),
-          ClipOval(
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusDirectional.circular(6),
+            ),
+            clipBehavior: Clip.antiAlias,
             child: Image.network(
               HttpConfig.fullUrl(entity.files[0]),
               width: 96,
@@ -465,7 +473,11 @@ class ArticleWidget {
                       (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80,
                 ),
                 itemBuilder: (context, index) {
-                  return ClipOval(
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.circular(6),
+                    ),
+                    clipBehavior: Clip.antiAlias,
                     child: Image.network(
                       HttpConfig.fullUrl(entity.files[index]),
                       height: 80,

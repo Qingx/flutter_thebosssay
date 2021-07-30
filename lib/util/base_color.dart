@@ -10,4 +10,5 @@ class BaseColor {
   static Color line = Color(0x1a000000);
   static Color pageBg = Color(0xfffafafa);
   static Color loadBg = Color(0xffe8e8e8);
+  static Color mineBg = Color(0xfff2f2f2);
 }

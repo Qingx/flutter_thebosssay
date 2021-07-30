@@ -108,16 +108,24 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     });
   }
 
-  void onShare() {
+  void doOnShare() {
     showShareDialog(context, onDismiss: () {
       Get.back();
     }, doClick: (index) {
       switch (index) {
         case 0:
-          BaseTool.shareToSession(mUrl: articleUrl);
+          BaseTool.shareToSession(
+            mUrl: articleUrl,
+            mTitle: articleTitle,
+            mDes: articleDes,
+          );
           break;
         case 1:
-          BaseTool.shareToTimeline(mUrl: articleUrl);
+          BaseTool.shareToTimeline(
+            mUrl: articleUrl,
+            mTitle: articleTitle,
+            mDes: articleDes,
+          );
           break;
         default:
           BaseTool.shareCopyLink(mUrl: articleUrl);
@@ -282,7 +290,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
               .onClick(onFavoriteChange),
           Image.asset(R.assetsImgShareDark, width: 24, height: 24)
               .marginOn(right: 16)
-              .onClick(onShare),
+              .onClick(doOnShare),
         ],
       ),
     );

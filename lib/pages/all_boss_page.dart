@@ -325,7 +325,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
   Widget typeWidget() {
     return Container(
-      width: 96,
+      width: 100,
       color: BaseColor.loadBg,
       child: MediaQuery.removePadding(
         removeBottom: true,
@@ -352,8 +352,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
 
     return hasSelect
         ? Container(
-            width: 96,
-            height: 64,
+            width: 100,
+            height: 72,
             alignment: Alignment.center,
             color: color,
             child: Container(
@@ -472,25 +472,25 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
           ).marginOn(top: 8),
           Text(
             entity.role,
-            style: TextStyle(fontSize: 12, color: BaseColor.textGray),
+            style: TextStyle(fontSize: 10, color: BaseColor.textGray),
             textAlign: TextAlign.center,
             maxLines: 1,
             softWrap: true,
             overflow: TextOverflow.ellipsis,
           ),
           Container(
-            width: 40,
-            height: 18,
-            margin: EdgeInsets.only(top: 8),
+            width: 56,
+            height: 24,
+            margin: EdgeInsets.only(top: 4),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: labelColor,
-              borderRadius: BorderRadius.all(Radius.circular(9)),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             child: Image.asset(
               label,
-              width: 14,
-              height: 14,
+              width: 15,
+              height: 15,
             ),
           ).onClick(() {
             onFollowChanged(entity);
@@ -644,25 +644,25 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
           ).marginOn(top: 8),
           Text(
             entity.role,
-            style: TextStyle(fontSize: 12, color: BaseColor.textGray),
+            style: TextStyle(fontSize: 10, color: BaseColor.textGray),
             textAlign: TextAlign.center,
             maxLines: 1,
             softWrap: true,
             overflow: TextOverflow.ellipsis,
           ),
           Container(
-            width: 40,
-            height: 18,
-            margin: EdgeInsets.only(top: 8),
+            width: 56,
+            height: 24,
+            margin: EdgeInsets.only(top: 4),
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: labelColor,
-              borderRadius: BorderRadius.all(Radius.circular(9)),
+              borderRadius: BorderRadius.all(Radius.circular(12)),
             ),
             child: Image.asset(
               label,
-              width: 14,
-              height: 14,
+              width: 15,
+              height: 15,
             ),
           ).onClick(() {
             onFollowChanged(entity);
