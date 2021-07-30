@@ -143,16 +143,9 @@ class _SquareContentPageState extends State<SquareContentPage>
               (context, index) {
                 ArticleEntity entity = mData[index];
 
-                if (entity.files.isNullOrEmpty()) {
-                  return ArticleWidget.onlyTextNoContent(
-                      entity, index, context);
-                } else if (entity.files.length == 1) {
-                  return ArticleWidget.singleImgNoContent(
-                      entity, index, context);
-                } else {
-                  return ArticleWidget.adTriImgNoContent(
-                      entity, index, context);
-                }
+                return entity.files.isNullOrEmpty()
+                    ? ArticleWidget.onlyTextNoContent(entity, index, context)
+                    : ArticleWidget.singleImgNoContent(entity, index, context);
               },
               childCount: mData.length,
             ),

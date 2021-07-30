@@ -362,13 +362,10 @@ class _FollowContentPageState extends State<FollowContentPage>
               (context, index) {
                 ArticleEntity entity = mData[index];
 
-                if (entity.files.isNullOrEmpty()) {
-                  return ArticleWidget.onlyTextWithContent(
-                      entity, index, context);
-                } else {
-                  return ArticleWidget.singleImgWithContent(
-                      entity, index, context);
-                }
+                return entity.files.isNullOrEmpty()
+                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
+                    : ArticleWidget.singleImgWithContent(
+                        entity, index, context);
               },
               childCount: mData.length,
             ),

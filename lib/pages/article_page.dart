@@ -19,7 +19,6 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class ArticlePage extends StatelessWidget {
   var data = Get.arguments as Map<String, dynamic>;
@@ -103,7 +102,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     BossApi.ins().obtainArticleDetail(articleId).listen((event) {
       hasCollect = event.isCollect;
       articleTitle = event.title;
-      articleDes = event.descContent;
+      articleDes = event.descContent ?? "";
 
       if (!event.files.isNullOrEmpty()) {
         articleCover = event.files[0];
