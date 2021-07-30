@@ -51,10 +51,10 @@ class BaseTool {
   }
 
   ///分享至微信会话
-  static void shareToSession({String mUrl}) {
+  static void shareToSession({String mUrl, String mTitle, String mDes}) {
     String url = mUrl ?? "http://index.tianjiemedia.com/";
-    String title = "Boss说-追踪老板的言论";
-    String des = "深度学习大佬的言论文章，找寻你的成功暗门";
+    String title = mTitle ?? "Boss说-追踪老板的言论";
+    String des = mDes ?? "深度学习大佬的言论文章，找寻你的成功暗门";
     fluwx.WeChatShareWebPageModel model = fluwx.WeChatShareWebPageModel(
       url,
       title: title,
@@ -66,10 +66,10 @@ class BaseTool {
   }
 
   ///分享至微信朋友圈
-  static void shareToTimeline({String mUrl}) {
+  static void shareToTimeline({String mUrl, String mTitle, String mDes}) {
     String url = mUrl ?? "http://index.tianjiemedia.com/";
-    String title = "Boss说-追踪老板的言论";
-    String des = "深度学习大佬的言论文章，找寻你的成功暗门";
+    String title = mTitle ?? "Boss说-追踪老板的言论";
+    String des = mDes ?? "深度学习大佬的言论文章，找寻你的成功暗门";
     fluwx.WeChatShareWebPageModel model = fluwx.WeChatShareWebPageModel(
       url,
       title: title,
@@ -81,8 +81,8 @@ class BaseTool {
   }
 
   ///分享复制链接
-  static void shareCopyLink() {
-    String url = "http://index.tianjiemedia.com/";
+  static void shareCopyLink({String mUrl}) {
+    String url = mUrl ?? "http://index.tianjiemedia.com/";
 
     Clipboard.setData(ClipboardData(text: url))
         .then((value) => BaseTool.toast(msg: "复制成功"));

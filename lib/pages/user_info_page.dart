@@ -107,7 +107,6 @@ class UserInfoPage extends StatelessWidget {
       BaseWidget.showLoadingAlert("正在更新...", context);
       UserApi.ins().obtainChangeName(name).listen((event) {
         entity.nickName = name;
-        UserConfig.getIns().user = entity;
         Global.user.setUser(entity);
 
         Get.back();

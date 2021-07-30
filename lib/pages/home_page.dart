@@ -108,7 +108,6 @@ class _HomePageState extends State<HomePage> {
   void doRefreshUser() {
     UserApi.ins().obtainRefreshUser().listen((event) {
       UserConfig.getIns().token = event.token;
-      UserConfig.getIns().user = event.userInfo;
       Global.user.setUser(event.userInfo);
 
       ///极光推送设置别名
@@ -137,7 +136,10 @@ class _HomePageState extends State<HomePage> {
         print("onOpenNotification:$message");
 
         if (message["extras"]["articleId"] != null) {
-          var data = {"articleId": message["extras"]["articleId"]};
+          var data = {
+            "articleId": message["extras"]["articleId"],
+            "fromHistory": false
+          };
           Get.to(() => ArticlePage(), arguments: data);
         }
       },

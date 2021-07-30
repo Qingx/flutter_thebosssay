@@ -159,11 +159,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
           setState(() {});
         });
       }
-
-      ///添加收藏文章后刷新
-      if (event.obj == RefreshCollectEvent) {
-        // controller?.callRefresh();
-      }
     });
   }
 

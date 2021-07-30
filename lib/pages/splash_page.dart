@@ -108,8 +108,7 @@ class _SplashPageState extends State<SplashPage> {
 
       Get.offAll(() => GuidePage(), arguments: list);
     } else {
-      UserEntity entity = UserConfig.getIns().user;
-      Global.user.setUser(entity);
+      Global.user.setUser(UserConfig.getIns().user);
 
       Get.offAll(() => HomePage());
     }

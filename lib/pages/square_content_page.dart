@@ -57,8 +57,6 @@ class _SquareContentPageState extends State<SquareContentPage>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
-
-    eventBus();
   }
 
   ///初始化获取数据
@@ -71,14 +69,6 @@ class _SquareContentPageState extends State<SquareContentPage>
     }).doOnError((e) {
       print(e);
     }).last;
-  }
-
-  void eventBus() {
-    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      if (event.obj == RefreshCollectEvent) {
-        // controller.callRefresh();
-      }
-    });
   }
 
   @override

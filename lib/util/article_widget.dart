@@ -115,8 +115,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      var data = {"articleId": entity.id, "fromHistory": false};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -258,8 +258,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      var data = {"articleId": entity.id, "fromHistory": false};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -318,8 +318,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      var data = {"articleId": entity.id, "fromHistory": false};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -420,8 +420,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      var data = {"articleId": entity.id, "fromHistory": false};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 
@@ -494,8 +494,8 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      var data = {"articleId": entity.id, "fromHistory": false};
+      Get.to(() => ArticlePage(), arguments: data);
     });
   }
 }

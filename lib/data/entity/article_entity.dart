@@ -15,7 +15,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   int createTime; //创建时间
   int status; //审核状态
   List<String> files = []; //图片列表
-  String originLink; //原文链接
+  String originLink=""; //原文链接
   BossInfoEntity bossVO;
 
   Map<String, dynamic> toMap() {

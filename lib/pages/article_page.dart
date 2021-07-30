@@ -2,98 +2,109 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
-import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
+import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
-import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/style.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'input_phone_page.dart';
 
-class ArticlePage extends StatefulWidget {
-  ArticleEntity entity;
+class ArticlePage extends StatelessWidget {
+  var data = Get.arguments as Map<String, dynamic>;
 
-  ArticlePage({Key key, this.entity}) : super(key: key);
+  ArticlePage({Key key}) : super(key: key);
 
   @override
-  _ArticlePageState createState() => _ArticlePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: BaseColor.pageBg,
+      body: Container(
+        child: Column(
+          children: [
+            Container(
+              color: BaseColor.loadBg,
+              child: BaseWidget.statusBar(context, true),
+            ),
+            TopBarWidget(data),
+            Expanded(
+              child: webWidget(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget webWidget() {
+    return WebView(
+      initialUrl:
+          "${HttpConfig.globalEnv.baseUrl}#/article?id=${data["articleId"]}",
+      javascriptMode: JavascriptMode.unrestricted,
+      onPageFinished: (s) {
+        print('onPageFinished:$s');
+      },
+    );
+  }
 }
 
-class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
-  ScrollController scrollController;
+class TopBarWidget extends StatefulWidget {
+  var data = Get.arguments as Map<String, dynamic>;
 
-  Map<String, dynamic> map;
-  ArticleEntity mData;
+  TopBarWidget(this.data, {Key key}) : super(key: key);
+
+  @override
+  _TopBarWidgetState createState() => _TopBarWidgetState();
+}
+
+class _TopBarWidgetState extends State<TopBarWidget> {
   String articleId;
+  bool fromHistory;
+  String articleUrl;
+  String articleTitle;
+  String articleDes;
   bool hasCollect = false;
 
-  var builderFuture;
+  @override
+  void dispose() {
+    super.dispose();
+
+    TalkingApi.ins().obtainPageEnd("ArticleWebPage");
+  }
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addObserver(this);
+    articleId = widget.data["articleId"];
+    fromHistory = widget.data["fromHistory"];
+    articleUrl = "${HttpConfig.globalEnv.baseUrl}#/article?id=$articleId";
 
-    map = Get.arguments as Map<String, dynamic>;
-    articleId = map["articleId"];
+    doReadArticle();
+    doArticleDetail();
 
-    builderFuture = loadInitData();
-
-    scrollController = ScrollController();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      doReadArticle();
-    });
+    TalkingApi.ins().obtainPageStart("ArticleWebPage");
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
+  void doArticleDetail() {
+    BossApi.ins().obtainArticleDetail(articleId).listen((event) {
+      hasCollect = event.isCollect;
+      articleTitle = event.title;
+      articleDes = event.descContent;
 
-    scrollController?.dispose();
-  }
-
-  ///初始化数据
-  Future<ArticleEntity> loadInitData() {
-    if (widget.entity == null) {
-      return BossApi.ins().obtainArticleDetail(articleId).doOnData((event) {
-        mData = event;
-        hasCollect = mData.isCollect;
-
-        setState(() {});
-      }).last;
-    } else {
-      return Observable<ArticleEntity>.just(widget.entity).doOnData((event) {
-        mData = event;
-        hasCollect = mData.isCollect;
-        setState(() {});
-      }).last;
-    }
-  }
-
-  ///阅读文章
-  void doReadArticle() {
-    UserApi.ins().obtainReadArticle(articleId).listen((event) {
-      UserEntity user = Global.user.user.value;
-      user.readNum++;
-      Global.user.setUser(user);
-      UserConfig.getIns().user = user;
+      setState(() {});
     });
   }
 
@@ -103,16 +114,27 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
     }, doClick: (index) {
       switch (index) {
         case 0:
-          BaseTool.shareToSession();
+          BaseTool.shareToSession(mUrl: articleUrl);
           break;
         case 1:
-          BaseTool.shareToTimeline();
+          BaseTool.shareToTimeline(mUrl: articleUrl);
           break;
         default:
-          BaseTool.shareCopyLink();
+          BaseTool.shareCopyLink(mUrl: articleUrl);
           break;
       }
     });
+  }
+
+  ///阅读文章
+  void doReadArticle() {
+    if (!fromHistory) {
+      UserApi.ins().obtainReadArticle(articleId).listen((event) {
+        UserEntity user = Global.user.user.value;
+        user.readNum++;
+        Global.user.setUser(user);
+      });
+    }
   }
 
   void onFavoriteChange() {
@@ -137,7 +159,7 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
       showSelectFolderDialog(context, event, onDismiss: () {
         Get.back();
       }, onConfirm: (folderId) {
-        tryFavoriteArticle(mData.id, folderId);
+        tryFavoriteArticle(articleId, folderId);
       }, onCreate: () {
         showAddFolder();
       });
@@ -158,15 +180,18 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   void onAddFolder(name) {
     BaseWidget.showLoadingAlert("尝试收藏...", context);
     UserApi.ins().obtainCreateFavorite(name).flatMap((value) {
-      return UserApi.ins().obtainFavoriteArticle(mData.id, value.id);
+      return UserApi.ins().obtainFavoriteArticle(articleId, value.id);
     }).listen((event) {
       Get.back();
       Get.back();
       Get.back();
 
       hasCollect = true;
-      mData.isCollect = true;
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+
+      var user = Global.user.user.value;
+      user.collectNum++;
+      Global.user.setUser(user);
+
       Global.eventBus.fire(BaseEvent(RefreshCollectEvent));
       setState(() {});
 
@@ -187,8 +212,11 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
       Get.back();
 
       hasCollect = true;
-      mData.isCollect = true;
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+
+      UserEntity user = Global.user.user.value;
+      user.collectNum++;
+      Global.user.setUser(user);
+
       Global.eventBus.fire(BaseEvent(RefreshCollectEvent));
       setState(() {});
 
@@ -205,12 +233,15 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
   void tryCancelFavoriteArticle() {
     BaseWidget.showLoadingAlert("取消收藏...", context);
 
-    UserApi.ins().obtainCancelFavoriteArticle(mData.id).listen((event) {
+    UserApi.ins().obtainCancelFavoriteArticle(articleId).listen((event) {
       Get.back();
 
       hasCollect = false;
-      mData.isCollect = false;
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+
+      UserEntity user = Global.user.user.value;
+      user.collectNum--;
+      Global.user.setUser(user);
+
       Global.eventBus.fire(BaseEvent(RefreshCollectEvent));
       setState(() {});
 
@@ -225,328 +256,33 @@ class _ArticlePageState extends State<ArticlePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: BaseColor.pageBg,
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              color: BaseColor.loadBg,
-              child: BaseWidget.statusBar(context, true),
-            ),
-            Container(
-              color: BaseColor.loadBg,
-              height: 44,
-              padding: EdgeInsets.only(left: 12, right: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.arrow_back,
-                    color: BaseColor.textDark,
-                    size: 28,
-                  ).onClick(() {
-                    Get.back();
-                  }),
-                  Expanded(child: SizedBox()),
-                  Image.asset(
-                          hasCollect
-                              ? R.assetsImgFavoriteAccent
-                              : R.assetsImgFavoriteDark,
-                          width: 24,
-                          height: 24)
-                      .marginOn(right: 20)
-                      .onClick(onFavoriteChange),
-                  Image.asset(R.assetsImgShareDark, width: 24, height: 24)
-                      .marginOn(right: 16)
-                      .onClick(onShare),
-                ],
-              ),
-            ),
-            Expanded(
-              child: futureWidget(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget futureWidget() {
-    return FutureBuilder(
-      builder: (BuildContext context, AsyncSnapshot<ArticleEntity> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasData) {
-            return Stack(
-              children: [
-                contentWidget()
-                    .positionOn(top: 0, bottom: 0, left: 0, right: 0),
-                floatWidget().positionOn(
-                    bottom: MediaQuery.of(context).padding.bottom + 64,
-                    right: 16),
-              ],
-            );
-          } else
-            return BaseWidget.errorWidget(() {
-              loadInitData();
-              setState(() {});
-            });
-        } else {
-          return BaseWidget.loadingWidget();
-        }
-      },
-      future: builderFuture,
-    );
-  }
-
-  Widget contentWidget() {
-    return MediaQuery.removePadding(
-      removeTop: true,
-      removeBottom: true,
-      context: context,
-      child: ListView(
-        scrollDirection: Axis.vertical,
-        controller: scrollController,
-        children: [
-          Text(
-            mData.title,
-            style: TextStyle(
-              fontSize: 18,
-              color: BaseColor.textDark,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.start,
-            maxLines: 2,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-          ).marginOn(left: 16, right: 16, top: 16),
-          Container(
-            margin: EdgeInsets.only(top: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${mData.collect}k收藏·${mData.point}w浏览",
-                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
-                  softWrap: false,
-                  maxLines: 1,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Expanded(child: SizedBox()),
-                Icon(
-                  Icons.access_time,
-                  color: BaseColor.textGray,
-                  size: 14,
-                ).marginOn(right: 4),
-                Text(
-                  BaseTool.getUpdateTime(mData.createTime)
-                      .replaceAll(RegExp(r'更新'), ""),
-                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
-                  softWrap: false,
-                  maxLines: 1,
-                  textAlign: TextAlign.end,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ).marginOn(left: 16, right: 16),
-          bossWidget(),
-          bodyWidget(),
-          copyRightWidget(),
-        ],
-      ),
-    );
-  }
-
-  Widget bossWidget() {
     return Container(
-      height: 64,
-      margin: EdgeInsets.only(left: 16, right: 15),
+      color: BaseColor.loadBg,
+      height: 44,
+      padding: EdgeInsets.only(left: 12, right: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ClipOval(
-            child: Image.network(
-              HttpConfig.fullUrl(mData.bossVO.head),
-              width: 32,
-              height: 32,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  R.assetsImgTestPhoto,
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: 12, right: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        mData.bossVO.name,
-                        style: TextStyle(
-                            color: BaseColor.textDark,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold),
-                        softWrap: false,
-                        maxLines: 1,
-                        textAlign: TextAlign.start,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Image.asset(
-                        R.assetsImgBossLabel,
-                        width: 56,
-                        height: 16,
-                      ).marginOn(left: 8)
-                    ],
-                  ),
-                  Text(
-                    mData.bossVO.role,
-                    style: TextStyle(
-                      color: BaseColor.textGray,
-                      fontSize: 10,
-                    ),
-                    softWrap: false,
-                    maxLines: 1,
-                    textAlign: TextAlign.start,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget bodyWidget() {
-    String document = mData.content;
-    return Container(
-      margin: EdgeInsets.only(left: 16, right: 16),
-      child: Html(
-        data: document,
-        style: {
-          "body": Style(
-            fontSize: FontSize(17),
-            // lineHeight: 30,
-            letterSpacing: 1,
-            color: BaseColor.textDarkLight,
-            textAlign: TextAlign.start,
-          ),
-        },
-      ),
-    );
-  }
-
-  Widget floatWidget() {
-    return Container(
-      alignment: Alignment.center,
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-              color: BaseColor.line,
-              offset: Offset(0.0, 4.0), //阴影x,y轴偏移量
-              blurRadius: 4, //阴影模糊程度
-              spreadRadius: 0 //阴影扩散程度
-              )
-        ],
-      ),
-      child: Icon(
-        Icons.keyboard_arrow_up,
-        color: BaseColor.textDark,
-        size: 24,
-      ),
-    ).onClick(() {
-      scrollController.position
-          .moveTo(scrollController.position.minScrollExtent);
-    });
-  }
-
-  Widget copyRightWidget() {
-    return Container(
-      margin: EdgeInsets.only(top: 24),
-      padding: EdgeInsets.only(
-        top: 16,
-        bottom: 16 + MediaQuery.of(context).padding.bottom,
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(16),
-            topLeft: Radius.circular(16),
-          ),
-          color: BaseColor.loadBg),
-      child: Column(
-        children: [
-          Container(
-            height: 48,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  margin: EdgeInsets.only(left: 40),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: BaseColor.accent,
-                  ),
-                ),
-                Text(
-                  "小编仅搜罗该boss的全网文章，并作整理归纳，\n如若浏览文章请见原文链接：${widget.entity.originLink ?? "暂无"}",
-                  style: TextStyle(
-                    color: BaseColor.textDarkLight,
-                    fontSize: 12,
-                  ),
-                  textAlign: TextAlign.start,
-                  softWrap: true,
-                ).marginOn(left: 12),
-              ],
-            ),
-          ),
-          Container(
-            height: 48,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  margin: EdgeInsets.only(left: 40),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: BaseColor.accent,
-                  ),
-                ),
-                Text(
-                  "如有侵权，请发送邮件至cd1369@1369net.com，\n确认后我们将尽快删除。",
-                  style: TextStyle(
-                    color: BaseColor.textDarkLight,
-                    fontSize: 12,
-                  ),
-                  textAlign: TextAlign.start,
-                  softWrap: true,
-                ).marginOn(left: 12),
-              ],
-            ),
-          ),
+          Icon(
+            Icons.arrow_back,
+            color: BaseColor.textDark,
+            size: 28,
+          ).onClick(() {
+            Get.back();
+          }),
+          Expanded(child: SizedBox()),
+          Image.asset(
+                  hasCollect
+                      ? R.assetsImgFavoriteAccent
+                      : R.assetsImgFavoriteDark,
+                  width: 24,
+                  height: 24)
+              .marginOn(right: 20)
+              .onClick(onFavoriteChange),
+          Image.asset(R.assetsImgShareDark, width: 24, height: 24)
+              .marginOn(right: 16)
+              .onClick(onShare),
         ],
       ),
     );
