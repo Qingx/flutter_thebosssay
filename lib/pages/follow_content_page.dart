@@ -317,7 +317,8 @@ class _FollowContentPageState extends State<FollowContentPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(),
+          arguments: entity, transition: Transition.rightToLeftWithFade);
     });
   }
 

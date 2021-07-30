@@ -126,7 +126,7 @@ class _TalkPageState extends State<TalkPage>
 
   void onSearchClick() {
     if (Global.hint.canUse.value) {
-      Get.to(() => SearchArticlePage());
+      Get.to(() => SearchArticlePage(), transition: Transition.fadeIn);
     }
   }
 }

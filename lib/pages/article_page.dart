@@ -10,6 +10,7 @@ import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
+import 'package:flutter_boss_says/pages/input_phone_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -18,8 +19,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-import 'input_phone_page.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class ArticlePage extends StatelessWidget {
   var data = Get.arguments as Map<String, dynamic>;
@@ -75,6 +75,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   String articleUrl;
   String articleTitle;
   String articleDes;
+  String articleCover;
   bool hasCollect = false;
 
   @override
@@ -104,6 +105,10 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       articleTitle = event.title;
       articleDes = event.descContent;
 
+      if (!event.files.isNullOrEmpty()) {
+        articleCover = event.files[0];
+      }
+
       setState(() {});
     });
   }
@@ -118,6 +123,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             mUrl: articleUrl,
             mTitle: articleTitle,
             mDes: articleDes,
+            thumbnail: articleCover,
           );
           break;
         case 1:
@@ -125,6 +131,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             mUrl: articleUrl,
             mTitle: articleTitle,
             mDes: articleDes,
+            thumbnail: articleCover,
           );
           break;
         default:

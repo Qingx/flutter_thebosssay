@@ -273,8 +273,7 @@ class _MinePageState extends State<MinePage>
                     controller.user.value.type == BaseEmpty.emptyUser.type
                         ? "游客：${UserConfig.getIns().tempId.substring(0, 12)}..."
                         : "ID：${controller.user.value.id}",
-                    style:
-                        TextStyle(fontSize: 16, color: BaseColor.textDarkLight),
+                    style: TextStyle(fontSize: 16, color: BaseColor.textDarkLight),
                     softWrap: false,
                     maxLines: 1,
                     textAlign: TextAlign.start,

@@ -236,7 +236,8 @@ class _BossContentPageState extends State<BossContentPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(),
+          arguments: entity, transition: Transition.rightToLeftWithFade);
     });
   }
 

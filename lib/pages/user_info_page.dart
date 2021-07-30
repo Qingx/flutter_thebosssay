@@ -26,7 +26,7 @@ class UserInfoPage extends StatelessWidget {
     UserConfig.getIns().clear();
     Global.user.setUser(BaseEmpty.emptyUser);
     BaseTool.toast(msg: "退出成功");
-    Get.offAll(() => HomePage());
+    Get.offAll(() => HomePage(), transition: Transition.fadeIn);
   }
 
   ///点击修改

@@ -498,7 +498,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(),
+          arguments: entity, transition: Transition.rightToLeftWithFade);
     });
   }
 
@@ -670,7 +671,8 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(),
+          arguments: entity, transition: Transition.rightToLeftWithFade);
     });
   }
 

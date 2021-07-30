@@ -3,6 +3,7 @@ import 'package:flutter_boss_says/r.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:uuid/uuid.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class BaseTool {
   static bool eq(double num1, double num2) {
@@ -51,7 +52,12 @@ class BaseTool {
   }
 
   ///分享至微信会话
-  static void shareToSession({String mUrl, String mTitle, String mDes}) {
+  static void shareToSession({
+    String mUrl,
+    String mTitle,
+    String mDes,
+    String thumbnail,
+  }) {
     String url = mUrl ?? "http://index.tianjiemedia.com/";
     String title = mTitle ?? "Boss说-追踪老板的言论";
     String des = mDes ?? "深度学习大佬的言论文章，找寻你的成功暗门";
@@ -60,13 +66,16 @@ class BaseTool {
       title: title,
       description: des,
       scene: fluwx.WeChatScene.SESSION,
-      thumbnail: fluwx.WeChatImage.asset(R.assetsImgAboutUsLogo),
+      thumbnail: thumbnail.isNullOrEmpty()
+          ? fluwx.WeChatImage.asset(R.assetsImgAboutUsLogo)
+          : fluwx.WeChatImage.network(thumbnail),
     );
     fluwx.shareToWeChat(model);
   }
 
   ///分享至微信朋友圈
-  static void shareToTimeline({String mUrl, String mTitle, String mDes}) {
+  static void shareToTimeline(
+      {String mUrl, String mTitle, String mDes, String thumbnail}) {
     String url = mUrl ?? "http://index.tianjiemedia.com/";
     String title = mTitle ?? "Boss说-追踪老板的言论";
     String des = mDes ?? "深度学习大佬的言论文章，找寻你的成功暗门";
@@ -75,7 +84,9 @@ class BaseTool {
       title: title,
       description: des,
       scene: fluwx.WeChatScene.TIMELINE,
-      thumbnail: fluwx.WeChatImage.asset(R.assetsImgAboutUsLogo),
+      thumbnail: thumbnail.isNullOrEmpty()
+          ? fluwx.WeChatImage.asset(R.assetsImgAboutUsLogo)
+          : fluwx.WeChatImage.network(thumbnail),
     );
     fluwx.shareToWeChat(model);
   }

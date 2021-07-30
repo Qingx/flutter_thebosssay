@@ -13,7 +13,6 @@ import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
-import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
@@ -271,7 +270,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   void onWatchMore() {
-    Get.to(() => BossInfoPage(), arguments: entity);
+    Get.to(() => BossInfoPage(),
+        arguments: entity, transition: Transition.rightToLeftWithFade);
   }
 
   Widget builderWidget(BuildContext context,
@@ -411,15 +411,19 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                         borderRadius: BorderRadius.all(Radius.circular(4)),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
-                        entity.role,
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 240),
+                        child: Text(
+                          entity.role,
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
+                    Expanded(child: SizedBox()),
                   ],
                 ),
                 Text(

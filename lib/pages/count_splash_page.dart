@@ -144,9 +144,10 @@ class _SplashPageState extends State<SplashPage> {
 
       if (currentTime < 0) {
         if (firstUse) {
-          Get.off(() => GuidePage(), arguments: list);
+          Get.off(() => GuidePage(),
+              arguments: list, transition: Transition.fadeIn);
         } else {
-          Get.off(() => HomePage());
+          Get.off(() => HomePage(), transition: Transition.fadeIn);
         }
 
         mDispose?.cancel();
