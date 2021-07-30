@@ -503,6 +503,9 @@ class ArticleWidget {
           )
         ],
       ),
-    );
+    ).onClick(() {
+      var data = {"articleId": entity.id, "fromHistory": false};
+      Get.to(() => ArticlePage(), arguments: data);
+    });
   }
 }
