@@ -136,11 +136,8 @@ class _HomePageState extends State<HomePage> {
         print("onOpenNotification:$message");
 
         if (message["extras"]["articleId"] != null) {
-          var data = {
-            "articleId": message["extras"]["articleId"],
-            "fromHistory": false
-          };
-          Get.to(() => ArticlePage(), arguments: data);
+          Get.to(() => ArticlePage(),
+              arguments: message["extras"]["articleId"]);
         }
       },
     );

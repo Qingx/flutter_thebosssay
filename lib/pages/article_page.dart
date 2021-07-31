@@ -21,7 +21,7 @@ import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticlePage extends StatelessWidget {
-  var data = Get.arguments as Map<String, dynamic>;
+  String articleId = Get.arguments as String;
 
   ArticlePage({Key key}) : super(key: key);
 
@@ -37,7 +37,7 @@ class ArticlePage extends StatelessWidget {
               color: BaseColor.loadBg,
               child: BaseWidget.statusBar(context, true),
             ),
-            TopBarWidget(data),
+            TopBarWidget(articleId),
             Expanded(
               child: webWidget(),
             ),
@@ -49,8 +49,7 @@ class ArticlePage extends StatelessWidget {
 
   Widget webWidget() {
     return WebView(
-      initialUrl:
-          "${HttpConfig.globalEnv.baseUrl}#/article?id=${data["articleId"]}",
+      initialUrl: "${HttpConfig.globalEnv.baseUrl}#/article?id=$articleId",
       javascriptMode: JavascriptMode.unrestricted,
       onPageFinished: (s) {
         print('onPageFinished:$s');
@@ -60,17 +59,15 @@ class ArticlePage extends StatelessWidget {
 }
 
 class TopBarWidget extends StatefulWidget {
-  var data = Get.arguments as Map<String, dynamic>;
+  String articleId;
 
-  TopBarWidget(this.data, {Key key}) : super(key: key);
+  TopBarWidget(this.articleId, {Key key}) : super(key: key);
 
   @override
   _TopBarWidgetState createState() => _TopBarWidgetState();
 }
 
 class _TopBarWidgetState extends State<TopBarWidget> {
-  String articleId;
-  bool fromHistory;
   String articleUrl;
   String articleTitle;
   String articleDes;
@@ -88,9 +85,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   void initState() {
     super.initState();
 
-    articleId = widget.data["articleId"];
-    fromHistory = widget.data["fromHistory"];
-    articleUrl = "${HttpConfig.globalEnv.baseUrl}#/article?id=$articleId";
+    articleUrl =
+        "${HttpConfig.globalEnv.baseUrl}#/article?id=${widget.articleId}";
 
     doReadArticle();
     doArticleDetail();
@@ -99,7 +95,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   }
 
   void doArticleDetail() {
-    BossApi.ins().obtainArticleDetail(articleId).listen((event) {
+    BossApi.ins().obtainArticleDetail(widget.articleId).listen((event) {
       hasCollect = event.isCollect;
       articleTitle = event.title;
       articleDes = event.descContent ?? "";
@@ -142,13 +138,11 @@ class _TopBarWidgetState extends State<TopBarWidget> {
 
   ///阅读文章
   void doReadArticle() {
-    if (!fromHistory) {
-      UserApi.ins().obtainReadArticle(articleId).listen((event) {
-        UserEntity user = Global.user.user.value;
-        user.readNum++;
-        Global.user.setUser(user);
-      });
-    }
+    UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {
+      UserEntity user = Global.user.user.value;
+      user.readNum++;
+      Global.user.setUser(user);
+    });
   }
 
   void onFavoriteChange() {
@@ -173,7 +167,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       showSelectFolderDialog(context, event, onDismiss: () {
         Get.back();
       }, onConfirm: (folderId) {
-        tryFavoriteArticle(articleId, folderId);
+        tryFavoriteArticle(widget.articleId, folderId);
       }, onCreate: () {
         showAddFolder();
       });
@@ -194,7 +188,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   void onAddFolder(name) {
     BaseWidget.showLoadingAlert("尝试收藏...", context);
     UserApi.ins().obtainCreateFavorite(name).flatMap((value) {
-      return UserApi.ins().obtainFavoriteArticle(articleId, value.id);
+      return UserApi.ins().obtainFavoriteArticle(widget.articleId, value.id);
     }).listen((event) {
       Get.back();
       Get.back();
@@ -247,7 +241,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   void tryCancelFavoriteArticle() {
     BaseWidget.showLoadingAlert("取消收藏...", context);
 
-    UserApi.ins().obtainCancelFavoriteArticle(articleId).listen((event) {
+    UserApi.ins().obtainCancelFavoriteArticle(widget.articleId).listen((event) {
       Get.back();
 
       hasCollect = false;

@@ -302,8 +302,7 @@ class _HistoryPageState extends State<HistoryPage>
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.articleId, "fromHistory": true};
-      Get.to(() => ArticlePage(), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.articleId);
     });
   }
 
