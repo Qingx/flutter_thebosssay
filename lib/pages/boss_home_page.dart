@@ -449,7 +449,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   Widget numberWidget() {
     return Container(
-      padding: EdgeInsets.only(left: 16, top: 12, bottom: 12, right: 16),
+      padding: EdgeInsets.only(left: 16, top: 16, bottom: 16, right: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -740,7 +740,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     String content = "最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        256;
+        320;
     return Container(
       height: height,
       child: Center(

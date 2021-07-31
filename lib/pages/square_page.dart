@@ -68,8 +68,8 @@ class _SquarePageState extends State<SquarePage>
 
   Widget tabWidget() {
     return Container(
-      height: 40,
-      padding: EdgeInsets.only(top: 6, bottom: 6),
+      height: 52,
+      padding: EdgeInsets.only(top: 12, bottom: 12),
       child: MediaQuery.removePadding(
         removeTop: true,
         removeBottom: true,

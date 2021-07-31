@@ -296,19 +296,13 @@ class _BossContentPageState extends State<BossContentPage>
           loadingItemWidget(1, 16),
           loadingItemWidget(0.2, 8),
           loadingItemWidget(0.6, 8),
-          Container(
-              margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-              height: 48,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SpinKitFadingCircle(
-                    color: Color(0xff0e1e1e1),
-                    size: 48,
-                    duration: Duration(milliseconds: 2000),
-                  ),
-                ],
-              )),
+          loadingItemWidget(0.7, 24),
+          loadingItemWidget(0.3, 8),
+          loadingItemWidget(1, 16),
+          loadingItemWidget(1, 8),
+          loadingItemWidget(1, 8),
+          loadingItemWidget(0.6, 8),
+          loadingItemWidget(0.4, 8),
         ],
       ),
     );

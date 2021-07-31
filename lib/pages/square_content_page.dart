@@ -157,7 +157,7 @@ class _SquareContentPageState extends State<SquareContentPage>
     String content = " 最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        180;
+        240;
     return Container(
       height: height,
       child: Center(
@@ -197,19 +197,13 @@ class _SquareContentPageState extends State<SquareContentPage>
           loadingItemWidget(1, 16),
           loadingItemWidget(0.2, 8),
           loadingItemWidget(0.6, 8),
-          Container(
-              margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-              height: 48,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SpinKitFadingCircle(
-                    color: Color(0xff0e1e1e1),
-                    size: 48,
-                    duration: Duration(milliseconds: 2000),
-                  ),
-                ],
-              )),
+          loadingItemWidget(0.7, 24),
+          loadingItemWidget(0.3, 8),
+          loadingItemWidget(1, 16),
+          loadingItemWidget(1, 8),
+          loadingItemWidget(1, 8),
+          loadingItemWidget(0.6, 8),
+          loadingItemWidget(0.4, 8),
         ],
       ),
     );

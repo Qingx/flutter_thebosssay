@@ -124,8 +124,8 @@ class _FollowPageState extends State<FollowPage>
 
   Widget tabWidget() {
     return Container(
-      height: 40,
-      padding: EdgeInsets.only(top: 6, bottom: 6),
+      height: 52,
+      padding: EdgeInsets.only(top: 12, bottom: 12),
       child: MediaQuery.removePadding(
         removeTop: true,
         removeBottom: true,
@@ -208,8 +208,8 @@ class _FollowPageState extends State<FollowPage>
 
   Widget loadTabWidget() {
     return Container(
-      height: 40,
-      padding: EdgeInsets.only(top: 12),
+      height: 52,
+      padding: EdgeInsets.only(top: 12, bottom: 12),
       child: MediaQuery.removePadding(
         removeTop: true,
         removeBottom: true,
@@ -253,8 +253,8 @@ class _FollowPageState extends State<FollowPage>
 
   Widget loadCardWidget() {
     return Container(
-      height: 188,
-      padding: EdgeInsets.only(top: 24, bottom: 24),
+      height: 180,
+      padding: EdgeInsets.only(top: 12, bottom: 24),
       child: MediaQuery.removePadding(
         removeBottom: true,
         removeTop: true,

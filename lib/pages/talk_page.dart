@@ -72,7 +72,7 @@ class _TalkPageState extends State<TalkPage>
 
   Widget titleTabBar() {
     return Container(
-      height: 40,
+      alignment: Alignment.bottomLeft,
       color: BaseColor.pageBg,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -84,7 +84,7 @@ class _TalkPageState extends State<TalkPage>
             R.assetsImgSearch,
             width: 20,
             height: 20,
-          ).onClick(onSearchClick).marginOn(right: 16, bottom: 8)
+          ).onClick(onSearchClick).marginOn(right: 16)
         ],
       ),
     );
