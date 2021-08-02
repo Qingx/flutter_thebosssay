@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0801686B26B7921A003946D3 /* AppScore.m in Sources */ = {isa = PBXBuildFile; fileRef = 0801686A26B7921A003946D3 /* AppScore.m */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -31,6 +32,8 @@
 
 /* Begin PBXFileReference section */
 		04A0AF5426A6C886004E142B /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		0801686926B7921A003946D3 /* AppScore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppScore.h; sourceTree = "<group>"; };
+		0801686A26B7921A003946D3 /* AppScore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppScore.m; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		2691243FCC3042ABA9D53D53 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
@@ -62,6 +65,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0801686826B791F8003946D3 /* AppScore */ = {
+			isa = PBXGroup;
+			children = (
+				0801686926B7921A003946D3 /* AppScore.h */,
+				0801686A26B7921A003946D3 /* AppScore.m */,
+			);
+			path = AppScore;
+			sourceTree = "<group>";
+		};
 		87134034480C782DD735BEED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +115,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				0801686826B791F8003946D3 /* AppScore */,
 				04A0AF5426A6C886004E142B /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -274,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				0801686B26B7921A003946D3 /* AppScore.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
