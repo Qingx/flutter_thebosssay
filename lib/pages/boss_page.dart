@@ -101,7 +101,7 @@ class _BossPageState extends State<BossPage>
 
   Widget titleWidget() {
     return Text(
-      "老板's",
+      "我的追踪",
       style: TextStyle(
         fontSize: 28,
         color: BaseColor.textDark,
@@ -141,6 +141,7 @@ class _BossPageState extends State<BossPage>
     Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
     Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
 
+    String name = entity.id == "-1" ? "全部" : entity.name;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
       padding: EdgeInsets.only(left: 12, right: 12),
@@ -148,7 +149,7 @@ class _BossPageState extends State<BossPage>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          entity.name,
+          name,
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),

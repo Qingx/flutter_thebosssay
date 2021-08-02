@@ -351,7 +351,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                   maxLines: 1,
                 ),
                 Text(
-                  "${entity.point ?? 0}万阅读·${entity.totalCount ?? 0}篇言论",
+                  "${entity.point ?? 0}万阅读·${entity.totalCount ?? 0}篇言论·${entity.collect ?? 0}关注",
                   style: TextStyle(fontSize: 12, color: Colors.white),
                   softWrap: false,
                   maxLines: 1,
@@ -451,7 +451,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            "ta的言论",
+            "Ta的言论",
             style: TextStyle(
                 fontSize: 24,
                 color: BaseColor.textDark,

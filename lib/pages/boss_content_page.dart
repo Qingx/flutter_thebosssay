@@ -14,6 +14,7 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 
@@ -65,7 +66,15 @@ class _BossContentPageState extends State<BossContentPage>
   ///eventBus
   void eventBus() {
     eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
-      controller.callRefresh();
+      if (event.needLoading) {
+        controller.callRefresh();
+      } else {
+        var index = mData.indexWhere((element) => element.id == event.id);
+        if (index != null) {
+          mData.removeAt(index);
+          setState(() {});
+        }
+      }
     });
   }
 
@@ -90,6 +99,35 @@ class _BossContentPageState extends State<BossContentPage>
     }, onError: (res) {
       controller.finishRefresh(success: false);
     });
+  }
+
+  ///置顶
+  void doAddTop(String id) {
+    var index = mData.indexWhere((element) => element.id == id);
+    if (index != null) {
+      var entity = mData[index];
+      mData.removeAt(index);
+      mData = [entity, ...mData];
+      setState(() {});
+    }
+  }
+
+  ///取消追踪
+  void doCancelFollow(String id) {
+    var index = mData.indexWhere((element) => element.id == id);
+    if (index != null) {
+      BaseWidget.showLoadingAlert("尝试取消...", context);
+
+      BossApi.ins().obtainNoFollowBoss(id).listen((event) {
+        Get.back();
+
+        Global.eventBus.fire(
+            RefreshFollowEvent(id: id, isFollow: false, needLoading: false));
+      }, onError: (res) {
+        Get.back();
+        BaseTool.toast(msg: "取消失败,${res.msg}");
+      });
+    }
   }
 
   @override
@@ -147,93 +185,117 @@ class _BossContentPageState extends State<BossContentPage>
   }
 
   Widget bodyItemWidget(BossInfoEntity entity, int index) {
-    return Container(
-      padding: EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
-      height: 80,
-      color: BaseColor.pageBg,
-      child: Row(
-        children: [
-          ClipOval(
-            child: Image.network(
-              HttpConfig.fullUrl(entity.head),
-              width: 56,
-              height: 56,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  R.assetsImgDefaultHead,
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                );
-              },
+    return Slidable(
+      child: Container(
+        padding: EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
+        height: 80,
+        color: BaseColor.pageBg,
+        child: Row(
+          children: [
+            ClipOval(
+              child: Image.network(
+                HttpConfig.fullUrl(entity.head),
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    R.assetsImgDefaultHead,
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
             ),
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                entity.name,
-                                style: TextStyle(
-                                    color: BaseColor.textDark,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.start,
-                                softWrap: false,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  entity.name,
+                                  style: TextStyle(
+                                      color: BaseColor.textDark,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.start,
+                                  softWrap: false,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ).marginOn(left: 8),
+                              ),
+                              Image.asset(
+                                R.assetsImgBossLabel,
+                                width: 56,
+                                height: 16,
                               ).marginOn(left: 8),
-                            ),
-                            Image.asset(
-                              R.assetsImgBossLabel,
-                              width: 56,
-                              height: 16,
-                            ).marginOn(left: 8),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Text(
-                        BaseTool.getUpdateTime(entity.updateTime),
-                        style: TextStyle(
-                            fontSize: 12, color: BaseColor.textDarkLight),
-                        textAlign: TextAlign.end,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                    ],
+                        Text(
+                          BaseTool.getUpdateTime(entity.updateTime),
+                          style: TextStyle(
+                              fontSize: 12, color: BaseColor.textDarkLight),
+                          textAlign: TextAlign.end,
+                          softWrap: false,
+                          maxLines: 1,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Text(
-                  entity.role,
-                  style:
-                      TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
-                  softWrap: false,
-                  maxLines: 1,
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                ).marginOn(left: 8),
-              ],
+                  Text(
+                    entity.role,
+                    style:
+                        TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                    softWrap: false,
+                    maxLines: 1,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(left: 8),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    ).onClick(() {
-      Get.to(() => BossHomePage(),
-          arguments: entity, transition: Transition.rightToLeftWithFade);
-    });
+          ],
+        ),
+      ).onClick(() {
+        Get.to(() => BossHomePage(),
+            arguments: entity, transition: Transition.rightToLeftWithFade);
+      }),
+      actionPane: SlidableScrollActionPane(),
+      key: Key(entity.id),
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: '置顶',
+          color: BaseColor.accent,
+          icon: Icons.vertical_align_top,
+          closeOnTap: false,
+          onTap: () {
+            doAddTop(entity.id);
+          },
+        ),
+        IconSlideAction(
+          caption: '取消追踪',
+          color: Colors.red,
+          icon: Icons.delete,
+          closeOnTap: false,
+          onTap: () {
+            doCancelFollow(entity.id);
+          },
+        ),
+      ],
+    );
   }
 
   Widget emptyBodyWidget() {

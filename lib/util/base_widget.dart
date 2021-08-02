@@ -195,6 +195,54 @@ class BaseWidget {
     );
   }
 
+  static EasyRefresh bossRefreshWidget(
+      {List<Widget> slivers,
+      EasyRefreshController controller,
+      ScrollController scrollController,
+      Function loadData}) {
+    return EasyRefresh.custom(
+      enableControlFinishRefresh: true,
+      taskIndependence: false,
+      controller: controller,
+      scrollController: scrollController,
+      scrollDirection: Axis.vertical,
+      topBouncing: true,
+      bottomBouncing: true,
+      header: ClassicalHeader(
+        enableInfiniteRefresh: false,
+        bgColor: null,
+        infoColor: BaseColor.textDark,
+        float: false,
+        enableHapticFeedback: true,
+        refreshText: "下拉以刷新",
+        refreshReadyText: "释放以刷新",
+        refreshingText: "正在刷新",
+        refreshedText: "刷新完成",
+        refreshFailedText: "刷新失败",
+        noMoreText: "没有更多数据了",
+        infoText: "上次更新 %T",
+      ),
+      footer: ClassicalFooter(
+        enableInfiniteLoad: true,
+        enableHapticFeedback: true,
+        infoColor: BaseColor.textDark,
+        loadText: "上拉以加载",
+        loadReadyText: "释放以加载",
+        loadingText: "正在加载",
+        loadedText: "加载完成",
+        loadFailedText: "加载失败",
+        noMoreText: "没有更多数据了",
+        infoText: "上次更新 %T",
+      ),
+      onRefresh: () async {
+        await Future.delayed(Duration(seconds: 0), () {
+          loadData();
+        });
+      },
+      slivers: slivers,
+    );
+  }
+
   static EasyRefresh noRefreshWidget(
       {List<Widget> slivers,
       EasyRefreshController controller,
