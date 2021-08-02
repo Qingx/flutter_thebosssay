@@ -141,7 +141,7 @@ class BossInfoPage extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  R.assetsImgTestPhoto,
+                  R.assetsImgDefaultHead,
                   width: 64,
                   height: 64,
                   fit: BoxFit.cover,

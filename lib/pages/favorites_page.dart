@@ -369,8 +369,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Widget articleItemWidget(String favoriteId, ArticleEntity entity, int index) {
-    bool hasIndex = index % 2 == 0;
-    String head = hasIndex ? R.assetsImgTestPhoto : R.assetsImgTestHead;
     return Container(
       child: Column(
         children: [
@@ -408,7 +406,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Image.asset(
-                                head,
+                                R.assetsImgDefaultHead,
                                 width: 24,
                                 height: 24,
                                 fit: BoxFit.cover,

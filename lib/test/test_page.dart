@@ -3,7 +3,6 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:get/get.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key key}) : super(key: key);
@@ -13,6 +12,15 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
+  List<String> data = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    data = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,12 +74,20 @@ class _TestPageState extends State<TestPage> {
   }
 
   Widget webWidget() {
-    return WebView(
-      initialUrl: "http://file.tianjiemedia.com/privacyService.html",
-      javascriptMode: JavascriptMode.unrestricted,
-      onPageFinished: (s){
-        print('onPageFinished:$s');
-      },
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      removeBottom: true,
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          return Container(
+            height: 48,
+            alignment: Alignment.center,
+            child: Text(data[index]),
+          );
+        },
+        itemCount: data.length,
+      ),
     );
   }
 }

@@ -235,8 +235,6 @@ class _SearchBossPageState extends State<SearchBossPage>
   }
 
   Widget bodyItemWidget(BossInfoEntity entity, int index) {
-    String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-
     return Container(
       padding: EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
       height: 80,
@@ -251,7 +249,7 @@ class _SearchBossPageState extends State<SearchBossPage>
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  head,
+                  R.assetsImgDefaultHead,
                   width: 56,
                   height: 56,
                   fit: BoxFit.cover,

@@ -28,7 +28,7 @@ class BossContentPage extends StatefulWidget {
 
 class _BossContentPageState extends State<BossContentPage>
     with AutomaticKeepAliveClientMixin {
-  StreamSubscription<BaseEvent> eventDispose;
+  var eventDispose;
 
   var builderFuture;
 
@@ -64,11 +64,8 @@ class _BossContentPageState extends State<BossContentPage>
 
   ///eventBus
   void eventBus() {
-    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      if (event.obj == RefreshFollowEvent) {
-        ///添加追踪boss后刷新
-        controller.callRefresh();
-      }
+    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+      controller.callRefresh();
     });
   }
 
@@ -150,8 +147,6 @@ class _BossContentPageState extends State<BossContentPage>
   }
 
   Widget bodyItemWidget(BossInfoEntity entity, int index) {
-    String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
-
     return Container(
       padding: EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
       height: 80,
@@ -166,7 +161,7 @@ class _BossContentPageState extends State<BossContentPage>
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  head,
+                  R.assetsImgDefaultHead,
                   width: 56,
                   height: 56,
                   fit: BoxFit.cover,

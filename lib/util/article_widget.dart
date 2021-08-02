@@ -45,7 +45,7 @@ class ArticleWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        R.assetsImgTestPhoto,
+                        R.assetsImgDefaultHead,
                         width: 24,
                         height: 24,
                         fit: BoxFit.cover,
@@ -163,7 +163,7 @@ class ArticleWidget {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
-                                    R.assetsImgTestPhoto,
+                                    R.assetsImgDefaultHead,
                                     width: 24,
                                     height: 24,
                                     fit: BoxFit.cover,
@@ -212,6 +212,7 @@ class ArticleWidget {
                   ),
                 ),
                 Card(
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.circular(4),
                   ),
@@ -223,7 +224,7 @@ class ArticleWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        R.assetsImgTestPhoto,
+                        R.assetsImgDefaultCover,
                         width: 96,
                         height: 64,
                         fit: BoxFit.cover,
@@ -305,7 +306,7 @@ class ArticleWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        R.assetsImgTestPhoto,
+                        R.assetsImgDefaultHead,
                         width: 24,
                         height: 24,
                         fit: BoxFit.cover,
@@ -416,7 +417,7 @@ class ArticleWidget {
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Image.asset(
-                                    R.assetsImgTestPhoto,
+                                    R.assetsImgDefaultHead,
                                     width: 24,
                                     height: 24,
                                     fit: BoxFit.cover,
@@ -476,6 +477,7 @@ class ArticleWidget {
                   ),
                 ),
                 Card(
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.circular(4),
                   ),
@@ -487,7 +489,7 @@ class ArticleWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        R.assetsImgTestPhoto,
+                        R.assetsImgDefaultCover,
                         width: 96,
                         height: 64,
                         fit: BoxFit.cover,

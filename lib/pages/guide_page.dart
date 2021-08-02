@@ -281,9 +281,7 @@ class _GuidePageState extends State<GuidePage> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        index % 2 == 0
-                            ? R.assetsImgTestPhoto
-                            : R.assetsImgTestHead,
+                        R.assetsImgDefaultHead,
                         width: 52,
                         height: 52,
                         fit: BoxFit.cover,

@@ -43,7 +43,7 @@ class _FollowContentPageState extends State<FollowContentPage>
   bool hasData = false;
   int totalArticleNumber;
 
-  StreamSubscription<BaseEvent> eventDispose;
+  var eventDispose;
 
   @override
   bool get wantKeepAlive => true;
@@ -120,10 +120,8 @@ class _FollowContentPageState extends State<FollowContentPage>
   }
 
   void eventBus() {
-    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      if (event.obj == RefreshFollowEvent) {
-        controller.callRefresh();
-      }
+    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+      controller.callRefresh();
     });
   }
 
@@ -271,9 +269,7 @@ class _FollowContentPageState extends State<FollowContentPage>
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        index % 2 == 0
-                            ? R.assetsImgTestPhoto
-                            : R.assetsImgTestHead,
+                        R.assetsImgDefaultHead,
                         width: 64,
                         height: 64,
                         fit: BoxFit.cover,

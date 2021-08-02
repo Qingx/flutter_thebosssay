@@ -12,6 +12,7 @@ import 'package:flutter_boss_says/pages/input_phone_page.dart';
 import 'package:flutter_boss_says/pages/today_history_page.dart';
 import 'package:flutter_boss_says/pages/user_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';

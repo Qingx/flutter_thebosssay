@@ -45,7 +45,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   //0:首页界面 1:搜索结果页面
   int widgetStatus = 0;
 
-  StreamSubscription<BaseEvent> eventDispose;
+  var eventDispose;
 
   String searchText;
 
@@ -98,15 +98,11 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   }
 
   void eventBus() {
-    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      ///添加追踪boss后刷新
-      if (event.obj == RefreshFollowEvent) {
-        if (widgetStatus == 0) {
-          controller.callRefresh();
-        } else {
-          builderFuture = loadSearchData(searchText);
-          setState(() {});
-        }
+    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+      var index = mData.indexWhere((element) => element.id == event.id);
+      if (index != null) {
+        mData[index].isCollect = event.isFollow;
+        setState(() {});
       }
     });
   }
@@ -174,7 +170,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       setState(() {});
 
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: false));
 
       showFollowCancelDialog(context, onDismiss: () {
         Get.back();
@@ -194,7 +190,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       setState(() {});
 
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
       showFollowSuccessDialog(context, onConfirm: () {
         Get.back();
@@ -451,7 +447,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead,
+                  R.assetsImgDefaultHead,
                   width: 56,
                   height: 56,
                   fit: BoxFit.cover,
@@ -624,7 +620,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead,
+                  R.assetsImgDefaultHead,
                   width: 56,
                   height: 56,
                   fit: BoxFit.cover,

@@ -110,6 +110,7 @@ flutter:
     - assets/img/favoriteDark.png
     - assets/img/shareLink.png
     - assets/img/bossSelect.png
+    - assets/img/defaultCover.jpg
     - assets/img/bossTopHead.png
     - assets/img/itemAbout.png
     - assets/img/itemContact.png
@@ -118,6 +119,7 @@ flutter:
     - assets/img/aboutUsLogo.png
     - assets/img/itemShare.png
     - assets/img/emptySearch.png
+    - assets/img/defaultHead.png
     - assets/img/testPhoto.png
     - assets/img/bossNormal.png
     - assets/img/itemScore.png

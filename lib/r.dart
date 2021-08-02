@@ -11,6 +11,8 @@ class R {
   static final String assetsImgShareLink = 'assets/img/shareLink.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSelect.png)
   static final String assetsImgBossSelect = 'assets/img/bossSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/defaultCover.jpg)
+  static final String assetsImgDefaultCover = 'assets/img/defaultCover.jpg';
   /// ![](http://127.0.0.1:11111111/assets/img/bossTopHead.png)
   static final String assetsImgBossTopHead = 'assets/img/bossTopHead.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemAbout.png)
@@ -27,6 +29,8 @@ class R {
   static final String assetsImgItemShare = 'assets/img/itemShare.png';
   /// ![](http://127.0.0.1:11111111/assets/img/emptySearch.png)
   static final String assetsImgEmptySearch = 'assets/img/emptySearch.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/defaultHead.png)
+  static final String assetsImgDefaultHead = 'assets/img/defaultHead.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testPhoto.png)
   static final String assetsImgTestPhoto = 'assets/img/testPhoto.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossNormal.png)

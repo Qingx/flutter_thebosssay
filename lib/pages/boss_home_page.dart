@@ -120,7 +120,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   BossInfoEntity entity;
 
-  StreamSubscription<BaseEvent> eventDispose;
+  var eventDispose;
 
   @override
   void dispose() {
@@ -150,13 +150,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   void eventBus() {
-    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      ///添加追踪boss后刷新
-      if (event.obj == RefreshFollowEvent) {
-        BossApi.ins().obtainBossDetail(entity.id).listen((event) {
-          entity = event;
-          setState(() {});
-        });
+    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+      if (entity.id == event.id) {
+        entity.isCollect = event.isFollow;
+        setState(() {});
       }
     });
   }
@@ -234,7 +231,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       entity.isCollect = false;
       setState(() {});
 
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: false));
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 
       showFollowCancelDialog(context, onDismiss: () {
@@ -256,7 +253,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       setState(() {});
 
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-      Global.eventBus.fire(BaseEvent(RefreshFollowEvent));
+      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
       showFollowSuccessDialog(context, onConfirm: () {
         Get.back();
@@ -329,7 +326,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.asset(
-                  R.assetsImgTestPhoto,
+                  R.assetsImgDefaultHead,
                   width: 64,
                   height: 64,
                   fit: BoxFit.cover,
