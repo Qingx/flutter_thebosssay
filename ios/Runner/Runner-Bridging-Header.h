@@ -2,3 +2,4 @@
 #import "TalkingDataAppAnalyticsPlugin.h"
 #import "fluwx-umbrella.h"
 #import "WXApi.h"
+#import "AppScore.h"

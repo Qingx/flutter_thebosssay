@@ -16,6 +16,9 @@ import UserNotificationsUI
             
         }
     }
+    
+    AppScore.register(with: self.registrar(forPlugin: "AppScore")!)
+    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
     

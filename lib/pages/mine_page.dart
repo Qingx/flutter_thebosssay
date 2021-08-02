@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
@@ -152,6 +153,12 @@ class _MinePageState extends State<MinePage>
     });
   }
 
+  void showStore() {
+    const MethodChannel channel =
+        const MethodChannel('app.storescore/storescore');
+    channel.invokeMethod("storeScore");
+  }
+
   void onClickItem(index) {
     switch (index) {
       case 0:
@@ -170,6 +177,7 @@ class _MinePageState extends State<MinePage>
         Get.to(() => ContactUsPage());
         break;
       case 6:
+        showStore();
         break;
       case 7:
         onClickClear();
