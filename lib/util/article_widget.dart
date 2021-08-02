@@ -101,7 +101,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.createTime),
+                  DateFormat.getYYYYMMDD(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -252,7 +252,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.createTime),
+                  DateFormat.getYYYYMMDD(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -353,7 +353,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.createTime),
+                  DateFormat.getYYYYMMDD(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -461,7 +461,7 @@ class ArticleWidget {
                               ),
                             ),
                             Text(
-                              "${DateFormat.getYYYYMMDD(entity.createTime)}",
+                              "${DateFormat.getYYYYMMDD(entity.releaseTime)}",
                               style: TextStyle(
                                   fontSize: 13, color: BaseColor.textGray),
                               textAlign: TextAlign.start,
