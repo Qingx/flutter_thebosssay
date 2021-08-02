@@ -110,7 +110,7 @@ class _TalkPageState extends State<TalkPage>
 
   Widget pageWidget() {
     return PageView.builder(
-      physics: NeverScrollableScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       controller: mPageController,
       itemCount: mPages.length,
       itemBuilder: (context, index) {

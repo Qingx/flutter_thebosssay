@@ -162,7 +162,7 @@ class _SearchBossPageState extends State<SearchBossPage>
                 autofocus: false,
                 style: TextStyle(fontSize: 16, color: BaseColor.textDark),
                 decoration: InputDecoration(
-                  hintText: Global.hint.hint.value,
+                  hintText: Global.hint.hint.value=="-1"?"查找追踪过的老板":Global.hint.hint.value,
                   hintStyle: TextStyle(fontSize: 16, color: BaseColor.textGray),
                   fillColor: BaseColor.loadBg,
                   filled: true,

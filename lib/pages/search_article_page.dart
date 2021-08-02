@@ -156,7 +156,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
                 autofocus: false,
                 style: TextStyle(fontSize: 16, color: BaseColor.textDark),
                 decoration: InputDecoration(
-                  hintText: Global.hint.hint.value,
+                  hintText: Global.hint.hint.value=="-1"?"请输入内容":Global.hint.hint.value,
                   hintStyle: TextStyle(fontSize: 16, color: BaseColor.textGray),
                   fillColor: BaseColor.loadBg,
                   filled: true,

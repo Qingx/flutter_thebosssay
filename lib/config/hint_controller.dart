@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
 class HintController extends GetxController {
-  var hint = "请输入内容".obs;
+  var hint = "-1".obs;
   var canUse = false.obs;
 
   setHint(String text) {

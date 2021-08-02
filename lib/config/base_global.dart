@@ -10,6 +10,5 @@ class Global {
   static HintController hint = HintController();
   static EventBus eventBus = EventBus();
   static JPush jPush = JPush();
-  static String hintText = "请输入内容";
   static String shareUrl = "http://index.tianjiemedia.com/";
 }
