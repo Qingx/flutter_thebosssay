@@ -1,6 +1,5 @@
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
-import 'dart:convert' as convert;
 
 articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	if (json['id'] != null) {
@@ -11,9 +10,6 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	}
 	if (json['title'] != null) {
 		data.title = json['title'].toString();
-	}
-	if (json['content'] != null) {
-		data.content = json['content'].toString();
 	}
 	if (json['descContent'] != null) {
 		data.descContent = json['descContent'].toString();
@@ -34,15 +30,10 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['collect'])
 				: json['collect'].toInt();
 	}
-	if (json['createTime'] != null) {
-		data.createTime = json['createTime'] is String
-				? int.tryParse(json['createTime'])
-				: json['createTime'].toInt();
-	}
-	if (json['status'] != null) {
-		data.status = json['status'] is String
-				? int.tryParse(json['status'])
-				: json['status'].toInt();
+	if (json['releaseTime'] != null) {
+		data.releaseTime = json['releaseTime'] is String
+				? int.tryParse(json['releaseTime'])
+				: json['releaseTime'].toInt();
 	}
 	if (json['files'] != null) {
 		data.files = (json['files'] as List).map((v) => v.toString()).toList().cast<String>();
@@ -58,14 +49,12 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['id'] = entity.id;
 	data['bossId'] = entity.bossId;
 	data['title'] = entity.title;
-	data['content'] = entity.content;
 	data['descContent'] = entity.descContent;
 	data['isCollect'] = entity.isCollect;
 	data['isPoint'] = entity.isPoint;
 	data['point'] = entity.point;
 	data['collect'] = entity.collect;
-	data['createTime'] = entity.createTime;
-	data['status'] = entity.status;
+	data['releaseTime'] = entity.releaseTime;
 	data['files'] = entity.files;
 	data['bossVO'] = entity.bossVO?.toJson();
 	return data;

@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
-import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
@@ -114,11 +112,10 @@ class _GuidePageState extends State<GuidePage> {
 
     BossApi.ins().obtainGuideFollowList(listSelect).listen((event) {
       entity.traceNum = listSelect.length;
-      UserConfig.getIns().user = entity;
       Global.user.setUser(entity);
 
       BaseTool.toast(msg: "追踪成功");
-      Get.off(() => HomePage());
+      Get.offAll(() => HomePage(), transition: Transition.fadeIn);
     }, onError: (res) {
       Get.back();
       print(res);
@@ -193,7 +190,7 @@ class _GuidePageState extends State<GuidePage> {
                 overflow: TextOverflow.ellipsis,
               ).onClick(() {
                 if (countText == "跳过") {
-                  Get.off(() => HomePage());
+                  Get.offAll(() => HomePage(), transition: Transition.fadeIn);
                 }
               }),
             ),

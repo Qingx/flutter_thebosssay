@@ -9,7 +9,6 @@ import 'package:flutter_boss_says/config/hint_controller.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/db/boss_db_provider.dart';
@@ -106,12 +105,12 @@ class _SplashPageState extends State<SplashPage> {
       DataConfig.getIns().firstUseApp = false;
       var list = event.where((element) => element.guide).toList();
 
-      Get.offAll(() => GuidePage(), arguments: list);
+      Get.offAll(() => GuidePage(),
+          arguments: list, transition: Transition.fadeIn);
     } else {
-      UserEntity entity = UserConfig.getIns().user;
-      Global.user.setUser(entity);
+      Global.user.setUser(UserConfig.getIns().user);
 
-      Get.offAll(() => HomePage());
+      Get.offAll(() => HomePage(), transition: Transition.fadeIn);
     }
   }
 

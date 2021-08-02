@@ -43,7 +43,6 @@ class _InputCodePageState extends State<InputCodePage> {
       UserApi.ins().obtainSignPhone(phoneNumber, codeNumber, rnd).listen(
           (event) {
         UserConfig.getIns().token = event.token;
-        UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);
 
         ///极光推送设置别名

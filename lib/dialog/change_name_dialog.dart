@@ -16,8 +16,8 @@ Future<dynamic> showChangeName(BuildContext context,
           borderRadius: BorderRadius.all(Radius.circular(12)),
           child: Container(
             width: 264,
-            height: 180,
-            padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 24),
+            height: 192,
+            padding: EdgeInsets.only(left: 24, right: 24, top: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

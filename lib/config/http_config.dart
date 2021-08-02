@@ -14,9 +14,9 @@ class HttpConfig {
     if (url.startsWith(r'http')) {
       return url;
     } else if (url.startsWith(r'/')) {
-      return "${globalEnv.downUrl}$url";
+      return "${globalEnv.baseUrl}$url";
     } else {
-      return "${globalEnv.downUrl}/$url";
+      return "${globalEnv.baseUrl}/$url";
     }
   }
 }
@@ -41,9 +41,9 @@ class DevEnv extends IEnv {
 
   @override
   String get baseUrl {
-    // return "http://192.168.1.106:8087/"; //李
-    return "http://192.168.1.142:8087/"; //熊
-    return "http://api.tianjiemedia.com/"; //阿里云
+    // return "http://192.168.1.106:8087"; //李
+    // return "http://192.168.1.142:8087"; //熊
+    return "http://api.tianjiemedia.com"; //阿里云
   }
 
   @override
@@ -51,18 +51,4 @@ class DevEnv extends IEnv {
 
   @override
   String get downUrl => "http://download-tr.hii-m.net";
-}
-
-class UatEnv extends IEnv {
-  @override
-  bool get isDebug => false;
-
-  @override
-  String get baseUrl => "http://124.70.72.199:8765/";
-
-  @override
-  String get fileUrl => "http://192.144.169.58:9999/";
-
-  @override
-  String get downUrl => "http://192.144.169.58:8888/";
 }

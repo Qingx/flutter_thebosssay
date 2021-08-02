@@ -82,18 +82,18 @@ class _BossPageState extends State<BossPage>
 
   Widget titleTabBar() {
     return Container(
-      height: 40,
+      alignment: Alignment.bottomLeft,
       color: BaseColor.pageBg,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          titleWidget().marginOn(left: 16, bottom: 2),
+          titleWidget().marginOn(left: 16),
           Expanded(child: SizedBox()),
           Image.asset(
             R.assetsImgSearch,
             width: 20,
             height: 20,
-          ).onClick(onSearchClick).marginOn(right: 16, bottom: 8)
+          ).onClick(onSearchClick).marginOn(right: 16)
         ],
       ),
     );
@@ -113,8 +113,8 @@ class _BossPageState extends State<BossPage>
 
   Widget tabWidget() {
     return Container(
-      height: 40,
-      padding: EdgeInsets.only(top: 6, bottom: 6),
+      height: 52,
+      padding: EdgeInsets.only(top: 12, bottom: 12),
       child: MediaQuery.removePadding(
         removeTop: true,
         removeBottom: true,
@@ -183,11 +183,11 @@ class _BossPageState extends State<BossPage>
         size: 24,
       ),
     ).onClick(() {
-      Get.to(() => AllBossPage());
+      Get.to(() => AllBossPage(), transition: Transition.downToUp);
     });
   }
 
   void onSearchClick() {
-    Get.to(() => SearchBossPage());
+    Get.to(() => SearchBossPage(), transition: Transition.fadeIn);
   }
 }

@@ -55,7 +55,6 @@ class _InputPhonePageState extends State<InputPhonePage> {
 
       UserApi.ins().obtainWechatLogin(code).listen((event) {
         UserConfig.getIns().token = event.token;
-        UserConfig.getIns().user = event.userInfo;
         Global.user.setUser(event.userInfo);
 
         ///极光推送设置别名
@@ -133,7 +132,8 @@ class _InputPhonePageState extends State<InputPhonePage> {
 
       UserApi.ins().obtainSendCode(phoneNumber, 0).listen((event) {
         var data = {"phoneNumber": phoneNumber, "rnd": event};
-        Get.off(() => InputCodePage(), arguments: data);
+        Get.off(() => InputCodePage(),
+            arguments: data, transition: Transition.fadeIn);
       }, onError: (res) {
         Get.back();
         print(res);

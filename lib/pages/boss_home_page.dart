@@ -13,7 +13,6 @@ import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
-import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
@@ -159,11 +158,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
           setState(() {});
         });
       }
-
-      ///添加收藏文章后刷新
-      if (event.obj == RefreshCollectEvent) {
-        // controller?.callRefresh();
-      }
     });
   }
 
@@ -276,7 +270,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   void onWatchMore() {
-    Get.to(() => BossInfoPage(), arguments: entity);
+    Get.to(() => BossInfoPage(),
+        arguments: entity, transition: Transition.rightToLeftWithFade);
   }
 
   Widget builderWidget(BuildContext context,
@@ -393,7 +388,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
             ),
             child: Text(
               hasFollow ? "已追踪" : "追踪",
-              style: TextStyle(color: Colors.white, fontSize: 14),
+              style: TextStyle(color: Colors.white, fontSize: 13),
               softWrap: false,
               maxLines: 1,
               textAlign: TextAlign.center,
@@ -416,15 +411,19 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                         borderRadius: BorderRadius.all(Radius.circular(4)),
                       ),
                       alignment: Alignment.center,
-                      child: Text(
-                        entity.role,
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 240),
+                        child: Text(
+                          entity.role,
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
+                    Expanded(child: SizedBox()),
                   ],
                 ),
                 Text(
@@ -450,8 +449,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   Widget numberWidget() {
     return Container(
-      height: 56,
-      padding: EdgeInsets.only(left: 16, top: 12, bottom: 12, right: 16),
+      padding: EdgeInsets.only(left: 16, top: 16, bottom: 16, right: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -507,13 +505,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
               (context, index) {
                 ArticleEntity entity = mData[index];
 
-                if (entity.files.isNullOrEmpty()) {
-                  return ArticleWidget.onlyTextWithContent(
-                      entity, index, context);
-                } else {
-                  return ArticleWidget.singleImgWithContent(
-                      entity, index, context);
-                }
+                return entity.files.isNullOrEmpty()
+                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
+                    : ArticleWidget.singleImgWithContent(
+                        entity, index, context);
               },
               childCount: mData.length,
             ),
@@ -745,7 +740,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     String content = "最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        256;
+        320;
     return Container(
       height: height,
       child: Center(

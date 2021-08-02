@@ -310,7 +310,6 @@ class _ChangeWidgetState extends State<ChangeWidget> {
     BaseWidget.showLoadingAlert("正在修改...", context);
     UserApi.ins().obtainChangePhone(phoneNumber, content, rnd).listen((event) {
       entity.phone = phoneNumber;
-      UserConfig.getIns().user = entity;
       Global.user.setUser(entity);
 
       Get.back();

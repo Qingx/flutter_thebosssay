@@ -9,7 +9,6 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -61,8 +60,6 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
     controller = EasyRefreshController();
 
     builderFuture = loadInitData();
-
-    eventBus();
   }
 
   Future<WlPage.Page<HistoryEntity>> loadInitData() {
@@ -102,14 +99,6 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
     });
   }
 
-  void eventBus() {
-    eventDispose = Global.eventBus.on<BaseEvent>().listen((event) {
-      if (event.obj == RefreshCollectEvent) {
-        // controller.callRefresh();
-      }
-    });
-  }
-
   ///删除历史记录
   void removeHistory(HistoryEntity entity, int index) {
     BaseWidget.showLoadingAlert("尝试删除...", context);
@@ -122,7 +111,6 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
 
       UserEntity entity = UserConfig.getIns().user;
       entity.readNum = numbers;
-      UserConfig.getIns().user = entity;
       Global.user.setUser(entity);
 
       setState(() {});
@@ -332,8 +320,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.articleId};
-      Get.to(() => ArticlePage(), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.articleId);
     });
   }
 

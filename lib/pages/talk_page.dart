@@ -10,7 +10,6 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class TalkPage extends StatefulWidget {
   const TalkPage({Key key}) : super(key: key);
@@ -73,19 +72,19 @@ class _TalkPageState extends State<TalkPage>
 
   Widget titleTabBar() {
     return Container(
-      height: 40,
+      alignment: Alignment.bottomLeft,
       color: BaseColor.pageBg,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          titleWidget(0).marginOn(left: 16, bottom: 2),
-          titleWidget(1).marginOn(left: 28, bottom: 2),
+          titleWidget(0).marginOn(left: 16),
+          titleWidget(1).marginOn(left: 28),
           Expanded(child: SizedBox()),
           Image.asset(
             R.assetsImgSearch,
             width: 20,
             height: 20,
-          ).onClick(onSearchClick).marginOn(right: 16, bottom: 8)
+          ).onClick(onSearchClick).marginOn(right: 16)
         ],
       ),
     );
@@ -126,7 +125,7 @@ class _TalkPageState extends State<TalkPage>
 
   void onSearchClick() {
     if (Global.hint.canUse.value) {
-      Get.to(() => SearchArticlePage());
+      Get.to(() => SearchArticlePage(), transition: Transition.fadeIn);
     }
   }
 }

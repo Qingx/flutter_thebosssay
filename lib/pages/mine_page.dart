@@ -273,7 +273,8 @@ class _MinePageState extends State<MinePage>
                     controller.user.value.type == BaseEmpty.emptyUser.type
                         ? "游客：${UserConfig.getIns().tempId.substring(0, 12)}..."
                         : "ID：${controller.user.value.id}",
-                    style: TextStyle(fontSize: 16, color: BaseColor.textGray),
+                    style:
+                        TextStyle(fontSize: 16, color: BaseColor.textDarkLight),
                     softWrap: false,
                     maxLines: 1,
                     textAlign: TextAlign.start,
@@ -329,7 +330,7 @@ class _MinePageState extends State<MinePage>
   Widget infoItemWidget(int index) {
     return Container(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Obx(
@@ -340,7 +341,7 @@ class _MinePageState extends State<MinePage>
                       ? Global.user.user.value.collectNum.toString()
                       : Global.user.user.value.readNum.toString(),
               style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 24,
                   color: BaseColor.textDark,
                   fontWeight: FontWeight.bold),
               softWrap: false,
@@ -351,12 +352,12 @@ class _MinePageState extends State<MinePage>
           ),
           Text(
             infoNames[index],
-            style: TextStyle(fontSize: 12, color: BaseColor.textGray),
+            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
             softWrap: false,
             maxLines: 1,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
-          ),
+          ).marginOn(top: 4),
         ],
       ),
     ).onClick(() {
@@ -373,7 +374,7 @@ class _MinePageState extends State<MinePage>
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
           if (index == 3) {
-            return Container(height: 8, color: BaseColor.loadBg);
+            return Container(height: 8, color: BaseColor.mineBg);
           } else
             return listItemWidget(index);
         },

@@ -222,7 +222,6 @@ class BaseApi {
 
     return UserApi.ins().obtainTempLogin(tempId).map((event) {
       UserConfig.getIns().setTempId = tempId;
-      UserConfig.getIns().user = event.userInfo;
       UserConfig.getIns().token = event.token;
       Global.user.setUser(event.userInfo);
 
@@ -233,7 +232,6 @@ class BaseApi {
 
   static Observable<String> globalRefresh = Observable.defer(() {
     return UserApi.ins().obtainRefreshUser().map((event) {
-      UserConfig.getIns().user = event.userInfo;
       UserConfig.getIns().token = event.token;
       Global.user.setUser(event.userInfo);
 

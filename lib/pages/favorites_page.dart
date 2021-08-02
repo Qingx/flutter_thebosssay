@@ -6,7 +6,7 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/dialog/new%20_folder_dialog.dart';
+import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -37,7 +37,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   List<FavoriteEntity> mData = [];
   List<String> mSelectId = [];
-  int numbers = Global.user.user.value.collectNum;
 
   StreamSubscription<BaseEvent> eventDispose;
 
@@ -83,12 +82,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     UserApi.ins().obtainFavoriteList().listen((event) {
       mData = event;
       mSelectId.clear();
-
-      numbers = 0;
-      event.forEach((element) {
-        numbers += element.list.length ?? 0;
-      });
-
       setState(() {});
 
       controller.finishRefresh(success: true);
@@ -102,7 +95,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
     BaseWidget.showLoadingAlert("尝试删除...", context);
     UserApi.ins().obtainRemoveFavorite(entity.id).listen((event) {
       mData.remove(entity);
-      numbers = numbers - entity.list.length ?? 0;
+
+      var user = Global.user.user.value;
+      user.collectNum = user.collectNum - entity.list.length ?? 0;
+      Global.user.setUser(user);
 
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
 
@@ -126,7 +122,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
       FavoriteEntity favoriteEntity =
           mData.firstWhere((element) => element.id == favoriteId);
       favoriteEntity.list.remove(entity);
-      numbers--;
+
+      var user = Global.user.user.value;
+      user.collectNum--;
+      Global.user.setUser(user);
 
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
       setState(() {});
@@ -166,10 +165,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     BaseWidget.showLoadingAlert("尝试新建...", context);
     UserApi.ins().obtainCreateFavorite(name).listen((event) {
       mData.add(event);
-      numbers = 0;
-      mData.forEach((e) {
-        numbers = numbers + e.list.length;
-      });
 
       Get.back();
       Get.back();
@@ -211,16 +206,18 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     child: Container(
                       margin: EdgeInsets.only(right: 28),
                       alignment: Alignment.center,
-                      child: Text(
-                        "我的收藏（$numbers）",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: BaseColor.textDark,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                      child: Obx(
+                        () => Text(
+                          "我的收藏（${Global.user.user.value.collectNum ?? 0}）",
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: BaseColor.textDark,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ),
@@ -430,7 +427,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         ).marginOn(left: 8),
                         Expanded(child: SizedBox()),
                         Text(
-                          DateFormat.getYYYYMMDD(entity.createTime),
+                          DateFormat.getYYYYMMDD(entity.releaseTime),
                           style: TextStyle(
                             fontSize: 13,
                             color: BaseColor.textGray,
@@ -462,8 +459,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.id);
     });
   }
 

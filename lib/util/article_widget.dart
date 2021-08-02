@@ -5,7 +5,6 @@ import 'package:flutter_boss_says/pages/article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:get/get.dart';
 
@@ -23,7 +22,7 @@ class ArticleWidget {
           Text(
             entity.title,
             style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 color: BaseColor.textDark,
                 fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
@@ -102,7 +101,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.createTime),
+                  DateFormat.getYYYYMMDD(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -115,8 +114,7 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.id);
     });
   }
 
@@ -133,7 +131,7 @@ class ArticleWidget {
           Text(
             entity.title,
             style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 color: BaseColor.textDark,
                 fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
@@ -148,7 +146,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
@@ -196,19 +194,28 @@ class ArticleWidget {
                           ],
                         ),
                       ),
-                      Text(
-                        entity.descContent,
-                        style: TextStyle(
-                            fontSize: 14, color: BaseColor.textDarkLight),
-                        textAlign: TextAlign.start,
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.ellipsis,
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            entity.descContent,
+                            style: TextStyle(
+                                fontSize: 14, color: BaseColor.textDarkLight),
+                            textAlign: TextAlign.start,
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                ClipOval(
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.circular(4),
+                  ),
+                  clipBehavior: Clip.antiAlias,
                   child: Image.network(
                     HttpConfig.fullUrl(entity.files[0]),
                     width: 96,
@@ -245,7 +252,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.createTime),
+                  DateFormat.getYYYYMMDD(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -258,68 +265,7 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
-    });
-  }
-
-  ///无正文 单个图片文字
-  static Widget singleImgNoContent(
-      ArticleEntity entity, int index, BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8),
-      padding: EdgeInsets.all(16),
-      color: Colors.white,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entity.title,
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: BaseColor.textDark,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.start,
-                  softWrap: true,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  "烽火崛起·${entity.point}w人围观·${BaseTool.getUpdateTime(entity.createTime).replaceAll(RegExp(r'更新'), "")}",
-                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                ).marginOn(top: 16),
-              ],
-            ),
-          ),
-          ClipOval(
-            child: Image.network(
-              HttpConfig.fullUrl(entity.files[0]),
-              width: 96,
-              height: 64,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  R.assetsImgTestPhoto,
-                  width: 96,
-                  height: 64,
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-          ).marginOn(left: 16),
-        ],
-      ),
-    ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.id);
     });
   }
 
@@ -336,7 +282,7 @@ class ArticleWidget {
           Text(
             entity.title,
             style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 color: BaseColor.textDark,
                 fontWeight: FontWeight.bold),
             textAlign: TextAlign.start,
@@ -407,7 +353,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.createTime),
+                  DateFormat.getYYYYMMDD(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -420,82 +366,142 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.id);
     });
   }
 
-  ///无正文 三个图片文字
-  static Widget adTriImgNoContent(
+  ///无正文 单个图片文字
+  static Widget singleImgNoContent(
       ArticleEntity entity, int index, BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
       color: Colors.white,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            entity.title,
-            style: TextStyle(
-                fontSize: 16,
-                color: BaseColor.textDark,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
-            softWrap: true,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
           Container(
-            margin: EdgeInsets.only(top: 16),
-            height: 80,
-            child: MediaQuery.removePadding(
-              removeBottom: true,
-              removeTop: true,
-              context: context,
-              child: GridView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 3,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 4,
-                  childAspectRatio:
-                      (MediaQuery.of(context).size.width - 28 - 8) / 3 / 80,
-                ),
-                itemBuilder: (context, index) {
-                  return ClipOval(
-                    child: Image.network(
-                      HttpConfig.fullUrl(entity.files[index]),
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          R.assetsImgTestPhoto,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
+            width: MediaQuery.of(context).size.width,
+            child: Text(
+              entity.title,
+              style: TextStyle(
+                  fontSize: 18,
+                  color: BaseColor.textDark,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.start,
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            "广告·海南万科",
-            style: TextStyle(fontSize: 13, color: BaseColor.textGray),
-            textAlign: TextAlign.start,
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ).marginOn(top: 16),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            height: 64,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipOval(
+                              child: Image.network(
+                                HttpConfig.fullUrl(entity.bossVO?.head),
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    R.assetsImgTestPhoto,
+                                    width: 24,
+                                    height: 24,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                            ),
+                            Text(
+                              entity.bossVO.name,
+                              style: TextStyle(
+                                  fontSize: 14, color: BaseColor.textDarkLight),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ).marginOn(left: 8),
+                            Expanded(
+                              child: Text(
+                                entity.bossVO.role,
+                                style: TextStyle(
+                                    fontSize: 14, color: BaseColor.textGray),
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ).marginOn(left: 8),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "${entity.collect}k收藏·${entity.point}w人围观",
+                                style: TextStyle(
+                                    fontSize: 13, color: BaseColor.textGray),
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Text(
+                              "${DateFormat.getYYYYMMDD(entity.releaseTime)}",
+                              style: TextStyle(
+                                  fontSize: 13, color: BaseColor.textGray),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.circular(4),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.network(
+                    HttpConfig.fullUrl(entity.files[0]),
+                    width: 96,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        R.assetsImgTestPhoto,
+                        width: 96,
+                        height: 64,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ).marginOn(left: 8)
+              ],
+            ),
+          )
         ],
       ),
     ).onClick(() {
-      var data = {"articleId": entity.id};
-      Get.to(() => ArticlePage(entity: entity), arguments: data);
+      Get.to(() => ArticlePage(), arguments: entity.id);
     });
   }
 }

@@ -179,8 +179,8 @@ class _FollowContentPageState extends State<FollowContentPage>
 
   Widget cardWidget() {
     return Container(
-      height: 188,
-      padding: EdgeInsets.only(top: 24, bottom: 24),
+      height: 180,
+      padding: EdgeInsets.only(top: 12, bottom: 24),
       child: MediaQuery.removePadding(
         removeBottom: true,
         removeTop: true,
@@ -200,11 +200,10 @@ class _FollowContentPageState extends State<FollowContentPage>
 
   Widget emptyCardWidget() {
     return Container(
-      padding: EdgeInsets.only(top: 24, bottom: 12),
-      height: 188,
+      height: 180,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Image.asset(
             R.assetsImgEmptyBoss,
@@ -248,12 +247,13 @@ class _FollowContentPageState extends State<FollowContentPage>
 
     return Container(
       width: 100,
-      height: 140,
+      height: 144,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       margin: EdgeInsets.only(left: left, right: right),
+      padding: EdgeInsets.only(left: 4, right: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -317,15 +317,15 @@ class _FollowContentPageState extends State<FollowContentPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(),
+          arguments: entity, transition: Transition.rightToLeftWithFade);
     });
   }
 
   Widget titleWidget() {
     return Container(
       color: BaseColor.pageBg,
-      height: 40,
-      padding: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -340,7 +340,7 @@ class _FollowContentPageState extends State<FollowContentPage>
           Text(
             "共${totalArticleNumber ?? 0}篇",
             style: TextStyle(color: BaseColor.textDark, fontSize: 14),
-          ).marginOn(left: 16),
+          ).marginOn(left: 12),
         ],
       ),
     );
@@ -361,13 +361,10 @@ class _FollowContentPageState extends State<FollowContentPage>
               (context, index) {
                 ArticleEntity entity = mData[index];
 
-                if (entity.files.isNullOrEmpty()) {
-                  return ArticleWidget.onlyTextWithContent(
-                      entity, index, context);
-                } else {
-                  return ArticleWidget.singleImgWithContent(
-                      entity, index, context);
-                }
+                return entity.files.isNullOrEmpty()
+                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
+                    : ArticleWidget.singleImgWithContent(
+                        entity, index, context);
               },
               childCount: mData.length,
             ),
@@ -383,12 +380,14 @@ class _FollowContentPageState extends State<FollowContentPage>
     String content = "最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        392;
+        MediaQuery.of(context).padding.bottom -
+        480;
 
     return Container(
       height: height,
       child: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -423,20 +422,9 @@ class _FollowContentPageState extends State<FollowContentPage>
           loadingItemWidget(1, 8),
           loadingItemWidget(0.4, 8),
           loadingItemWidget(0.6, 8),
-          Container(
-            margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-            height: 48,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SpinKitFadingCircle(
-                  color: Color(0xff0e1e1e1),
-                  size: 48,
-                  duration: Duration(milliseconds: 2000),
-                ),
-              ],
-            ),
-          ),
+          loadingItemWidget(0.9, 8),
+          loadingItemWidget(0.7, 8),
+          loadingItemWidget(0.4, 8),
         ],
       ),
     );
@@ -456,7 +444,7 @@ class _FollowContentPageState extends State<FollowContentPage>
 
   Widget loadCardWidget() {
     return Container(
-      height: 188,
+      height: 192,
       padding: EdgeInsets.only(top: 24, bottom: 24),
       child: MediaQuery.removePadding(
         removeBottom: true,
