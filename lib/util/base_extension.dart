@@ -106,4 +106,16 @@ extension DoubleMoney on int {
     }
     return money;
   }
+
+  String formatCountNumber() {
+    if (this <= 99) {
+      return "0k";
+    } else if (this <= 999) {
+      return "0.${this ~/ 100}k";
+    } else if (this <= 9999) {
+      return "${this ~/ 1000}.${this % 1000 ~/ 100}k";
+    } else {
+      return "${this ~/ 10000}.${this % 10000 ~/ 1000}w";
+    }
+  }
 }

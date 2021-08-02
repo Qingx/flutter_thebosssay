@@ -8,9 +8,9 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   String descContent = ""; //摘要
   bool isCollect; //是否收藏
   bool isPoint; //是否点赞
-  int point; //点赞数
-  int collect; //收藏数
-  int releaseTime; //创建时间
+  int point = 0; //点赞数
+  int collect = 0; //收藏数
+  int releaseTime; //发布时间
   List<String> files = []; //图片列表
   BossInfoEntity bossVO;
 

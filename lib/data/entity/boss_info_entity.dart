@@ -13,10 +13,10 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   bool isPoint = false; //是否点赞
   bool deleted = false; //是否被删除
   bool guide = false; //是否被推荐
-  int point; //阅读数
-  int collect; //收藏数
-  int updateCount; //更新数量
-  int totalCount; //发布文章总数
+  int point = 0; //阅读数
+  int collect = 0; //收藏数
+  int updateCount = 0; //更新数量
+  int totalCount = 0; //发布文章总数
   int readCount; //阅读数
   int updateTime; //上次更新时间
   int createTime; //创建时间

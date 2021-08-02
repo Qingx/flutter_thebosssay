@@ -294,7 +294,7 @@ class _SearchBossPageState extends State<SearchBossPage>
                         ),
                       ),
                       Text(
-                        BaseTool.getUpdateTime(entity.updateTime),
+                        BaseTool.getBossItemTime(entity.updateTime),
                         style: TextStyle(
                             fontSize: 12, color: BaseColor.textDarkLight),
                         textAlign: TextAlign.end,

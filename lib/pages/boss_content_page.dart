@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/on_top_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -29,7 +30,8 @@ class BossContentPage extends StatefulWidget {
 
 class _BossContentPageState extends State<BossContentPage>
     with AutomaticKeepAliveClientMixin {
-  var eventDispose;
+  var eventFollowDispose;
+  var eventTopDispose;
 
   var builderFuture;
 
@@ -48,7 +50,8 @@ class _BossContentPageState extends State<BossContentPage>
     controller?.dispose();
     scrollController?.dispose();
 
-    eventDispose?.cancel();
+    eventFollowDispose?.cancel();
+    eventTopDispose?.cancel();
   }
 
   @override
@@ -65,7 +68,8 @@ class _BossContentPageState extends State<BossContentPage>
 
   ///eventBus
   void eventBus() {
-    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+    eventFollowDispose =
+        Global.eventBus.on<RefreshFollowEvent>().listen((event) {
       if (event.needLoading) {
         controller.callRefresh();
       } else {
@@ -74,6 +78,16 @@ class _BossContentPageState extends State<BossContentPage>
           mData.removeAt(index);
           setState(() {});
         }
+      }
+    });
+
+    eventTopDispose = Global.eventBus.on<OnTopEvent>().listen((event) {
+      var index = mData.indexWhere((element) => element.id == event.id);
+      if (index != null) {
+        var entity = mData[index];
+        mData.removeAt(index);
+        mData = [entity, ...mData];
+        setState(() {});
       }
     });
   }
@@ -105,10 +119,7 @@ class _BossContentPageState extends State<BossContentPage>
   void doAddTop(String id) {
     var index = mData.indexWhere((element) => element.id == id);
     if (index != null) {
-      var entity = mData[index];
-      mData.removeAt(index);
-      mData = [entity, ...mData];
-      setState(() {});
+      Global.eventBus.fire(OnTopEvent(id: id));
     }
   }
 
@@ -245,7 +256,7 @@ class _BossContentPageState extends State<BossContentPage>
                           ),
                         ),
                         Text(
-                          BaseTool.getUpdateTime(entity.updateTime),
+                          BaseTool.getBossItemTime(entity.updateTime),
                           style: TextStyle(
                               fontSize: 12, color: BaseColor.textDarkLight),
                           textAlign: TextAlign.end,

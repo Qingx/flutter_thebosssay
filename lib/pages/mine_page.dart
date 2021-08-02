@@ -153,6 +153,7 @@ class _MinePageState extends State<MinePage>
     });
   }
 
+  ///app评分
   void showStore() {
     const MethodChannel channel =
         const MethodChannel('app.storescore/storescore');

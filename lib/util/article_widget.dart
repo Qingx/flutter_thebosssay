@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/pages/article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:get/get.dart';
 
@@ -92,7 +93,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "${entity.collect ?? 0}k收藏·${entity.point ?? 0}w人围观",
+                    "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
                     style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -101,7 +102,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.releaseTime),
+                  BaseTool.getArticleItemTime(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -244,7 +245,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "${entity.collect}k收藏·${entity.point}w人围观",
+                    "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
                     style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -253,7 +254,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.releaseTime),
+                  BaseTool.getArticleItemTime(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -345,7 +346,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "${entity.collect ?? 0}k收藏·${entity.point ?? 0}w人围观",
+                    "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
                     style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -354,7 +355,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  DateFormat.getYYYYMMDD(entity.releaseTime),
+                  BaseTool.getArticleItemTime(entity.releaseTime),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -452,7 +453,7 @@ class ArticleWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                "${entity.collect}k收藏·${entity.point}w人围观",
+                                "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
                                 style: TextStyle(
                                     fontSize: 13, color: BaseColor.textGray),
                                 textAlign: TextAlign.start,
@@ -462,7 +463,7 @@ class ArticleWidget {
                               ),
                             ),
                             Text(
-                              "${DateFormat.getYYYYMMDD(entity.releaseTime)}",
+                              BaseTool.getArticleItemTime(entity.releaseTime),
                               style: TextStyle(
                                   fontSize: 13, color: BaseColor.textGray),
                               textAlign: TextAlign.start,

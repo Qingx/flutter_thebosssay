@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:uuid/uuid.dart';
@@ -21,8 +22,32 @@ class BaseTool {
     return "temp$uuid";
   }
 
+  static String getArticleItemTime(int startTime) {
+    int endTime = DateTime.now().millisecondsSinceEpoch;
+    if (endTime >= startTime) {
+      int diff = endTime - startTime;
+
+      int days = diff ~/ (1000 * 60 * 60 * 24);
+      int hours = diff ~/ (1000 * 60 * 60);
+      int minutes = diff ~/ (1000 * 60);
+      int seconds = diff ~/ 1000;
+
+      if (days > 0) {
+        return DateFormat.getYYMMDD(startTime);
+      } else if (hours > 0) {
+        return "$hours小时前更新";
+      } else if (minutes > 0) {
+        return "$minutes分钟前更新";
+      } else {
+        return "$seconds秒前更新";
+      }
+    } else {
+      return "时间戳异常";
+    }
+  }
+
   ///获取boss最近更新文章时间
-  static String getUpdateTime(int startTime) {
+  static String getBossItemTime(int startTime) {
     int endTime = DateTime.now().millisecondsSinceEpoch;
 
     if (endTime >= startTime) {

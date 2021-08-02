@@ -425,7 +425,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         ).marginOn(left: 8),
                         Expanded(child: SizedBox()),
                         Text(
-                          DateFormat.getYYYYMMDD(entity.releaseTime),
+                          BaseTool.getArticleItemTime(entity.releaseTime),
                           style: TextStyle(
                             fontSize: 13,
                             color: BaseColor.textGray,

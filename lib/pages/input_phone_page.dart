@@ -64,7 +64,6 @@ class _InputPhonePageState extends State<InputPhonePage> {
 
         TalkingApi.ins().obtainLogin(event.userInfo.id);
 
-        BaseTool.toast(msg: "登录成功");
         Get.offAll(() => HomePage());
       }, onError: (res) {
         Get.back();
