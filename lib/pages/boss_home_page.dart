@@ -351,7 +351,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                   maxLines: 1,
                 ),
                 Text(
-                  "${entity.point.formatCountNumber()}阅读·${entity.totalCount ?? 0}篇言论·${entity.collect.formatCountNumber()}关注",
+                  "${entity.readCount.formatCountNumber()}阅读·${entity.totalCount ?? 0}篇言论·${entity.collect.formatCountNumber()}关注",
                   style: TextStyle(fontSize: 12, color: Colors.white),
                   softWrap: false,
                   maxLines: 1,

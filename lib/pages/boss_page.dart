@@ -184,11 +184,11 @@ class _BossPageState extends State<BossPage>
         size: 24,
       ),
     ).onClick(() {
-      Get.to(() => AllBossPage(), transition: Transition.downToUp);
+      Get.to(() => AllBossPage());
     });
   }
 
   void onSearchClick() {
-    Get.to(() => SearchBossPage(), transition: Transition.fadeIn);
+    Get.to(() => SearchBossPage());
   }
 }

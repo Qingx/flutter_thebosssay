@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SearchBossPage extends StatefulWidget {
   SearchBossPage({Key key}) : super(key: key);
@@ -54,15 +54,19 @@ class _SearchBossPageState extends State<SearchBossPage>
   }
 
   ///初始化数据
-  Future<WlPage.Page<BossInfoEntity>> loadInitData() {
-    return BossApi.ins()
-        .obtainSearchBossList(pageParam, searchText)
-        .doOnData((event) {
-      hasData = event.hasData;
-      concat(event.records, false);
-    }).doOnError((res) {
-      print(res.msg);
-    }).last;
+  Future<bool> loadInitData() {
+    if (searchText == "") {
+      return Observable.just(true).last;
+    } else {
+      return BossApi.ins()
+          .obtainSearchBossList(pageParam, searchText)
+          .flatMap((value) {
+        pageParam?.reset();
+        hasData = value.hasData;
+        concat(value.records, false);
+        return Observable.just(false);
+      }).last;
+    }
   }
 
   ///刷新数据/加载更多
@@ -96,14 +100,16 @@ class _SearchBossPageState extends State<SearchBossPage>
     if (!editingController.text.isNullOrEmpty()) {
       editingController.clear();
       searchText = "";
-      controller.callRefresh();
+      builderFuture = loadInitData();
+      setState(() {});
     }
   }
 
   ///搜索框：提交
   void onEditSubmitted(text) {
     searchText = text;
-    controller.callRefresh();
+    builderFuture = loadInitData();
+    setState(() {});
   }
 
   void onEditChanged(text) {
@@ -121,7 +127,7 @@ class _SearchBossPageState extends State<SearchBossPage>
             BaseWidget.statusBar(context, true),
             topWidget(),
             Expanded(
-              child: FutureBuilder<WlPage.Page<BossInfoEntity>>(
+              child: FutureBuilder<bool>(
                 builder: builderWidget,
                 future: builderFuture,
               ),
@@ -135,7 +141,7 @@ class _SearchBossPageState extends State<SearchBossPage>
   Widget topWidget() {
     return Container(
       height: 56,
-      padding: EdgeInsets.only(top: 4, bottom: 12, left: 16, right: 16),
+      padding: EdgeInsets.only(top: 4, bottom: 12, left: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -166,9 +172,9 @@ class _SearchBossPageState extends State<SearchBossPage>
                     vertical: 8,
                   ),
                   suffixIcon: Icon(
-                    Icons.clear,
-                    size: 24,
-                    color: BaseColor.textDark,
+                    Icons.cancel,
+                    size: 20,
+                    color: BaseColor.textGray,
                   ).onClick(onEditCleared),
                   prefixIcon: Icon(
                     Icons.search,
@@ -182,16 +188,30 @@ class _SearchBossPageState extends State<SearchBossPage>
               ),
             ).marginOn(left: 20),
           ),
+          Container(
+            height: 56,
+            padding: EdgeInsets.only(left: 16, right: 16),
+            alignment: Alignment.center,
+            child: Text(
+              "搜索",
+              style: TextStyle(
+                color: BaseColor.accent,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ).onClick(() {
+            onEditSubmitted(editingController.text);
+          })
         ],
       ),
     );
   }
 
-  Widget builderWidget(BuildContext context,
-      AsyncSnapshot<WlPage.Page<BossInfoEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
-        return contentWidget();
+        return contentWidget(snapshot.data);
       } else
         return BaseWidget.errorWidget(() {
           builderFuture = loadInitData();
@@ -202,16 +222,19 @@ class _SearchBossPageState extends State<SearchBossPage>
     }
   }
 
-  Widget contentWidget() {
-    return Container(
-      color: BaseColor.pageBg,
-      child: BaseWidget.refreshWidgetPage(
-          slivers: [bodyWidget()],
-          controller: controller,
-          scrollController: scrollController,
-          hasData: hasData,
-          loadData: loadData),
-    );
+  Widget contentWidget(bool isSearchEmpty) {
+    return isSearchEmpty
+        ? initBodyWidget()
+        : Container(
+            color: BaseColor.pageBg,
+            child: BaseWidget.refreshWidgetPage(
+              slivers: [bodyWidget()],
+              controller: controller,
+              scrollController: scrollController,
+              hasData: hasData,
+              loadData: loadData,
+            ),
+          );
   }
 
   Widget bodyWidget() {
@@ -347,6 +370,51 @@ class _SearchBossPageState extends State<SearchBossPage>
             softWrap: false,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget initBodyWidget() {
+    return Container(
+      color: BaseColor.loadBg,
+      child: Column(
+        children: [
+          Container(
+            height: 48,
+            color: BaseColor.pageBg,
+          ),
+          Container(
+            height: 4,
+            color: BaseColor.loadBg,
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 184,
+            color: BaseColor.pageBg,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  R.assetsImgEmptyBoss,
+                  width: 100,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
+                Obx(
+                  () => Text(
+                    "从追踪的${Global.user.user.value.traceNum ?? 0}位boss中查找",
+                    style: TextStyle(color: BaseColor.textGray, fontSize: 16),
+                    textAlign: TextAlign.center,
+                    softWrap: false,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(top: 16),
+                ),
+              ],
+            ),
           ),
         ],
       ),

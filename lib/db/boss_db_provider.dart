@@ -12,18 +12,14 @@ class BossDbProvider extends BaseDbProvider {
   final String columnHead = "head"; //boss头像
   final String columnRole = "role"; //boss角色, 职务
   final String columnInfo = "info"; //boss描述
-  final String columnDate = "date"; //生日
   final String columnIsCollect = "isCollect"; //是否追踪 0：false 1：true
-  final String columnIsPoint = "isPoint"; //是否点赞 0：false 1：true
   final String columnDeleted = "deleted"; //是否被删除 0：false 1：true
   final String columnGuide = "guide"; //是否被推荐 0：false 1：true
-  final String columnPoint = "point"; //点赞数
   final String columnCollect = "collect"; //收藏数
   final String columnUpdateCount = "updateCount"; //更新数量
   final String columnTotalCount = "totalCount"; //发布文章总数
   final String columnReadCount = "readCount"; //阅读数
   final String columnUpdateTime = "updateTime"; //上次更新时间
-  final String columnCreateTime = "createTime"; //创建时间
   final String columnLabels = "labels"; //标签
 
   static BossDbProvider _mIns;
@@ -45,13 +41,12 @@ class BossDbProvider extends BaseDbProvider {
         create table $name (
         $columnId text primary key,$columnName text,
         $columnHead text,$columnRole text,
-        $columnInfo text,$columnDate integer,
-        $columnIsCollect integer,$columnIsPoint integer,
+        $columnIsCollect integer
         $columnDeleted integer,$columnGuide integer,
-        $columnPoint integer,$columnCollect integer,
+        $columnCollect integer,
         $columnUpdateCount integer,$columnTotalCount integer,
         $columnReadCount integer,$columnUpdateTime integer,
-        $columnCreateTime integer,$columnLabels text)
+        $columnLabels text)
       ''';
   }
 

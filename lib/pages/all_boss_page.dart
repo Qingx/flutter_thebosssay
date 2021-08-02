@@ -142,11 +142,19 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
     }
   }
 
-  void onEditSubmitted(text) {
-    widgetStatus = 1;
-    searchText = text;
-    builderFuture = loadSearchData(text);
-    setState(() {});
+  void onEditSubmitted(String text) {
+    if (text.isNullOrEmpty()) {
+      searchText = "";
+      editingController.clear();
+      widgetStatus = 0;
+      builderFuture = loadInitData();
+      setState(() {});
+    } else {
+      widgetStatus = 1;
+      searchText = text;
+      builderFuture = loadSearchData(text);
+      setState(() {});
+    }
   }
 
   void onEditChanged(text) {
@@ -223,7 +231,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   Widget topWidget() {
     return Container(
       height: 56,
-      padding: EdgeInsets.only(top: 4, bottom: 12, left: 16, right: 16),
+      padding: EdgeInsets.only(top: 4, bottom: 12, left: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -254,9 +262,9 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
                       vertical: 8,
                     ),
                     suffixIcon: Icon(
-                      Icons.clear,
-                      size: 24,
-                      color: BaseColor.textDark,
+                      Icons.cancel,
+                      size: 20,
+                      color: BaseColor.textGray,
                     ).onClick(onEditCleared),
                     prefixIcon: Icon(
                       Icons.search,
@@ -269,6 +277,21 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
                   onSubmitted: onEditSubmitted,
                 )).marginOn(left: 20),
           ),
+          Container(
+            height: 56,
+            padding: EdgeInsets.only(left: 16, right: 16),
+            alignment: Alignment.center,
+            child: Text(
+              "搜索",
+              style: TextStyle(
+                color: BaseColor.accent,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ).onClick(() {
+            onEditSubmitted(editingController.text);
+          })
         ],
       ),
     );
@@ -307,7 +330,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
           typeWidget(),
           Expanded(
             child: BaseWidget.refreshWidgetPage(
-                    slivers: [adWidget(), bossWidget()],
+                    slivers: [operationWidget(), bossWidget()],
                     controller: controller,
                     scrollController: scrollController,
                     hasData: hasData,
@@ -388,7 +411,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
           );
   }
 
-  Widget adWidget() {
+  Widget operationWidget() {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
@@ -396,7 +419,9 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
             R.assetsImgTestBanner,
             height: 100,
             fit: BoxFit.cover,
-          ).marginOn(bottom: 16);
+          ).marginOn(bottom: 16).onClick(() {
+            BaseTool.toast(msg: "点击运营图");
+          });
         },
         childCount: 1,
       ),

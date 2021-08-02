@@ -93,7 +93,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
+                    "${entity.collect.formatCountNumber()}收藏·${entity.readCount.formatCountNumber()}人围观",
                     style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -245,7 +245,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
+                    "${entity.collect.formatCountNumber()}收藏·${entity.readCount.formatCountNumber()}人围观",
                     style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -346,7 +346,7 @@ class ArticleWidget {
               children: [
                 Expanded(
                   child: Text(
-                    "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
+                    "${entity.collect.formatCountNumber()}收藏·${entity.readCount.formatCountNumber()}人围观",
                     style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -453,7 +453,7 @@ class ArticleWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                "${entity.collect.formatCountNumber()}收藏·${entity.point.formatCountNumber()}人围观",
+                                "${entity.collect.formatCountNumber()}收藏·${entity.readCount.formatCountNumber()}人围观",
                                 style: TextStyle(
                                     fontSize: 13, color: BaseColor.textGray),
                                 textAlign: TextAlign.start,

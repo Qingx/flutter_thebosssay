@@ -8,18 +8,14 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   String head = ""; //boss头像
   String role; //boss角色, 职务
   String info; //boss描述
-  int date; //生日
   bool isCollect = false; //是否追踪
-  bool isPoint = false; //是否点赞
   bool deleted = false; //是否被删除
   bool guide = false; //是否被推荐
-  int point = 0; //阅读数
+  int readCount = 0; //阅读数
   int collect = 0; //收藏数
   int updateCount = 0; //更新数量
   int totalCount = 0; //发布文章总数
-  int readCount; //阅读数
   int updateTime; //上次更新时间
-  int createTime; //创建时间
   List<String> labels = []; //标签
 
   Map<String, dynamic> toMap() {
@@ -29,18 +25,14 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
       'head': head,
       'role': role,
       'info': info,
-      'date': date,
       'isCollect': isCollect ? 1 : 0,
-      'isPoint': isPoint ? 1 : 0,
       'deleted': deleted ? 1 : 0,
       'guide': guide ? 1 : 0,
-      'point': point,
+      'readCount': readCount,
       'collect': collect,
       'updateCount': updateCount,
       'totalCount': totalCount,
-      'readCount': readCount,
       'updateTime': updateTime,
-      'createTime': createTime,
       'labels': convert.json.encode(labels)
     };
   }
@@ -52,18 +44,14 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
       ..head = json["head"]
       ..role = json["role"]
       ..info = json["info"]
-      ..date = json["date"]
       ..isCollect = json["isCollect"] == 1
-      ..isPoint = json["isPoint"] == 1
       ..deleted = json["deleted"] == 1
       ..guide = json["guide"] == 1
-      ..point = json["point"]
+      ..readCount = json["readCount"]
       ..collect = json["collect"]
       ..updateCount = json["updateCount"]
       ..totalCount = json["totalCount"]
-      ..readCount = json["readCount"]
       ..updateTime = json["updateTime"]
-      ..createTime = json["createTime"]
       ..labels = (convert.json.decode(json["labels"]) as List<dynamic>)
           .map((e) => e.toString())
           .toList();
@@ -71,6 +59,16 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
 
   @override
   String toString() {
-    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, date: $date, isCollect: $isCollect, isPoint: $isPoint, deleted: $deleted, point: $point, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, readCount: $readCount, updateTime: $updateTime, createTime: $createTime}';
+    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BossInfoEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

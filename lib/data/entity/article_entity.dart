@@ -8,7 +8,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   String descContent = ""; //摘要
   bool isCollect; //是否收藏
   bool isPoint; //是否点赞
-  int point = 0; //点赞数
+  int readCount = 0; //阅读数
   int collect = 0; //收藏数
   int releaseTime; //发布时间
   List<String> files = []; //图片列表
@@ -16,15 +16,15 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
 
   @override
   String toString() {
-    return 'ArticleEntity{id: $id, bossId: $bossId, title: $title, descContent: $descContent, isCollect: $isCollect, isPoint: $isPoint, point: $point, collect: $collect, releaseTime: $releaseTime, files: $files, bossVO: $bossVO}';
+    return 'ArticleEntity{id: $id, bossId: $bossId, title: $title, descContent: $descContent, isCollect: $isCollect, isPoint: $isPoint, point: $readCount, collect: $collect, releaseTime: $releaseTime, files: $files, bossVO: $bossVO}';
   }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ArticleEntity &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+          other is ArticleEntity &&
+              runtimeType == other.runtimeType &&
+              id == other.id;
 
   @override
   int get hashCode => id.hashCode;

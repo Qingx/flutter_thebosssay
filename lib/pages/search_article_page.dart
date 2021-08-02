@@ -135,7 +135,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   Widget topWidget() {
     return Container(
       height: 56,
-      padding: EdgeInsets.only(top: 4, bottom: 12, left: 16, right: 16),
+      padding: EdgeInsets.only(top: 4, bottom: 12, left: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -166,9 +166,9 @@ class _SearchArticlePageState extends State<SearchArticlePage>
                     vertical: 8,
                   ),
                   suffixIcon: Icon(
-                    Icons.clear,
-                    size: 24,
-                    color: BaseColor.textDark,
+                    Icons.cancel,
+                    size: 20,
+                    color: BaseColor.textGray,
                   ).onClick(onEditCleared),
                   prefixIcon: Icon(
                     Icons.search,
@@ -182,6 +182,21 @@ class _SearchArticlePageState extends State<SearchArticlePage>
               ),
             ).marginOn(left: 20),
           ),
+          Container(
+            height: 56,
+            padding: EdgeInsets.only(left: 16, right: 16),
+            alignment: Alignment.center,
+            child: Text(
+              "搜索",
+              style: TextStyle(
+                color: BaseColor.accent,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ).onClick(() {
+            onEditSubmitted(editingController.text);
+          }),
         ],
       ),
     );

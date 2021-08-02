@@ -17,16 +17,8 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 	if (json['info'] != null) {
 		data.info = json['info'].toString();
 	}
-	if (json['date'] != null) {
-		data.date = json['date'] is String
-				? int.tryParse(json['date'])
-				: json['date'].toInt();
-	}
 	if (json['isCollect'] != null) {
 		data.isCollect = json['isCollect'];
-	}
-	if (json['isPoint'] != null) {
-		data.isPoint = json['isPoint'];
 	}
 	if (json['deleted'] != null) {
 		data.deleted = json['deleted'];
@@ -34,10 +26,10 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 	if (json['guide'] != null) {
 		data.guide = json['guide'];
 	}
-	if (json['point'] != null) {
-		data.point = json['point'] is String
-				? int.tryParse(json['point'])
-				: json['point'].toInt();
+	if (json['readCount'] != null) {
+		data.readCount = json['readCount'] is String
+				? int.tryParse(json['readCount'])
+				: json['readCount'].toInt();
 	}
 	if (json['collect'] != null) {
 		data.collect = json['collect'] is String
@@ -54,20 +46,10 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['totalCount'])
 				: json['totalCount'].toInt();
 	}
-	if (json['readCount'] != null) {
-		data.readCount = json['readCount'] is String
-				? int.tryParse(json['readCount'])
-				: json['readCount'].toInt();
-	}
 	if (json['updateTime'] != null) {
 		data.updateTime = json['updateTime'] is String
 				? int.tryParse(json['updateTime'])
 				: json['updateTime'].toInt();
-	}
-	if (json['createTime'] != null) {
-		data.createTime = json['createTime'] is String
-				? int.tryParse(json['createTime'])
-				: json['createTime'].toInt();
 	}
 	if (json['labels'] != null) {
 		data.labels = (json['labels'] as List).map((v) => v.toString()).toList().cast<String>();
@@ -82,18 +64,14 @@ Map<String, dynamic> bossInfoEntityToJson(BossInfoEntity entity) {
 	data['head'] = entity.head;
 	data['role'] = entity.role;
 	data['info'] = entity.info;
-	data['date'] = entity.date;
 	data['isCollect'] = entity.isCollect;
-	data['isPoint'] = entity.isPoint;
 	data['deleted'] = entity.deleted;
 	data['guide'] = entity.guide;
-	data['point'] = entity.point;
+	data['readCount'] = entity.readCount;
 	data['collect'] = entity.collect;
 	data['updateCount'] = entity.updateCount;
 	data['totalCount'] = entity.totalCount;
-	data['readCount'] = entity.readCount;
 	data['updateTime'] = entity.updateTime;
-	data['createTime'] = entity.createTime;
 	data['labels'] = entity.labels;
 	return data;
 }
