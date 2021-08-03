@@ -93,7 +93,7 @@ class _BossPageState extends State<BossPage>
             R.assetsImgSearch,
             width: 20,
             height: 20,
-          ).onClick(onSearchClick).marginOn(right: 16)
+          ).onClick(onSearchClick).marginOn(right: 16, bottom: 8)
         ],
       ),
     );

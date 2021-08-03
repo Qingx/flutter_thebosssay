@@ -10,8 +10,9 @@ import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
-import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
-import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
@@ -25,6 +26,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class BossHomePage extends StatelessWidget {
   BossHomePage({Key key}) : super(key: key);
@@ -224,22 +226,25 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   void cancelFollow() {
-    BaseWidget.showLoadingAlert("尝试取消...", context);
-    BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+    showFollowAskCancelDialog(context, onDismiss: () {
       Get.back();
+    }, onConfirm: () {
+      BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      entity.isCollect = false;
-      setState(() {});
-
-      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: false));
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-
-      showFollowCancelDialog(context, onDismiss: () {
+      BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
         Get.back();
+        Get.back();
+
+        entity.isCollect = false;
+        setState(() {});
+
+        Global.eventBus
+            .fire(RefreshFollowEvent(id: entity.id, isFollow: false));
+        Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      }, onError: (res) {
+        Get.back();
+        BaseTool.toast(msg: " 取消失败，${res.msg}");
       });
-    }, onError: (res) {
-      Get.back();
-      BaseTool.toast(msg: " 取消失败，${res.msg}");
     });
   }
 
@@ -255,10 +260,14 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
-      showFollowSuccessDialog(context, onConfirm: () {
+      showAskPushDialog(context, onConfirm: () {
         Get.back();
+
+        showFollowChangedDialog(context, true);
       }, onDismiss: () {
         Get.back();
+
+        showFollowChangedDialog(context, true);
       });
     }, onError: (res) {
       Get.back();

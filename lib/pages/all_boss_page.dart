@@ -8,9 +8,12 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/data/entity/operation_photo_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/dialog/follow_cancel_dialog.dart';
-import 'package:flutter_boss_says/dialog/follow_success_dialog.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
@@ -23,6 +26,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AllBossPage extends StatefulWidget {
   const AllBossPage({Key key}) : super(key: key);
@@ -39,6 +43,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   EasyRefreshController controller;
   bool hasData = false;
   List<BossLabelEntity> labels = DataConfig.getIns().bossLabels;
+  OperationPhotoEntity operationEntity;
 
   String mCurrentTab;
 
@@ -75,11 +80,15 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   Future<WlPage.Page<BossInfoEntity>> loadInitData() {
     pageParam?.reset();
     mCurrentTab = labels[0].id;
-    return BossApi.ins()
-        .obtainAllBossList(pageParam, mCurrentTab)
-        .doOnData((event) {
-      hasData = event.hasData;
-      concat(event.records, false);
+    return UserApi.ins().obtainOperationPhoto().flatMap((value) {
+      operationEntity = value;
+
+      return BossApi.ins()
+          .obtainAllBossList(pageParam, mCurrentTab)
+          .doOnData((event) {
+        hasData = event.hasData;
+        concat(event.records, false);
+      });
     }).doOnError((e) {
       print(e);
     }).last;
@@ -170,22 +179,27 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   }
 
   void cancelFollow(BossInfoEntity entity) {
-    BaseWidget.showLoadingAlert("尝试取消...", context);
-    BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+    showFollowAskCancelDialog(context, onDismiss: () {
       Get.back();
+    }, onConfirm: () {
+      BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      entity.isCollect = false;
-      setState(() {});
-
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: false));
-
-      showFollowCancelDialog(context, onDismiss: () {
+      BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
         Get.back();
+        Get.back();
+
+        showFollowChangedDialog(context, false);
+
+        entity.isCollect = false;
+        setState(() {});
+
+        Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+        Global.eventBus
+            .fire(RefreshFollowEvent(id: entity.id, isFollow: false));
+      }, onError: (res) {
+        Get.back();
+        BaseTool.toast(msg: " 取消失败，${res.msg}");
       });
-    }, onError: (res) {
-      Get.back();
-      BaseTool.toast(msg: " 取消失败，${res.msg}");
     });
   }
 
@@ -200,10 +214,14 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
       Global.eventBus.fire(BaseEvent(RefreshUserEvent));
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
-      showFollowSuccessDialog(context, onConfirm: () {
+      showAskPushDialog(context, onConfirm: () {
         Get.back();
+
+        showFollowChangedDialog(context, true);
       }, onDismiss: () {
         Get.back();
+
+        showFollowChangedDialog(context, true);
       });
     }, onError: (res) {
       Get.back();
@@ -251,7 +269,9 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
                   autofocus: false,
                   style: TextStyle(fontSize: 16, color: BaseColor.textDark),
                   decoration: InputDecoration(
-                    hintText: Global.hint.hint.value=="-1"?"请输入内容":Global.hint.hint.value,
+                    hintText: Global.hint.hint.value == "-1"
+                        ? "请输入内容"
+                        : Global.hint.hint.value,
                     hintStyle:
                         TextStyle(fontSize: 16, color: BaseColor.textGray),
                     fillColor: BaseColor.loadBg,
@@ -330,12 +350,12 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
           typeWidget(),
           Expanded(
             child: BaseWidget.refreshWidgetPage(
-                    slivers: [operationWidget(), bossWidget()],
-                    controller: controller,
-                    scrollController: scrollController,
-                    hasData: hasData,
-                    loadData: loadData)
-                .paddingOnly(left: 16, right: 16),
+              slivers: [operationWidget(), bossWidget()],
+              controller: controller,
+              scrollController: scrollController,
+              hasData: hasData,
+              loadData: loadData,
+            ).paddingOnly(left: 16, right: 16),
           ),
         ],
       ),
@@ -415,12 +435,20 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          return Image.asset(
-            R.assetsImgTestBanner,
+          return Image.network(
+            HttpConfig.fullUrl(operationEntity?.pictureLocation ?? ""),
             height: 100,
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.asset(
+                R.assetsImgTestBanner,
+                height: 100,
+                fit: BoxFit.cover,
+              );
+            },
           ).marginOn(bottom: 16).onClick(() {
-            BaseTool.toast(msg: "点击运营图");
+            Get.to(() => BossHomePage(),
+                arguments: operationEntity.getBossInfo());
           });
         },
         childCount: 1,
@@ -519,8 +547,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(),
-          arguments: entity, transition: Transition.rightToLeftWithFade);
+      Get.to(() => BossHomePage(), arguments: entity);
     });
   }
 
@@ -692,8 +719,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(),
-          arguments: entity, transition: Transition.rightToLeftWithFade);
+      Get.to(() => BossHomePage(), arguments: entity);
     });
   }
 

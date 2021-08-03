@@ -261,7 +261,7 @@ class BaseWidget {
 
   static Future<dynamic> showLoadingAlert(String notice, BuildContext context) {
     return showDialog(
-      barrierDismissible: true,
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return Center(

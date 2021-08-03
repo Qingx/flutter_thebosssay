@@ -113,6 +113,8 @@ class R {
   static final String assetsImgContact4 = 'assets/img/contact4.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testSplash.png)
   static final String assetsImgTestSplash = 'assets/img/testSplash.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossFail.png)
+  static final String assetsImgBossFail = 'assets/img/bossFail.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSetting.png)
   static final String assetsImgBossSetting = 'assets/img/bossSetting.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossOrderSelect.png)

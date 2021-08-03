@@ -8,6 +8,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   String head = ""; //boss头像
   String role; //boss角色, 职务
   String info; //boss描述
+  bool top = false; //是否置顶
   bool isCollect = false; //是否追踪
   bool deleted = false; //是否被删除
   bool guide = false; //是否被推荐
@@ -18,48 +19,9 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   int updateTime; //上次更新时间
   List<String> labels = []; //标签
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'head': head,
-      'role': role,
-      'info': info,
-      'isCollect': isCollect ? 1 : 0,
-      'deleted': deleted ? 1 : 0,
-      'guide': guide ? 1 : 0,
-      'readCount': readCount,
-      'collect': collect,
-      'updateCount': updateCount,
-      'totalCount': totalCount,
-      'updateTime': updateTime,
-      'labels': convert.json.encode(labels)
-    };
-  }
-
-  BossInfoEntity toBean(Map<String, dynamic> json) {
-    return BossInfoEntity()
-      ..id = json["id"]
-      ..name = json["name"]
-      ..head = json["head"]
-      ..role = json["role"]
-      ..info = json["info"]
-      ..isCollect = json["isCollect"] == 1
-      ..deleted = json["deleted"] == 1
-      ..guide = json["guide"] == 1
-      ..readCount = json["readCount"]
-      ..collect = json["collect"]
-      ..updateCount = json["updateCount"]
-      ..totalCount = json["totalCount"]
-      ..updateTime = json["updateTime"]
-      ..labels = (convert.json.decode(json["labels"]) as List<dynamic>)
-          .map((e) => e.toString())
-          .toList();
-  }
-
   @override
   String toString() {
-    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels}';
+    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels}';
   }
 
   @override

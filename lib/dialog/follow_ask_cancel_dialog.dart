@@ -3,37 +3,37 @@ import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
-Future<dynamic> showFollowSuccessDialog(BuildContext context,
+Future<dynamic> showFollowAskCancelDialog(BuildContext context,
     {Function onDismiss, Function onConfirm}) {
   return showDialog(
-    barrierDismissible: false,
+    barrierDismissible: true,
     context: context,
     builder: (context) {
       return Center(
         child: Material(
           borderRadius: BorderRadius.all(Radius.circular(12)),
           child: Container(
-            width: 264,
-            height: 264,
+            width: 260,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(
-                  R.assetsImgBossSuccess,
+                  R.assetsImgBossFail,
                   width: 135,
                   height: 108,
                 ).marginOn(top: 16),
                 Text(
-                  "追踪成功",
+                  "确定要取消关注吗？",
                   style: TextStyle(color: BaseColor.textDark, fontSize: 16),
                   textAlign: TextAlign.center,
                   softWrap: false,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                ).marginOn(top: 16),
+                ).marginOn(top: 8),
                 Text(
-                  "需要实时推送该老板的言论吗？",
+                  "取消追踪后将不再关注该boss",
                   style: TextStyle(color: BaseColor.textGray, fontSize: 14),
                   textAlign: TextAlign.center,
                   softWrap: false,
@@ -42,42 +42,49 @@ Future<dynamic> showFollowSuccessDialog(BuildContext context,
                 ).marginOn(top: 8),
                 Container(
                   height: 36,
-                  margin: EdgeInsets.only(top: 16, bottom: 16),
+                  margin:
+                      EdgeInsets.only(top: 16, bottom: 20, left: 24, right: 24),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
+                      Expanded(
+                          child: Container(
                         height: 36,
-                        padding: EdgeInsets.only(left: 12, right: 12),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "暂不开启",
-                          style: TextStyle(
-                              fontSize: 16, color: BaseColor.textGray),
-                          softWrap: false,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ).onClick(onDismiss),
-                      Container(
-                        height: 36,
-                        padding: EdgeInsets.only(left: 12, right: 12),
-                        alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: BaseColor.accent,
+                          color: BaseColor.loadBg,
                           borderRadius: BorderRadius.circular(4),
                         ),
+                        alignment: Alignment.center,
                         child: Text(
-                          "开启推送",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
+                          "取消",
+                          style: TextStyle(
+                              fontSize: 14, color: BaseColor.textDark),
                           softWrap: false,
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ).onClick(onConfirm),
+                      ).onClick(onDismiss)),
+                      Expanded(
+                        child: Container(
+                          height: 36,
+                          margin: EdgeInsets.only(left: 14),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: BaseColor.accent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            "确定",
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            softWrap: false,
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ).onClick(onConfirm),
+                      )
                     ],
                   ),
                 ),

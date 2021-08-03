@@ -1,5 +1,6 @@
-class OnTopEvent {
+class TopOrCancelEvent {
   String id;
+  bool doTop;
 
-  OnTopEvent({this.id});
+  TopOrCancelEvent({this.id, this.doTop});
 }

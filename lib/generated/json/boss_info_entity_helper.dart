@@ -17,6 +17,9 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 	if (json['info'] != null) {
 		data.info = json['info'].toString();
 	}
+	if (json['top'] != null) {
+		data.top = json['top'];
+	}
 	if (json['isCollect'] != null) {
 		data.isCollect = json['isCollect'];
 	}
@@ -64,6 +67,7 @@ Map<String, dynamic> bossInfoEntityToJson(BossInfoEntity entity) {
 	data['head'] = entity.head;
 	data['role'] = entity.role;
 	data['info'] = entity.info;
+	data['top'] = entity.top;
 	data['isCollect'] = entity.isCollect;
 	data['deleted'] = entity.deleted;
 	data['guide'] = entity.guide;

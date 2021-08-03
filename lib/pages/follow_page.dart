@@ -2,17 +2,22 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/follow_content_page.dart';
+import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
-import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../r.dart';
 
 class FollowPage extends StatefulWidget {
   const FollowPage({Key key}) : super(key: key);
@@ -22,16 +27,20 @@ class FollowPage extends StatefulWidget {
 }
 
 class _FollowPageState extends State<FollowPage>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
+  Future<bool> builderFuture;
   int mCurrentIndex;
-  PageController mPageController;
 
-  List<BossLabelEntity> labels;
+  List<BossLabelEntity> mLabels;
   List<FollowContentPage> mPages;
+  bool hasData;
+  int totalArticleNumber;
 
-  StreamSubscription<BaseEvent> eventDispose;
+  PageController mPageController;
+  ScrollController scrollController;
+  EasyRefreshController controller;
 
-  var builderFuture;
+  var eventDispose;
 
   @override
   bool get wantKeepAlive => true;
@@ -41,6 +50,8 @@ class _FollowPageState extends State<FollowPage>
     super.dispose();
 
     mPageController?.dispose();
+    controller?.dispose();
+    scrollController?.dispose();
 
     eventDispose?.cancel();
   }
@@ -50,41 +61,97 @@ class _FollowPageState extends State<FollowPage>
     super.initState();
 
     mCurrentIndex = 0;
-    mPageController = PageController();
+    mLabels = [];
+    mPages = [];
+    hasData = false;
+    totalArticleNumber = 0;
 
     builderFuture = loadInitData();
+
+    mPageController = PageController();
+    scrollController = ScrollController();
+    controller = EasyRefreshController();
+
+    eventBus();
   }
 
-  Future<List<dynamic>> loadInitData() {
-    if (DataConfig.getIns().bossLabels.isLabelEmpty()) {
-      return BossApi.ins()
-          .obtainBossLabels()
-          .onErrorReturn([]).doOnData((event) {
-        labels = [BaseEmpty.emptyLabel, ...event];
-        DataConfig.getIns().setBossLabels = event;
+  void eventBus() {
+    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+      controller.callRefresh();
+    });
+  }
 
-        mPages = labels.map((e) => FollowContentPage(e.id)).toList();
+  Future<bool> loadInitData() {
+    pageParam?.reset();
+    bool canUse = !DataConfig.getIns().bossLabels.isLabelEmpty();
+
+    if (canUse) {
+      return BossApi.ins().obtainFollowArticle(pageParam).flatMap((value) {
+        mLabels = DataConfig.getIns().bossLabels;
+        mPages = mLabels.map((e) => FollowContentPage(e.id)).toList();
+
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+
+        return Observable.just(true);
       }).last;
     } else {
-      labels = DataConfig.getIns().bossLabels;
-      mPages = labels.map((e) => FollowContentPage(e.id)).toList();
+      return BossApi.ins().obtainBossLabels().flatMap((value) {
+        value = [BaseEmpty.emptyLabel, ...value];
+        mLabels = value;
 
-      return Observable.just([0, 1, 2]).last;
+        DataConfig.getIns().setBossLabels = mLabels;
+        mPages = mLabels.map((e) => FollowContentPage(e.id)).toList();
+
+        return BossApi.ins().obtainFollowArticle(pageParam);
+      }).flatMap((value) {
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+
+        return Observable.just(!mLabels.isLabelEmpty());
+      }).last;
     }
   }
 
   @override
+  void loadData(bool loadMore) {
+    if (!loadMore) {
+      pageParam.reset();
+    }
+
+    BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
+      totalArticleNumber = event.total;
+      hasData = event.hasData;
+      concat(event.records, loadMore);
+      setState(() {});
+
+      if (loadMore) {
+        controller.finishLoad(success: true);
+      } else {
+        controller.finishRefresh(success: true);
+      }
+    }, onError: (res) {
+      if (loadMore) {
+        controller.finishLoad(success: false);
+      } else {
+        controller.finishRefresh(success: false);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
+    return FutureBuilder<bool>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(
-      BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasData && !labels.isLabelEmpty()) {
+      if (snapshot.hasData && snapshot.data) {
         Global.hint.setCanUse(true);
         return contentWidget();
       } else {
@@ -100,26 +167,136 @@ class _FollowPageState extends State<FollowPage>
 
   Widget contentWidget() {
     return Container(
+      color: BaseColor.pageBg,
       child: Column(
         children: [
           tabWidget(),
           Expanded(
-            child: PageView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              controller: mPageController,
-              itemCount: mPages.length,
-              itemBuilder: (context, index) {
-                return mPages[index];
-              },
-              onPageChanged: (index) {
-                mCurrentIndex = index;
-                setState(() {});
-              },
+            child: BaseWidget.refreshWidgetPage(
+              slivers: [sliverWidget(), bodyWidget()],
+              controller: controller,
+              scrollController: scrollController,
+              hasData: hasData,
+              loadData: loadData,
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget sliverWidget() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return index == 0 ? bossWidget() : titleWidget();
+        },
+        childCount: 2,
+      ),
+    );
+  }
+
+  Widget titleWidget() {
+    return Container(
+      color: BaseColor.pageBg,
+      padding: EdgeInsets.only(bottom: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "最近更新",
+            style: TextStyle(
+                color: BaseColor.textDark,
+                fontSize: 24,
+                fontWeight: FontWeight.bold),
+          ).marginOn(left: 16),
+          Text(
+            "共${totalArticleNumber ?? 0}篇",
+            style: TextStyle(color: BaseColor.textDark, fontSize: 14),
+          ).marginOn(left: 12),
+        ],
+      ),
+    );
+  }
+
+  Widget bossWidget() {
+    return Container(
+      height: 180,
+      child: PageView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        controller: mPageController,
+        itemCount: mPages.length,
+        itemBuilder: (context, index) {
+          return mPages[index];
+        },
+        onPageChanged: (index) {
+          mCurrentIndex = index;
+          setState(() {});
+        },
+      ),
+    );
+  }
+
+  Widget bodyWidget() {
+    return mData.isNullOrEmpty()
+        ? SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return emptyBodyWidget();
+              },
+              childCount: 1,
+            ),
+          )
+        : SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                ArticleEntity entity = mData[index];
+
+                return entity.files.isNullOrEmpty()
+                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
+                    : ArticleWidget.singleImgWithContent(
+                        entity, index, context);
+              },
+              childCount: mData.length,
+            ),
+          );
+  }
+
+  Widget emptyBodyWidget() {
+    print(MediaQuery.of(context).padding.bottom);
+    print(MediaQuery.of(context).size.height);
+    print(MediaQuery.of(context).padding.top);
+
+    String path = R.assetsImgEmptyBoss;
+    String content = "最近还没有更新哦～";
+    double height = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom -
+        480;
+
+    return Container(
+      height: height,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(path, width: 160, height: 160),
+            Flexible(
+              child: Text(
+                content,
+                style: TextStyle(fontSize: 18, color: BaseColor.textGray),
+                textAlign: TextAlign.center,
+              ).marginOn(top: 16),
+            ),
+          ],
+        ),
+      ),
+    ).onClick(() {
+      controller.callRefresh();
+    });
   }
 
   Widget tabWidget() {
@@ -135,9 +312,9 @@ class _FollowPageState extends State<FollowPage>
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return tabItemWidget(labels[index], index);
+            return tabItemWidget(mLabels[index], index);
           },
-          itemCount: labels.length,
+          itemCount: mLabels.length,
         ),
       ),
     );
@@ -145,9 +322,9 @@ class _FollowPageState extends State<FollowPage>
 
   Widget tabItemWidget(BossLabelEntity entity, int index) {
     double left = index == 0 ? 16 : 8;
-    double right = index == 15 ? 16 : 8;
+    double right = index == mLabels.length - 1 ? 16 : 8;
 
-    bool hasSelect = labels[mCurrentIndex].id == entity.id;
+    bool hasSelect = mLabels[mCurrentIndex].id == entity.id;
 
     Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
     Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
@@ -167,6 +344,11 @@ class _FollowPageState extends State<FollowPage>
       if (index != mCurrentIndex) {
         mCurrentIndex = index;
         mPageController.jumpToPage(mCurrentIndex);
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 480),
+          curve: Curves.ease,
+        );
       }
     });
   }
@@ -187,20 +369,9 @@ class _FollowPageState extends State<FollowPage>
           loadingItemWidget(1, 8),
           loadingItemWidget(0.4, 8),
           loadingItemWidget(0.6, 8),
-          Container(
-            margin: EdgeInsets.only(top: 16, left: 16, right: 16),
-            height: 48,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SpinKitFadingCircle(
-                  color: Color(0xff0e1e1e1),
-                  size: 48,
-                  duration: Duration(milliseconds: 2000),
-                ),
-              ],
-            ),
-          ),
+          loadingItemWidget(0.9, 8),
+          loadingItemWidget(0.7, 8),
+          loadingItemWidget(0.4, 8),
         ],
       ),
     );
@@ -215,13 +386,13 @@ class _FollowPageState extends State<FollowPage>
         removeBottom: true,
         context: context,
         child: ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemBuilder: (context, index) {
             return loadTabItemWidget(index);
           },
-          itemCount: 4,
+          itemCount: 6,
         ),
       ),
     );
@@ -229,13 +400,16 @@ class _FollowPageState extends State<FollowPage>
 
   Widget loadTabItemWidget(int index) {
     double left = index == 0 ? 16 : 8;
-    double right = index == 15 ? 16 : 8;
+    double right = index == 5 ? 16 : 8;
+
     return Container(
-      width: 80,
+      width: 56,
+      height: 28,
       margin: EdgeInsets.only(left: left, right: right),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(14)),
-          color: BaseColor.loadBg),
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        color: BaseColor.loadBg,
+      ),
     );
   }
 
@@ -253,8 +427,8 @@ class _FollowPageState extends State<FollowPage>
 
   Widget loadCardWidget() {
     return Container(
-      height: 180,
-      padding: EdgeInsets.only(top: 12, bottom: 24),
+      height: 192,
+      padding: EdgeInsets.only(top: 24, bottom: 24),
       child: MediaQuery.removePadding(
         removeBottom: true,
         removeTop: true,

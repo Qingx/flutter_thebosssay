@@ -5,18 +5,18 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/event/on_top_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 
 class BossContentPage extends StatefulWidget {
@@ -81,13 +81,11 @@ class _BossContentPageState extends State<BossContentPage>
       }
     });
 
-    eventTopDispose = Global.eventBus.on<OnTopEvent>().listen((event) {
-      var index = mData.indexWhere((element) => element.id == event.id);
-      if (index != null) {
-        var entity = mData[index];
-        mData.removeAt(index);
-        mData = [entity, ...mData];
-        setState(() {});
+    eventTopDispose = Global.eventBus.on<TopOrCancelEvent>().listen((event) {
+      if (event.doTop) {
+        doAddTop(event.id);
+      } else {
+        doCancelTop(event.id);
       }
     });
   }
@@ -119,7 +117,40 @@ class _BossContentPageState extends State<BossContentPage>
   void doAddTop(String id) {
     var index = mData.indexWhere((element) => element.id == id);
     if (index != null) {
-      Global.eventBus.fire(OnTopEvent(id: id));
+      UserApi.ins().obtainBossTopOrMove(id, true).listen((event) {
+        var entity = mData[index];
+        entity.top = true;
+
+        mData.sort((a, b) => (b.updateTime).compareTo(a.updateTime));
+        mData.sort((a, b) => (b.top ? 1 : 0).compareTo(a.top ? 1 : 0));
+        setState(() {});
+
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 400),
+          curve: Curves.ease,
+        );
+      }, onError: (res) {
+        BaseTool.toast(msg: "操作失败，${res.msg}");
+      });
+    }
+  }
+
+  ///取消置顶
+  void doCancelTop(String id) {
+    var index = mData.indexWhere((element) => element.id == id);
+    if (index != null) {
+      UserApi.ins().obtainBossTopOrMove(id, false).listen((event) {
+        var entity = mData[index];
+        entity.top = false;
+
+        mData.sort((a, b) => (b.updateTime).compareTo(a.updateTime));
+        mData.sort((a, b) => (b.top ? 1 : 0).compareTo(a.top ? 1 : 0));
+
+        setState(() {});
+      }, onError: (res) {
+        BaseTool.toast(msg: "操作失败，${res.msg}");
+      });
     }
   }
 
@@ -127,16 +158,21 @@ class _BossContentPageState extends State<BossContentPage>
   void doCancelFollow(String id) {
     var index = mData.indexWhere((element) => element.id == id);
     if (index != null) {
-      BaseWidget.showLoadingAlert("尝试取消...", context);
-
-      BossApi.ins().obtainNoFollowBoss(id).listen((event) {
+      showFollowAskCancelDialog(context, onDismiss: () {
         Get.back();
+      }, onConfirm: () {
+        BaseWidget.showLoadingAlert("尝试取消...", context);
 
-        Global.eventBus.fire(
-            RefreshFollowEvent(id: id, isFollow: false, needLoading: false));
-      }, onError: (res) {
-        Get.back();
-        BaseTool.toast(msg: "取消失败,${res.msg}");
+        BossApi.ins().obtainNoFollowBoss(id).listen((event) {
+          Get.back();
+          Get.back();
+
+          Global.eventBus.fire(
+              RefreshFollowEvent(id: id, isFollow: false, needLoading: false));
+        }, onError: (res) {
+          Get.back();
+          BaseTool.toast(msg: "取消失败,${res.msg}");
+        });
       });
     }
   }
@@ -168,10 +204,11 @@ class _BossContentPageState extends State<BossContentPage>
     return Container(
       color: BaseColor.pageBg,
       child: BaseWidget.refreshWidget(
-          slivers: [bodyWidget()],
-          controller: controller,
-          scrollController: scrollController,
-          loadData: loadData),
+        slivers: [bodyWidget()],
+        controller: controller,
+        scrollController: scrollController,
+        loadData: loadData,
+      ),
     );
   }
 
@@ -196,11 +233,13 @@ class _BossContentPageState extends State<BossContentPage>
   }
 
   Widget bodyItemWidget(BossInfoEntity entity, int index) {
+    Color bgColor = entity.top ? BaseColor.accentLight : BaseColor.pageBg;
+
     return Slidable(
       child: Container(
         padding: EdgeInsets.only(top: 12, bottom: 12, left: 16, right: 16),
         height: 80,
-        color: BaseColor.pageBg,
+        color: bgColor,
         child: Row(
           children: [
             ClipOval(
@@ -281,19 +320,24 @@ class _BossContentPageState extends State<BossContentPage>
           ],
         ),
       ).onClick(() {
-        Get.to(() => BossHomePage(),
-            arguments: entity, transition: Transition.rightToLeftWithFade);
+        Get.to(() => BossHomePage(), arguments: entity);
       }),
       actionPane: SlidableScrollActionPane(),
       key: Key(entity.id),
       secondaryActions: <Widget>[
         IconSlideAction(
-          caption: '置顶',
+          caption: entity.top ? "取消置顶" : "置顶",
           color: BaseColor.accent,
-          icon: Icons.vertical_align_top,
+          icon: entity.top
+              ? Icons.vertical_align_bottom
+              : Icons.vertical_align_top,
           closeOnTap: false,
           onTap: () {
-            doAddTop(entity.id);
+            var index = mData.indexWhere((element) => element.id == entity.id);
+            if (index != null) {
+              Global.eventBus
+                  .fire(TopOrCancelEvent(id: entity.id, doTop: !entity.top));
+            }
           },
         ),
         IconSlideAction(
