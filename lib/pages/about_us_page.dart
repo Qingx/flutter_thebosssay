@@ -119,7 +119,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
             ),
           ),
           Text(
-            "当前版本：${Global.versionCode}",
+            "当前版本：${Global.versionCode}${Global.build}",
             style: TextStyle(fontSize: 12, color: BaseColor.textDark),
             softWrap: false,
             maxLines: 1,
