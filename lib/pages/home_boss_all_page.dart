@@ -8,7 +8,7 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
-import 'package:flutter_boss_says/data/entity/operation_photo_entity.dart';
+import 'package:flutter_boss_says/data/entity/operation_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
@@ -42,7 +42,7 @@ class _HomeBossAllPageState extends State<HomeBossAllPage>
   EasyRefreshController controller;
   bool hasData = false;
   List<BossLabelEntity> labels = DataConfig.getIns().bossLabels;
-  OperationPhotoEntity operationEntity;
+  OperationEntity operationEntity;
 
   String mCurrentTab;
 
@@ -445,8 +445,7 @@ class _HomeBossAllPageState extends State<HomeBossAllPage>
               );
             },
           ).marginOn(bottom: 16).onClick(() {
-            Get.to(() => BossHomePage(),
-                arguments: operationEntity.getBossInfo());
+            Get.to(() => BossHomePage(), arguments: operationEntity.entity);
           });
         },
         childCount: 1,

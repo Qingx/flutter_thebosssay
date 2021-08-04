@@ -1,6 +1,5 @@
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
 
 /// 应用数据相关缓存
 class DataConfig extends BaseConfig {

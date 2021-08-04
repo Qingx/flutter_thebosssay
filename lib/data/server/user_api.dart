@@ -4,7 +4,7 @@ import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
-import 'package:flutter_boss_says/data/entity/operation_photo_entity.dart';
+import 'package:flutter_boss_says/data/entity/operation_entity.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -165,8 +165,8 @@ class UserApi extends BaseApi {
   }
 
   ///获取运营图片
-  Observable<OperationPhotoEntity> obtainOperationPhoto() {
-    return get<OperationPhotoEntity>("/api/operationPicture/get").rebase();
+  Observable<OperationEntity> obtainOperationPhoto() {
+    return get<OperationEntity>("/api/operationPicture/get").rebase();
   }
 
   ///将boss置顶or取消置顶

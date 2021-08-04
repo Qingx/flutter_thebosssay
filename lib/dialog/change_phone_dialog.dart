@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 Future<dynamic> showPhoneName(BuildContext context,
     {Function onDismiss, Function(String) onConfirm}) {
   TextEditingController editingController = TextEditingController();
+  FocusNode focusNode = FocusNode();
   return showDialog(
     barrierDismissible: false,
     context: context,
@@ -40,6 +41,7 @@ Future<dynamic> showPhoneName(BuildContext context,
                   maxLines: 1,
                   textAlign: TextAlign.start,
                   autofocus: false,
+                  focusNode: focusNode,
                   keyboardType: TextInputType.number,
                   style: TextStyle(fontSize: 13, color: BaseColor.textDark),
                   decoration: InputDecoration(
@@ -106,6 +108,7 @@ Future<dynamic> showPhoneName(BuildContext context,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ).onClick(() {
+                        focusNode?.unfocus();
                         onConfirm(editingController.text);
                       }),
                     ),

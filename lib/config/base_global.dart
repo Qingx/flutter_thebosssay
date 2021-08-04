@@ -5,7 +5,7 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 
 class Global {
   static String versionCode = "1.0.7";
-  static String build = "+2";
+  static String build = "+3";
   static UserController user = UserController();
   static HintController hint = HintController();
   static EventBus eventBus = EventBus();

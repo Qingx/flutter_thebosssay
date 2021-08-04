@@ -199,12 +199,14 @@ class _ChangeWidgetState extends State<ChangeWidget> {
   int count;
   String countText;
   StreamSubscription<int> mDispose;
+  FocusNode focusNode;
 
   @override
   void dispose() {
     super.dispose();
 
     mDispose?.cancel();
+    focusNode?.dispose();
   }
 
   @override
@@ -215,6 +217,8 @@ class _ChangeWidgetState extends State<ChangeWidget> {
     count = 60;
     countText = "60s";
     hasClickSend = false;
+
+    focusNode = FocusNode();
   }
 
   ///输入的新手机号
@@ -250,6 +254,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
 
   ///尝试点击发送
   void tryClickSend() {
+    focusNode?.unfocus();
     if (isInputAvailable(true)) {
       if (!hasClickSend) {
         trySendCode();
@@ -265,6 +270,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
 
   ///尝试发送验证码
   void trySendCode() {
+    focusNode?.unfocus();
     phoneNumber = inputNumber;
     BaseWidget.showLoadingAlert("正在发送验证码...", context);
     UserApi.ins().obtainSendCode(phoneNumber, 2).listen((event) {
@@ -406,6 +412,7 @@ class _ChangeWidgetState extends State<ChangeWidget> {
         cursorColor: BaseColor.accent,
         maxLines: 1,
         autofocus: false,
+        focusNode: focusNode,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           hintText: "输入手机号",

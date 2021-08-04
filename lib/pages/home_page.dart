@@ -114,6 +114,11 @@ class _HomePageState extends State<HomePage> {
       Global.jPush.setAlias(event.userInfo.id).then((value) {
         print("jPush.setAlias:$value");
       });
+
+      // ///极光推送设置别名
+      // Global.jPush.setTags([event.userInfo.id]).then((value) {
+      //   print("jPush.setTags:$value");
+      // });
     });
   }
 

@@ -100,7 +100,6 @@ class _LoginInputCodePageState extends State<LoginInputCodePage> {
       setState(() {});
     }, onError: (res) {
       Get.back();
-      print(res.msg);
       BaseTool.toast(msg: "发送失败，${res.msg}");
     });
   }

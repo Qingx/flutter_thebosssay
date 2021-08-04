@@ -7,12 +7,14 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
 class BaseTool {
+  static final TwentyYears = 60 * 60 * 24 * 1000 * 365 * 20;
+
   static bool eq(double num1, double num2) {
     return (num1 - num2).abs() <= 0.000005;
   }
 
   static void toast({String msg}) {
-    Fluttertoast.showToast(msg: msg);
+    Fluttertoast.showToast(msg: msg, gravity: ToastGravity.CENTER);
   }
 
   static final _uuid = Uuid();

@@ -29,6 +29,7 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
   bool hasChecked = false;
   TapGestureRecognizer serviceTap;
   TapGestureRecognizer privacyTap;
+  FocusNode focusNode;
 
   @override
   void dispose() {
@@ -36,6 +37,7 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
 
     serviceTap?.dispose();
     privacyTap?.dispose();
+    focusNode?.dispose();
   }
 
   @override
@@ -44,6 +46,8 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
 
     serviceTap = TapGestureRecognizer();
     privacyTap = TapGestureRecognizer();
+
+    focusNode = FocusNode();
 
     weChatCallback();
   }
@@ -126,6 +130,7 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
   }
 
   void trySendCode() {
+    focusNode?.unfocus();
     if (isInputAvailable(true)) {
       BaseWidget.showLoadingAlert("正在发送验证码...", context);
 
@@ -135,8 +140,7 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
             arguments: data, transition: Transition.fadeIn);
       }, onError: (res) {
         Get.back();
-        print(res);
-        BaseTool.toast(msg: "验证码发送失败，${res.msg}");
+        BaseTool.toast(msg: "验证码发送失败");
       });
     }
   }
@@ -223,10 +227,11 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
                               TextStyle(color: BaseColor.accent, fontSize: 12),
                         ),
                         TextSpan(
-                            text: "《隐私政策》",
-                            style: TextStyle(
-                                color: BaseColor.accent, fontSize: 12),
-                            recognizer: privacyTap..onTap = showPrivacy),
+                          text: "《隐私政策》",
+                          style:
+                              TextStyle(color: BaseColor.accent, fontSize: 12),
+                          recognizer: privacyTap..onTap = showPrivacy,
+                        ),
                       ],
                     ),
                   ),
@@ -316,6 +321,7 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
         cursorColor: BaseColor.accent,
         maxLines: 1,
         autofocus: false,
+        focusNode: focusNode,
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           hintText: "请输入手机号",

@@ -11,6 +11,8 @@ class R {
   static final String assetsImgShareLink = 'assets/img/shareLink.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossSelect.png)
   static final String assetsImgBossSelect = 'assets/img/bossSelect.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/testGif.gif)
+  static final String assetsImgTestGif = 'assets/img/testGif.gif';
   /// ![](http://127.0.0.1:11111111/assets/img/defaultCover.jpg)
   static final String assetsImgDefaultCover = 'assets/img/defaultCover.jpg';
   /// ![](http://127.0.0.1:11111111/assets/img/bossTopHead.png)

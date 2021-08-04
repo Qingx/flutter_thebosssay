@@ -75,19 +75,20 @@ class BaseWidget {
 
   static Widget loadingWidget() {
     return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          child: SpinKitFadingCircle(
-            color: BaseColor.accent,
-            size: 50,
-            duration: Duration(milliseconds: 2000),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            child: SpinKitFadingCircle(
+              color: BaseColor.accent,
+              size: 50,
+              duration: Duration(milliseconds: 2000),
+            ),
           ),
-        )
-      ],
-    ));
+        ],
+      ),
+    );
   }
 
   static Widget testItemWidget(int index) {
