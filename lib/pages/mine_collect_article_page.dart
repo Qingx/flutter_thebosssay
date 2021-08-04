@@ -9,27 +9,25 @@ import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
-import 'article_page.dart';
-
-class FavoritesPage extends StatefulWidget {
-  const FavoritesPage({Key key}) : super(key: key);
+class MineCollectArticlePage extends StatefulWidget {
+  const MineCollectArticlePage({Key key}) : super(key: key);
 
   @override
-  _FavoritesPageState createState() => _FavoritesPageState();
+  _MineCollectArticlePageState createState() => _MineCollectArticlePageState();
 }
 
-class _FavoritesPageState extends State<FavoritesPage> {
+class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
   var builderFuture;
 
   ScrollController scrollController;
@@ -457,7 +455,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      Get.to(() => WebArticlePage(), arguments: entity.id);
     });
   }
 

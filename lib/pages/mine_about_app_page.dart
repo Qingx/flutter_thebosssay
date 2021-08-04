@@ -1,21 +1,21 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/pages/service_privacy_page.dart';
+import 'package:flutter_boss_says/pages/web_service_privacy_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class AboutUsPage extends StatefulWidget {
-  const AboutUsPage({Key key}) : super(key: key);
+class MineAboutAppPage extends StatefulWidget {
+  const MineAboutAppPage({Key key}) : super(key: key);
 
   @override
-  _AboutUsPageState createState() => _AboutUsPageState();
+  _MineAboutAppPageState createState() => _MineAboutAppPageState();
 }
 
-class _AboutUsPageState extends State<AboutUsPage> {
+class _MineAboutAppPageState extends State<MineAboutAppPage> {
   TapGestureRecognizer serviceTap;
   TapGestureRecognizer privacyTap;
 
@@ -36,11 +36,11 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   void showService() {
-    Get.to(() => ServicePrivacyPage(), arguments: "0");
+    Get.to(() => WebServicePrivacyPage(), arguments: "0");
   }
 
   void showPrivacy() {
-    Get.to(() => ServicePrivacyPage(), arguments: "1");
+    Get.to(() => WebServicePrivacyPage(), arguments: "1");
   }
 
   @override

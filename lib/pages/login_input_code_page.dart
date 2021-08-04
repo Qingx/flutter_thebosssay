@@ -15,14 +15,14 @@ import 'package:flutter_verification_box/verification_box.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
-class InputCodePage extends StatefulWidget {
-  const InputCodePage({Key key}) : super(key: key);
+class LoginInputCodePage extends StatefulWidget {
+  const LoginInputCodePage({Key key}) : super(key: key);
 
   @override
-  _InputCodePageState createState() => _InputCodePageState();
+  _LoginInputCodePageState createState() => _LoginInputCodePageState();
 }
 
-class _InputCodePageState extends State<InputCodePage> {
+class _LoginInputCodePageState extends State<LoginInputCodePage> {
   int count = 60;
   String countText = "60s";
   String codeNumber = "";

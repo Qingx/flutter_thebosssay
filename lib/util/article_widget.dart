@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
-import 'package:flutter_boss_says/pages/article_page.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -115,7 +115,7 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      Get.to(() => WebArticlePage(), arguments: entity.id);
     });
   }
 
@@ -267,7 +267,7 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      Get.to(() => WebArticlePage(), arguments: entity.id);
     });
   }
 
@@ -368,7 +368,7 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      Get.to(() => WebArticlePage(), arguments: entity.id);
     });
   }
 
@@ -504,7 +504,7 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.id);
+      Get.to(() => WebArticlePage(), arguments: entity.id);
     });
   }
 }

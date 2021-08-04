@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/pages/follow_page.dart';
+import 'package:flutter_boss_says/pages/speech_track_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
-import 'package:flutter_boss_says/pages/square_page.dart';
+import 'package:flutter_boss_says/pages/speech_square_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class TalkPage extends StatefulWidget {
-  const TalkPage({Key key}) : super(key: key);
+class HomeSpeechPage extends StatefulWidget {
+  const HomeSpeechPage({Key key}) : super(key: key);
 
   @override
-  _TalkPageState createState() => _TalkPageState();
+  _HomeSpeechPageState createState() => _HomeSpeechPageState();
 }
 
-class _TalkPageState extends State<TalkPage>
+class _HomeSpeechPageState extends State<HomeSpeechPage>
     with AutomaticKeepAliveClientMixin {
   int mCurrentIndex;
   List<String> mTitles;
@@ -40,7 +40,7 @@ class _TalkPageState extends State<TalkPage>
 
     mCurrentIndex = 0;
     mTitles = ["追踪", "广场"];
-    mPages = [FollowPage(), SquarePage()];
+    mPages = [FollowPage(), SpeechSquarePage()];
     mPageController = PageController();
 
     getShangjia();

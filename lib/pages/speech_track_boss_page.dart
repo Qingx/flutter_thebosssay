@@ -4,7 +4,7 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
-import 'package:flutter_boss_says/pages/all_boss_page.dart';
+import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -12,16 +12,16 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class FollowContentPage extends StatefulWidget {
+class SpeechTrackBossPage extends StatefulWidget {
   String label;
 
-  FollowContentPage(this.label, {Key key}) : super(key: key);
+  SpeechTrackBossPage(this.label, {Key key}) : super(key: key);
 
   @override
-  _FollowContentPageState createState() => _FollowContentPageState();
+  _SpeechTrackBossPageState createState() => _SpeechTrackBossPageState();
 }
 
-class _FollowContentPageState extends State<FollowContentPage>
+class _SpeechTrackBossPageState extends State<SpeechTrackBossPage>
     with AutomaticKeepAliveClientMixin {
   var builderFuture;
   List<BossInfoEntity> mData;
@@ -232,7 +232,7 @@ class _FollowContentPageState extends State<FollowContentPage>
               ),
             ),
           ).onClick(() {
-            Get.to(() => AllBossPage());
+            Get.to(() => HomeBossAllPage());
           }),
         ],
       ),

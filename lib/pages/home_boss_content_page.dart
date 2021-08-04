@@ -9,6 +9,7 @@ import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/event/on_top_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/scroll_top_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -19,19 +20,20 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
-class BossContentPage extends StatefulWidget {
+class HomeBossContentPage extends StatefulWidget {
   String label;
 
-  BossContentPage(this.label, {Key key}) : super(key: key);
+  HomeBossContentPage(this.label, {Key key}) : super(key: key);
 
   @override
-  _BossContentPageState createState() => _BossContentPageState();
+  _HomeBossContentPageState createState() => _HomeBossContentPageState();
 }
 
-class _BossContentPageState extends State<BossContentPage>
+class _HomeBossContentPageState extends State<HomeBossContentPage>
     with AutomaticKeepAliveClientMixin {
   var eventFollowDispose;
   var eventTopDispose;
+  var eventScrollDispose;
 
   var builderFuture;
 
@@ -52,6 +54,7 @@ class _BossContentPageState extends State<BossContentPage>
 
     eventFollowDispose?.cancel();
     eventTopDispose?.cancel();
+    eventScrollDispose?.cancel();
   }
 
   @override
@@ -86,6 +89,16 @@ class _BossContentPageState extends State<BossContentPage>
         doAddTop(event.id);
       } else {
         doCancelTop(event.id);
+      }
+    });
+
+    eventScrollDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
+      if (event.pageName == "boss" && event.labelId == widget.label) {
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 480),
+          curve: Curves.ease,
+        );
       }
     });
   }
@@ -123,6 +136,7 @@ class _BossContentPageState extends State<BossContentPage>
 
         mData.sort((a, b) => (b.updateTime).compareTo(a.updateTime));
         mData.sort((a, b) => (b.top ? 1 : 0).compareTo(a.top ? 1 : 0));
+
         setState(() {});
 
         scrollController.animateTo(

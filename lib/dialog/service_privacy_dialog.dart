@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_boss_says/pages/service_privacy_page.dart';
+import 'package:flutter_boss_says/pages/web_service_privacy_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:get/get.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -48,7 +48,7 @@ Future<dynamic> showServicePrivacyDialog(BuildContext context,
                                 color: BaseColor.accent, fontSize: 14),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Get.to(() => ServicePrivacyPage(),
+                                Get.to(() => WebServicePrivacyPage(),
                                     arguments: "0");
                               }),
                         TextSpan(
@@ -62,7 +62,7 @@ Future<dynamic> showServicePrivacyDialog(BuildContext context,
                                 color: BaseColor.accent, fontSize: 14),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Get.to(() => ServicePrivacyPage(),
+                                Get.to(() => WebServicePrivacyPage(),
                                     arguments: "1");
                               }),
                         TextSpan(

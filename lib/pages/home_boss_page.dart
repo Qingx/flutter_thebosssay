@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
-import 'package:flutter_boss_says/pages/all_boss_page.dart';
-import 'package:flutter_boss_says/pages/boss_content_page.dart';
+import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
+import 'package:flutter_boss_says/pages/home_boss_content_page.dart';
 import 'package:flutter_boss_says/pages/search_boss_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -10,20 +12,20 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class BossPage extends StatefulWidget {
-  const BossPage({Key key}) : super(key: key);
+class HomeBossPage extends StatefulWidget {
+  const HomeBossPage({Key key}) : super(key: key);
 
   @override
-  _BossPageState createState() => _BossPageState();
+  _HomeBossPageState createState() => _HomeBossPageState();
 }
 
-class _BossPageState extends State<BossPage>
+class _HomeBossPageState extends State<HomeBossPage>
     with AutomaticKeepAliveClientMixin {
   int mCurrentIndex;
 
   PageController mPageController;
   List<BossLabelEntity> labels;
-  List<BossContentPage> mPages;
+  List<HomeBossContentPage> mPages;
 
   @override
   bool get wantKeepAlive => true;
@@ -43,7 +45,7 @@ class _BossPageState extends State<BossPage>
     mPageController = PageController();
 
     labels = DataConfig.getIns().bossLabels;
-    mPages = labels.map((e) => BossContentPage(e.id)).toList();
+    mPages = labels.map((e) => HomeBossContentPage(e.id)).toList();
   }
 
   @override
@@ -141,7 +143,6 @@ class _BossPageState extends State<BossPage>
     Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
     Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
 
-    String name = entity.id == "-1" ? "全部" : entity.name;
     return Container(
       margin: EdgeInsets.only(left: left, right: right),
       padding: EdgeInsets.only(left: 12, right: 12),
@@ -149,7 +150,7 @@ class _BossPageState extends State<BossPage>
           borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
       child: Center(
         child: Text(
-          name,
+          entity.name,
           style: TextStyle(color: fontColor, fontSize: 14),
         ),
       ),
@@ -157,6 +158,9 @@ class _BossPageState extends State<BossPage>
       if (index != mCurrentIndex) {
         mCurrentIndex = index;
         mPageController.jumpToPage(mCurrentIndex);
+      } else {
+        Global.eventBus
+            .fire(ScrollToTopEvent(pageName: "boss", labelId: entity.id));
       }
     });
   }
@@ -184,7 +188,7 @@ class _BossPageState extends State<BossPage>
         size: 24,
       ),
     ).onClick(() {
-      Get.to(() => AllBossPage());
+      Get.to(() => HomeBossAllPage());
     });
   }
 

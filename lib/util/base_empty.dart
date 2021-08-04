@@ -5,5 +5,5 @@ class BaseEmpty {
   static UserEntity emptyUser = UserEntity()..type = "0";
   static BossLabelEntity emptyLabel = BossLabelEntity()
     ..id = "-1"
-    ..name = "推荐";
+    ..name = "全部";
 }

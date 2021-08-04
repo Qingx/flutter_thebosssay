@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
-import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -20,25 +18,20 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
-import 'article_page.dart';
-
-class TodayHistoryPage extends StatefulWidget {
-  const TodayHistoryPage({Key key}) : super(key: key);
+class MineHistoryAllPage extends StatefulWidget {
+  const MineHistoryAllPage({Key key}) : super(key: key);
 
   @override
-  _TodayHistoryPageState createState() => _TodayHistoryPageState();
+  _MineHistoryAllPageState createState() => _MineHistoryAllPageState();
 }
 
-class _TodayHistoryPageState extends State<TodayHistoryPage>
+class _MineHistoryAllPageState extends State<MineHistoryAllPage>
     with BasePageController<HistoryEntity> {
   var builderFuture;
 
   ScrollController scrollController;
   EasyRefreshController controller;
-
-  bool hasData;
-
-  int numbers = Global.user.user.value.readNum;
+  bool hasData = false;
 
   StreamSubscription<BaseEvent> eventDispose;
 
@@ -63,12 +56,9 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
   }
 
   Future<WlPage.Page<HistoryEntity>> loadInitData() {
-    return UserApi.ins().obtainHistory(pageParam, true).doOnData((event) {
+    return UserApi.ins().obtainHistory(pageParam, false).doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
-      numbers = event.total;
-
-      setState(() {});
     }).last;
   }
 
@@ -78,11 +68,9 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       pageParam.reset();
     }
 
-    UserApi.ins().obtainHistory(pageParam, true).listen((event) {
+    UserApi.ins().obtainHistory(pageParam, false).listen((event) {
       hasData = event.hasData;
-      numbers = event.total;
       concat(event.records, loadMore);
-
       setState(() {});
 
       if (loadMore) {
@@ -107,12 +95,6 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
       Get.back();
 
       mData.removeAt(index);
-      numbers--;
-
-      UserEntity entity = UserConfig.getIns().user;
-      entity.readNum = numbers;
-      Global.user.setUser(entity);
-
       setState(() {});
     }, onError: (res) {
       Get.back();
@@ -124,8 +106,8 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: BaseColor.pageBg,
+      resizeToAvoidBottomInset: false,
       body: Container(
         child: Column(
           children: [
@@ -151,7 +133,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
                       margin: EdgeInsets.only(right: 28),
                       alignment: Alignment.center,
                       child: Text(
-                        "今日阅读（$numbers）",
+                        "阅读记录",
                         style: TextStyle(
                             fontSize: 16,
                             color: BaseColor.textDark,
@@ -281,7 +263,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
                       ).marginOn(left: 8),
                       Expanded(child: SizedBox()),
                       Text(
-                        DateFormat.getHHNN(entity.updateTime),
+                        DateFormat.getMMDDHHMM(entity.updateTime),
                         style: TextStyle(
                           fontSize: 13,
                           color: BaseColor.textGray,
@@ -320,7 +302,7 @@ class _TodayHistoryPageState extends State<TodayHistoryPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => ArticlePage(), arguments: entity.articleId);
+      Get.to(() => WebArticlePage(), arguments: entity.articleId);
     });
   }
 

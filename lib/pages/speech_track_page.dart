@@ -8,7 +8,8 @@ import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
-import 'package:flutter_boss_says/pages/follow_content_page.dart';
+import 'package:flutter_boss_says/pages/speech_track_boss_page.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
@@ -16,8 +17,6 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:rxdart/rxdart.dart';
-
-import '../r.dart';
 
 class FollowPage extends StatefulWidget {
   const FollowPage({Key key}) : super(key: key);
@@ -32,7 +31,7 @@ class _FollowPageState extends State<FollowPage>
   int mCurrentIndex;
 
   List<BossLabelEntity> mLabels;
-  List<FollowContentPage> mPages;
+  List<SpeechTrackBossPage> mPages;
   bool hasData;
   int totalArticleNumber;
 
@@ -88,7 +87,7 @@ class _FollowPageState extends State<FollowPage>
     if (canUse) {
       return BossApi.ins().obtainFollowArticle(pageParam).flatMap((value) {
         mLabels = DataConfig.getIns().bossLabels;
-        mPages = mLabels.map((e) => FollowContentPage(e.id)).toList();
+        mPages = mLabels.map((e) => SpeechTrackBossPage(e.id)).toList();
 
         hasData = value.hasData;
         totalArticleNumber = value.total;
@@ -102,7 +101,7 @@ class _FollowPageState extends State<FollowPage>
         mLabels = value;
 
         DataConfig.getIns().setBossLabels = mLabels;
-        mPages = mLabels.map((e) => FollowContentPage(e.id)).toList();
+        mPages = mLabels.map((e) => SpeechTrackBossPage(e.id)).toList();
 
         return BossApi.ins().obtainFollowArticle(pageParam);
       }).flatMap((value) {
@@ -344,12 +343,12 @@ class _FollowPageState extends State<FollowPage>
       if (index != mCurrentIndex) {
         mCurrentIndex = index;
         mPageController.jumpToPage(mCurrentIndex);
-        scrollController.animateTo(
-          scrollController.position.minScrollExtent,
-          duration: Duration(milliseconds: 480),
-          curve: Curves.ease,
-        );
       }
+      scrollController.animateTo(
+        scrollController.position.minScrollExtent,
+        duration: Duration(milliseconds: 480),
+        curve: Curves.ease,
+      );
     });
   }
 

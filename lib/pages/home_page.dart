@@ -8,10 +8,10 @@ import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/event/refresh_user_event.dart';
-import 'package:flutter_boss_says/pages/article_page.dart';
-import 'package:flutter_boss_says/pages/boss_page.dart';
-import 'package:flutter_boss_says/pages/mine_page.dart';
-import 'package:flutter_boss_says/pages/talk_page.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
+import 'package:flutter_boss_says/pages/home_boss_page.dart';
+import 'package:flutter_boss_says/pages/home_mine_page.dart';
+import 'package:flutter_boss_says/pages/home_speech_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
       [R.assetsImgBossNormal, R.assetsImgBossSelect],
       [R.assetsImgMineNormal, R.assetsImgMineSelect]
     ];
-    mPages = [TalkPage(), BossPage(), MinePage()];
+    mPages = [HomeSpeechPage(), HomeBossPage(), HomeMinePage()];
 
     mPageController = PageController();
 
@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
         print("onOpenNotification:$message");
 
         if (message["extras"]["articleId"] != null) {
-          Get.to(() => ArticlePage(),
+          Get.to(() => WebArticlePage(),
               arguments: message["extras"]["articleId"]);
         }
       },

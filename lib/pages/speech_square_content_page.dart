@@ -1,28 +1,30 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/scroll_top_event.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 
-class SquareContentPage extends StatefulWidget {
+class SpeechSquareContentPage extends StatefulWidget {
   String label;
 
-  SquareContentPage(this.label, {Key key}) : super(key: key);
+  SpeechSquareContentPage(this.label, {Key key}) : super(key: key);
 
   @override
-  _SquareContentPageState createState() => _SquareContentPageState();
+  _SpeechSquareContentPageState createState() =>
+      _SpeechSquareContentPageState();
 }
 
-class _SquareContentPageState extends State<SquareContentPage>
+class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
     with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
   var builderFuture;
 
@@ -31,7 +33,7 @@ class _SquareContentPageState extends State<SquareContentPage>
 
   bool hasData = false;
 
-  StreamSubscription<BaseEvent> eventDispose;
+  var eventDispose;
 
   @override
   bool get wantKeepAlive => true;
@@ -54,6 +56,20 @@ class _SquareContentPageState extends State<SquareContentPage>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+
+    eventBus();
+  }
+
+  void eventBus() {
+    eventDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
+      if (event.pageName == "square" && event.labelId == widget.label) {
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 480),
+          curve: Curves.ease,
+        );
+      }
+    });
   }
 
   ///初始化获取数据

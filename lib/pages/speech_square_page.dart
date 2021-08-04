@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
-import 'package:flutter_boss_says/pages/square_content_page.dart';
+import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/pages/speech_square_content_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
-class SquarePage extends StatefulWidget {
-  const SquarePage({Key key}) : super(key: key);
+class SpeechSquarePage extends StatefulWidget {
+  const SpeechSquarePage({Key key}) : super(key: key);
 
   @override
-  _SquarePageState createState() => _SquarePageState();
+  _SpeechSquarePageState createState() => _SpeechSquarePageState();
 }
 
-class _SquarePageState extends State<SquarePage>
+class _SpeechSquarePageState extends State<SpeechSquarePage>
     with AutomaticKeepAliveClientMixin {
   int mCurrentIndex;
 
   PageController mPageController;
   List<BossLabelEntity> labels;
-  List<SquareContentPage> mPages;
+  List<SpeechSquareContentPage> mPages;
 
   @override
   bool get wantKeepAlive => true;
@@ -38,7 +40,7 @@ class _SquarePageState extends State<SquarePage>
     mPageController = PageController();
 
     labels = DataConfig.getIns().bossLabels;
-    mPages = labels.map((e) => SquareContentPage(e.id)).toList();
+    mPages = labels.map((e) => SpeechSquareContentPage(e.id)).toList();
   }
 
   @override
@@ -111,6 +113,9 @@ class _SquarePageState extends State<SquarePage>
       if (index != mCurrentIndex) {
         mCurrentIndex = index;
         mPageController.jumpToPage(mCurrentIndex);
+      } else {
+        Global.eventBus
+            .fire(ScrollToTopEvent(pageName: "square", labelId: entity.id));
       }
     });
   }

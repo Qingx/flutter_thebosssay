@@ -19,23 +19,22 @@ import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
-class AllBossPage extends StatefulWidget {
-  const AllBossPage({Key key}) : super(key: key);
+class HomeBossAllPage extends StatefulWidget {
+  const HomeBossAllPage({Key key}) : super(key: key);
 
   @override
-  _AllBossPageState createState() => _AllBossPageState();
+  _HomeBossAllPageState createState() => _HomeBossAllPageState();
 }
 
-class _AllBossPageState extends State<AllBossPage> with BasePageController {
+class _HomeBossAllPageState extends State<HomeBossAllPage>
+    with BasePageController {
   TextEditingController editingController;
 
   var builderFuture;
@@ -387,7 +386,6 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
   Widget typeItemWidget(BossLabelEntity entity, int index) {
     bool hasSelect = mCurrentTab == entity.id;
     Color color = hasSelect ? BaseColor.pageBg : BaseColor.loadBg;
-    String name = entity == BaseEmpty.emptyLabel ? "为你推荐" : entity.name;
 
     return hasSelect
         ? Container(
@@ -403,7 +401,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
                   color: BaseColor.accent,
                   borderRadius: BorderRadius.all(Radius.circular(16))),
               child: Text(
-                name,
+                entity.name,
                 style: TextStyle(color: Colors.white, fontSize: 14),
                 softWrap: false,
                 maxLines: 1,
@@ -418,7 +416,7 @@ class _AllBossPageState extends State<AllBossPage> with BasePageController {
             alignment: Alignment.center,
             color: color,
             child: Text(
-              name,
+              entity.name,
               style: TextStyle(
                 color: BaseColor.textGray,
                 fontSize: 14,

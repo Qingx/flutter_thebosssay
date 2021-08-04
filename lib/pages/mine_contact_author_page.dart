@@ -6,8 +6,8 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class ContactUsPage extends StatelessWidget {
-  ContactUsPage({Key key}) : super(key: key);
+class ContactAuthorPage extends StatelessWidget {
+  ContactAuthorPage({Key key}) : super(key: key);
 
   List<String> images = [
     R.assetsImgContact1,

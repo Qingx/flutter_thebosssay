@@ -15,8 +15,8 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 
-class UserInfoPage extends StatelessWidget {
-  UserInfoPage({Key key}) : super(key: key);
+class MineChangeUserPage extends StatelessWidget {
+  MineChangeUserPage({Key key}) : super(key: key);
 
   List<String> names = ["账号昵称", "账号ID", "登录手机号"];
 

@@ -6,7 +6,6 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -46,8 +45,6 @@ class _GuidePageState extends State<GuidePage> {
   void initState() {
     super.initState();
 
-    BossDbProvider.getIns().getAllBoss().then((value) => print(value));
-
     mData = Get.arguments as List<BossInfoEntity>;
     listSelect = mData.map((e) => e.id).toList();
 
@@ -62,9 +59,6 @@ class _GuidePageState extends State<GuidePage> {
         setState(() {});
       }
     });
-
-    BossDbProvider.getIns().getRecommendBoss().then((value) => print(value));
-
     countTime();
   }
 

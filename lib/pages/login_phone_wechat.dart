@@ -7,8 +7,8 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
-import 'package:flutter_boss_says/pages/input_code_page.dart';
-import 'package:flutter_boss_says/pages/service_privacy_page.dart';
+import 'package:flutter_boss_says/pages/login_input_code_page.dart';
+import 'package:flutter_boss_says/pages/web_service_privacy_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -17,14 +17,14 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 
-class InputPhonePage extends StatefulWidget {
-  const InputPhonePage({Key key}) : super(key: key);
+class LoginPhoneWechatPage extends StatefulWidget {
+  const LoginPhoneWechatPage({Key key}) : super(key: key);
 
   @override
-  _InputPhonePageState createState() => _InputPhonePageState();
+  _LoginPhoneWechatPageState createState() => _LoginPhoneWechatPageState();
 }
 
-class _InputPhonePageState extends State<InputPhonePage> {
+class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
   String phoneNumber = "";
   bool hasChecked = false;
   TapGestureRecognizer serviceTap;
@@ -118,11 +118,11 @@ class _InputPhonePageState extends State<InputPhonePage> {
   }
 
   void showService() {
-    Get.to(() => ServicePrivacyPage(), arguments: "0");
+    Get.to(() => WebServicePrivacyPage(), arguments: "0");
   }
 
   void showPrivacy() {
-    Get.to(() => ServicePrivacyPage(), arguments: "1");
+    Get.to(() => WebServicePrivacyPage(), arguments: "1");
   }
 
   void trySendCode() {
@@ -131,7 +131,7 @@ class _InputPhonePageState extends State<InputPhonePage> {
 
       UserApi.ins().obtainSendCode(phoneNumber, 0).listen((event) {
         var data = {"phoneNumber": phoneNumber, "rnd": event};
-        Get.off(() => InputCodePage(),
+        Get.off(() => LoginInputCodePage(),
             arguments: data, transition: Transition.fadeIn);
       }, onError: (res) {
         Get.back();

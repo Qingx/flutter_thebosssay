@@ -3,18 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
-import 'package:flutter_boss_says/pages/about_us_page.dart';
-import 'package:flutter_boss_says/pages/contact_us_page.dart';
-import 'package:flutter_boss_says/pages/favorites_page.dart';
-import 'package:flutter_boss_says/pages/history_page.dart';
-import 'package:flutter_boss_says/pages/input_phone_page.dart';
-import 'package:flutter_boss_says/pages/today_history_page.dart';
-import 'package:flutter_boss_says/pages/user_info_page.dart';
+import 'package:flutter_boss_says/pages/mine_about_app_page.dart';
+import 'package:flutter_boss_says/pages/mine_contact_author_page.dart';
+import 'package:flutter_boss_says/pages/mine_collect_article_page.dart';
+import 'package:flutter_boss_says/pages/mine_history_all_page.dart';
+import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
+import 'package:flutter_boss_says/pages/mine_history_today_page.dart';
+import 'package:flutter_boss_says/pages/mine_change_user_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -24,14 +22,14 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
-class MinePage extends StatefulWidget {
-  const MinePage({Key key}) : super(key: key);
+class HomeMinePage extends StatefulWidget {
+  const HomeMinePage({Key key}) : super(key: key);
 
   @override
-  _MinePageState createState() => _MinePageState();
+  _HomeMinePageState createState() => _HomeMinePageState();
 }
 
-class _MinePageState extends State<MinePage>
+class _HomeMinePageState extends State<HomeMinePage>
     with AutomaticKeepAliveClientMixin {
   UserController controller;
   List<String> infoNames;
@@ -99,36 +97,36 @@ class _MinePageState extends State<MinePage>
 
   void onClickUser() {
     if (UserConfig.getIns().loginStatus) {
-      Get.to(() => UserInfoPage());
+      Get.to(() => MineChangeUserPage());
     } else {
       BaseTool.toast(msg: "请先登录！");
-      Get.to(() => InputPhonePage());
+      Get.to(() => LoginPhoneWechatPage());
     }
   }
 
   ///点击收藏/收藏数
   void onClickFavorite() {
     if (UserConfig.getIns().loginStatus) {
-      Get.to(() => FavoritesPage());
+      Get.to(() => MineCollectArticlePage());
     } else {
       BaseTool.toast(msg: "请先登录！");
-      Get.to(() => InputPhonePage());
+      Get.to(() => LoginPhoneWechatPage());
     }
   }
 
   ///点击阅读记录
   void onClickHistory() {
     if (UserConfig.getIns().loginStatus) {
-      Get.to(() => HistoryPage());
+      Get.to(() => MineHistoryAllPage());
     } else {
       BaseTool.toast(msg: "请先登录！");
-      Get.to(() => InputPhonePage());
+      Get.to(() => LoginPhoneWechatPage());
     }
   }
 
   ///点击今日阅读量
   void onClickTodayHistory() {
-    Get.to(() => TodayHistoryPage());
+    Get.to(() => MineHistoryTodayPage());
   }
 
   void onClickInfo(index) {
@@ -173,10 +171,10 @@ class _MinePageState extends State<MinePage>
         onShare();
         break;
       case 4:
-        Get.to(() => AboutUsPage());
+        Get.to(() => MineAboutAppPage());
         break;
       case 5:
-        Get.to(() => ContactUsPage());
+        Get.to(() => ContactAuthorPage());
         break;
       case 6:
         showStore();

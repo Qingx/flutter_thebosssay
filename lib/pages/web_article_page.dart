@@ -10,7 +10,7 @@ import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
-import 'package:flutter_boss_says/pages/input_phone_page.dart';
+import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -20,10 +20,10 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ArticlePage extends StatelessWidget {
+class WebArticlePage extends StatelessWidget {
   String articleId = Get.arguments as String;
 
-  ArticlePage({Key key}) : super(key: key);
+  WebArticlePage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +154,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       }
     } else {
       BaseTool.toast(msg: "请先登录！");
-      Get.to(() => InputPhonePage());
+      Get.to(() => LoginPhoneWechatPage());
     }
   }
 

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_boss_says/config/boss_service_privacy.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ServicePrivacyPage extends StatefulWidget {
-  const ServicePrivacyPage({Key key}) : super(key: key);
+class WebServicePrivacyPage extends StatefulWidget {
+  const WebServicePrivacyPage({Key key}) : super(key: key);
 
   @override
-  _ServicePrivacyPageState createState() => _ServicePrivacyPageState();
+  _WebServicePrivacyPageState createState() => _WebServicePrivacyPageState();
 }
 
-class _ServicePrivacyPageState extends State<ServicePrivacyPage> {
+class _WebServicePrivacyPageState extends State<WebServicePrivacyPage> {
   String code;
   String title;
   String url;
