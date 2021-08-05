@@ -72,6 +72,7 @@ class _SplashPageState extends State<SplashPage> {
         Get.offAll(() => GuidePage(), arguments: event);
       },
       onError: (res) {
+        print("GuidePage=>$res");
         Get.offAll(() => HomePage());
       },
       onDone: () {

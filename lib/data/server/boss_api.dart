@@ -4,6 +4,7 @@ import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BossApi extends BaseApi {
@@ -14,8 +15,9 @@ class BossApi extends BaseApi {
   factory BossApi.ins() => _mIns ??= BossApi._();
 
   ///引导页boss列表
-  Observable<BossInfoEntity> obtainGuideBoss() {
-    return autoToken(() => get<BossInfoEntity>("/api/boss/guide").rebase());
+  Observable<List<GuidBossEntity>> obtainGuideBoss() {
+    return autoToken(
+        () => get<List<GuidBossEntity>>("/api/boss/guide").rebase());
   }
 
   ///追踪单个boss

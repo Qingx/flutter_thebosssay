@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
@@ -181,8 +182,7 @@ class _HomeMinePageState extends State<HomeMinePage>
         showStore();
         break;
       case 7:
-        // onClickClear();
-        JpushApi.ins().getAllTags();
+        onClickClear();
         break;
       default:
         BaseTool.toast(msg: itemNames[index]);

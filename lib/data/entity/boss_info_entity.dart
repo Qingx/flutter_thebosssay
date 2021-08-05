@@ -17,7 +17,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   int totalCount = 0; //发布文章总数
   int updateTime; //上次更新时间
   List<String> labels = []; //标签
-  List<String> photoUrl = []; //标签标签
+  List<String> photoUrl = []; //标签图片
 
   int getSort() {
     return updateTime + (top ? BaseTool.TwentyYears : 0);

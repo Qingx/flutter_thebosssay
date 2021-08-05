@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
@@ -33,7 +34,7 @@ class _GuidePageState extends State<GuidePage> {
 
   double indicatorWidth = 0;
   ScrollController controller;
-  List<BossInfoEntity> mData = [];
+  List<GuidBossEntity> mData = [];
   List<String> listSelect = [];
 
   @override
@@ -48,7 +49,7 @@ class _GuidePageState extends State<GuidePage> {
   void initState() {
     super.initState();
 
-    mData = Get.arguments as List<BossInfoEntity>;
+    mData = Get.arguments as List<GuidBossEntity>;
     listSelect = mData.map((e) => e.id).toList();
 
     controller = ScrollController();
@@ -250,7 +251,7 @@ class _GuidePageState extends State<GuidePage> {
     );
   }
 
-  Widget itemWidget(BossInfoEntity entity, int index) {
+  Widget itemWidget(GuidBossEntity entity, int index) {
     bool hasSelect = listSelect.contains(entity.id);
 
     Color nameColor = hasSelect ? Colors.white : BaseColor.textDark;
