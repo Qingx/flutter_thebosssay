@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
-import 'package:flutter_boss_says/data/server/user_api.dart';
-import 'package:flutter_boss_says/pages/speech_track_page.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/speech_square_page.dart';
+import 'package:flutter_boss_says/pages/speech_track_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -42,17 +40,6 @@ class _HomeSpeechPageState extends State<HomeSpeechPage>
     mTitles = ["追踪", "广场"];
     mPages = [FollowPage(), SpeechSquarePage()];
     mPageController = PageController();
-
-    getShangjia();
-  }
-
-  ///获取上架状态
-  void getShangjia() {
-    UserApi.ins().obtainCheckShangjia().listen((event) {
-      DataConfig.getIns().isShangjia = event;
-    }, onError: (res) {
-      DataConfig.getIns().isShangjia = false;
-    });
   }
 
   @override

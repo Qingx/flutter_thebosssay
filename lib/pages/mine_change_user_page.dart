@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
 import 'package:flutter_boss_says/dialog/change_phone_dialog.dart';
@@ -25,6 +26,9 @@ class MineChangeUserPage extends StatelessWidget {
     BaseWidget.showLoadingAlert("正在清理数据...", context);
     UserConfig.getIns().clear();
     Global.user.setUser(BaseEmpty.emptyUser);
+
+    JpushApi.ins().clearTags();
+
     BaseTool.toast(msg: "退出成功");
     Get.offAll(() => HomePage());
   }
@@ -93,7 +97,7 @@ class MineChangeUserPage extends StatelessWidget {
         BaseTool.toast(msg: "账号昵称：${Global.user.user.value.nickName}");
         break;
       case 1:
-        BaseTool.toast(msg: "账号ID：${Global.user.user.value.id}");
+        BaseTool.copyText(Global.user.user.value.id, infix: "账号ID");
         break;
       default:
         break;

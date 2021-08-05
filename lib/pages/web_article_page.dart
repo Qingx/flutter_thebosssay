@@ -22,6 +22,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebArticlePage extends StatelessWidget {
   String articleId = Get.arguments as String;
+  var articleUrl = HttpConfig.globalEnv.baseUrl;
+  // var articleUrl = "http://192.168.1.85:9529";
 
   WebArticlePage({Key key}) : super(key: key);
 
@@ -48,8 +50,10 @@ class WebArticlePage extends StatelessWidget {
   }
 
   Widget webWidget() {
+    String url = "$articleUrl#/article?id=$articleId";
+    print(url);
     return WebView(
-      initialUrl: "${HttpConfig.globalEnv.baseUrl}#/article?id=$articleId",
+      initialUrl: url,
       javascriptMode: JavascriptMode.unrestricted,
       onPageFinished: (s) {
         print('onPageFinished:$s');
@@ -78,7 +82,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   void dispose() {
     super.dispose();
 
-    TalkingApi.ins().obtainPageEnd("ArticleWebPage");
+    TalkingApi.ins().obtainPageEnd("WebArticlePage");
   }
 
   @override
@@ -91,7 +95,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     doReadArticle();
     doArticleDetail();
 
-    TalkingApi.ins().obtainPageStart("ArticleWebPage");
+    TalkingApi.ins().obtainPageStart("WebArticlePage");
   }
 
   void doArticleDetail() {

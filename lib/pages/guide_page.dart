@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
+import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -107,6 +110,8 @@ class _GuidePageState extends State<GuidePage> {
     BossApi.ins().obtainGuideFollowList(listSelect).listen((event) {
       entity.traceNum = listSelect.length;
       Global.user.setUser(entity);
+
+      JpushApi.ins().addTags(listSelect);
 
       BaseTool.toast(msg: "追踪成功");
       Get.offAll(() => HomePage(), transition: Transition.fadeIn);
@@ -256,9 +261,16 @@ class _GuidePageState extends State<GuidePage> {
 
     return Container(
       margin: EdgeInsets.only(left: 8, right: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4)),
-        color: bgColor,
+      decoration: ShapeDecoration(
+        image: DecorationImage(
+          image: AssetImage(R.assetsImgGuideCard),
+          fit: BoxFit.cover,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.all(
+            Radius.circular(4),
+          ),
+        ),
       ),
       child: Stack(
         children: [

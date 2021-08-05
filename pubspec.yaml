@@ -127,6 +127,7 @@ flutter:
     - assets/img/errorIcon.png
     - assets/img/bossTopBg.png
     - assets/img/testHead.png
+    - assets/img/guideCard.png
     - assets/img/search.png
     - assets/img/changeInfo.png
     - assets/img/favoriteAccent.png

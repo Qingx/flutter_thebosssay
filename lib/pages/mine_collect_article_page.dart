@@ -8,7 +8,6 @@ import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
-import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -98,8 +97,6 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
       user.collectNum = user.collectNum - entity.list.length ?? 0;
       Global.user.setUser(user);
 
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
-
       BaseTool.toast(msg: "删除成功");
       Get.back();
       setState(() {});
@@ -125,7 +122,6 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
       user.collectNum--;
       Global.user.setUser(user);
 
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
       setState(() {});
     }, onError: (res) {
       Get.back();

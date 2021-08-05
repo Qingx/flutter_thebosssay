@@ -1,5 +1,4 @@
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
-import 'dart:convert' as convert;
 import 'package:flutter_boss_says/util/base_tool.dart';
 
 bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
@@ -58,6 +57,9 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 	if (json['labels'] != null) {
 		data.labels = (json['labels'] as List).map((v) => v.toString()).toList().cast<String>();
 	}
+	if (json['photoUrl'] != null) {
+		data.photoUrl = (json['photoUrl'] as List).map((v) => v.toString()).toList().cast<String>();
+	}
 	return data;
 }
 
@@ -78,5 +80,6 @@ Map<String, dynamic> bossInfoEntityToJson(BossInfoEntity entity) {
 	data['totalCount'] = entity.totalCount;
 	data['updateTime'] = entity.updateTime;
 	data['labels'] = entity.labels;
+	data['photoUrl'] = entity.photoUrl;
 	return data;
 }

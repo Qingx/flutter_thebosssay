@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
-import 'package:flutter_boss_says/event/refresh_user_event.dart';
-import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/pages/home_boss_page.dart';
 import 'package:flutter_boss_says/pages/home_mine_page.dart';
 import 'package:flutter_boss_says/pages/home_speech_page.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
 
     onJPushCallback();
 
-    doRefreshUser();
+    // doRefreshUser();
 
     doDeviceID();
 
@@ -92,10 +92,6 @@ class _HomePageState extends State<HomePage> {
       if (event.obj == JumpBossEvent) {
         jumpToBoss();
       }
-
-      if (event.obj == RefreshUserEvent) {
-        doRefreshUser();
-      }
     });
   }
 
@@ -109,22 +105,12 @@ class _HomePageState extends State<HomePage> {
     UserApi.ins().obtainRefreshUser().listen((event) {
       UserConfig.getIns().token = event.token;
       Global.user.setUser(event.userInfo);
-
-      ///极光推送设置别名
-      Global.jPush.setAlias(event.userInfo.id).then((value) {
-        print("jPush.setAlias:$value");
-      });
-
-      // ///极光推送设置别名
-      // Global.jPush.setTags([event.userInfo.id]).then((value) {
-      //   print("jPush.setTags:$value");
-      // });
     });
   }
 
   void onJPushCallback() {
     ///极光推送回调
-    Global.jPush.addEventHandler(
+    JpushApi.ins().jPush.addEventHandler(
       onReceiveMessage: (msg) async {
         //消息回调
         print('message:$msg');

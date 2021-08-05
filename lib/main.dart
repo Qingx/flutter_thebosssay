@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
@@ -30,22 +31,22 @@ void registerWeChat() {
 
 ///注册极光推送
 void registerJiGuang() {
-  Global.jPush.setup(
+  JpushApi.ins().jPush.setup(
       appKey: "f98cfa8459c6510944ebbefd",
       channel: "developer-default",
       production: false,
       debug: false);
 
   ///极光申请推送权限
-  Global.jPush.applyPushAuthority();
+  JpushApi.ins().jPush.applyPushAuthority();
 
   ///极光推送注册成功回调id
-  Global.jPush.getRegistrationID().then((value) {
+  JpushApi.ins().jPush.getRegistrationID().then((value) {
     print('registerJPush:$value');
   });
 
   ///极光推送通知权限回调
-  Global.jPush.isNotificationEnabled().then((value) {
+  JpushApi.ins().jPush.isNotificationEnabled().then((value) {
     print("isJPushOpen:$value");
   });
 }

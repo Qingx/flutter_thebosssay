@@ -12,6 +12,7 @@ class UserEntity with JsonConvert<UserEntity> {
   String type; //0->游客 1->正式
   String wxHead;
   String wxName;
+  List<String> tags = [];
 
   bool isNotEmpty() => id != null;
 
@@ -25,6 +26,6 @@ class UserEntity with JsonConvert<UserEntity> {
 
   @override
   String toString() {
-    return 'UserEntity{avatar: $avatar, collectNum: $collectNum, deviceId: $deviceId, id: $id, nickName: $nickName, phone: $phone, readNum: $readNum, traceNum: $traceNum, type: $type, wxHead: $wxHead, wxName: $wxName}';
+    return 'UserEntity{avatar: $avatar, deviceId: $deviceId, id: $id, nickName: $nickName, phone: $phone, collectNum: $collectNum, readNum: $readNum, traceNum: $traceNum, type: $type, wxHead: $wxHead, wxName: $wxName, tags: $tags}';
   }
 }

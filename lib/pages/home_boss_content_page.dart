@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
+import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/event/on_top_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
@@ -134,8 +137,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
         var entity = mData[index];
         entity.top = true;
 
-        mData.sort((a, b) => (b.updateTime).compareTo(a.updateTime));
-        mData.sort((a, b) => (b.top ? 1 : 0).compareTo(a.top ? 1 : 0));
+        mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
         setState(() {});
 
@@ -158,8 +160,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
         var entity = mData[index];
         entity.top = false;
 
-        mData.sort((a, b) => (b.updateTime).compareTo(a.updateTime));
-        mData.sort((a, b) => (b.top ? 1 : 0).compareTo(a.top ? 1 : 0));
+        mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
         setState(() {});
       }, onError: (res) {
@@ -181,8 +182,16 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           Get.back();
           Get.back();
 
+          BaseWidget.showDoFollowChangeDialog(context, false);
+
+          UserEntity userEntity = Global.user.user.value;
+          userEntity.traceNum--;
+          Global.user.setUser(userEntity);
+
           Global.eventBus.fire(
               RefreshFollowEvent(id: id, isFollow: false, needLoading: false));
+
+          JpushApi.ins().deleteTags([id]);
         }, onError: (res) {
           Get.back();
           BaseTool.toast(msg: "取消失败,${res.msg}");
@@ -287,24 +296,42 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Flexible(
-                                child: Text(
-                                  entity.name,
-                                  style: TextStyle(
-                                      color: BaseColor.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.start,
-                                  softWrap: false,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ).marginOn(left: 8),
-                              ),
-                              Image.asset(
-                                R.assetsImgBossLabel,
-                                width: 56,
-                                height: 16,
+                              Text(
+                                entity.name,
+                                style: TextStyle(
+                                    color: BaseColor.textDark,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.start,
+                                softWrap: false,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ).marginOn(left: 8),
+                              Expanded(
+                                child: MediaQuery.removePadding(
+                                  context: context,
+                                  removeBottom: true,
+                                  removeTop: true,
+                                  removeLeft: true,
+                                  removeRight: true,
+                                  child: ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      return Image.network(
+                                        HttpConfig.fullUrl(
+                                            entity.photoUrl[index]),
+                                        width: 56,
+                                        height: 16,
+                                      ).marginOn(left: index == 0 ? 8 : 1);
+                                    },
+                                    itemCount: entity?.photoUrl?.isNullOrEmpty()
+                                        ? 0
+                                        : entity?.photoUrl?.length,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),

@@ -8,7 +8,7 @@ Future<dynamic> showFollowChangedDialog(BuildContext context, bool doFollow) {
   String content = doFollow ? "后续可在老板-我的追踪里查看" : "已成功取消追踪，将不会实时推送";
 
   return showDialog(
-    barrierDismissible: true,
+    barrierDismissible: false,
     context: context,
     builder: (context) {
       return Center(

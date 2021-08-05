@@ -1,5 +1,3 @@
-import 'dart:convert' as convert;
-
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 
@@ -19,6 +17,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   int totalCount = 0; //发布文章总数
   int updateTime; //上次更新时间
   List<String> labels = []; //标签
+  List<String> photoUrl = []; //标签标签
 
   int getSort() {
     return updateTime + (top ? BaseTool.TwentyYears : 0);
@@ -26,7 +25,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
 
   @override
   String toString() {
-    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels}';
+    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels, photoUrl: $photoUrl}';
   }
 
   @override

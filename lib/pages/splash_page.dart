@@ -49,26 +49,35 @@ class _SplashPageState extends State<SplashPage> {
 
   void doFirstUse() {
     UserApi.ins().obtainCheckServer().listen((event) {}, onDone: () {
-      showServicePrivacyDialog(context, onDismiss: () {
-        exit(0);
-      }, onConfirm: doAgreeService);
+      showServicePrivacyDialog(
+        context,
+        onDismiss: () {
+          exit(0);
+        },
+        onConfirm: doAgreeService,
+      );
     });
   }
 
   void doAgreeService() {
     BaseWidget.showLoadingAlert("努力加载Boss...", context);
+
     BossApi.ins().obtainBossLabels().flatMap((value) {
       value = [BaseEmpty.emptyLabel, ...value];
       DataConfig.getIns().setBossLabels = value;
 
       return BossApi.ins().obtainGuideBoss();
-    }).listen((event) {
-      Get.offAll(() => GuidePage(), arguments: event.records);
-    }, onError: (res) {
-      Get.offAll(() => HomePage());
-    }, onDone: () {
-      DataConfig.getIns().firstUseApp = false;
-    });
+    }).listen(
+      (event) {
+        Get.offAll(() => GuidePage(), arguments: event);
+      },
+      onError: (res) {
+        Get.offAll(() => HomePage());
+      },
+      onDone: () {
+        DataConfig.getIns().firstUseApp = false;
+      },
+    );
   }
 
   void doSecondUse() {
@@ -78,6 +87,8 @@ class _SplashPageState extends State<SplashPage> {
       Get.offAll(() => HomePage());
     }, onError: (res) {
       Get.offAll(() => HomePage());
+    }, onDone: () {
+      Global.user.setUser(UserConfig.getIns().user);
     });
   }
 

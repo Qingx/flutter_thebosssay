@@ -7,7 +7,9 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
@@ -15,12 +17,10 @@ import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
-import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -237,9 +237,16 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         entity.isCollect = false;
         setState(() {});
 
+        BaseWidget.showDoFollowChangeDialog(context, false);
+
+        UserEntity userEntity = Global.user.user.value;
+        userEntity.traceNum--;
+        Global.user.setUser(userEntity);
+
         Global.eventBus
             .fire(RefreshFollowEvent(id: entity.id, isFollow: false));
-        Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+
+        JpushApi.ins().deleteTags([entity.id]);
       }, onError: (res) {
         Get.back();
         BaseTool.toast(msg: " 取消失败，${res.msg}");
@@ -256,17 +263,22 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       entity.isCollect = true;
       setState(() {});
 
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      UserEntity userEntity = Global.user.user.value;
+      userEntity.traceNum++;
+      Global.user.setUser(userEntity);
+
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
+
+      JpushApi.ins().addTags([entity.id]);
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();
 
-        showFollowChangedDialog(context, true);
+        BaseWidget.showDoFollowChangeDialog(context, true);
       }, onDismiss: () {
         Get.back();
 
-        showFollowChangedDialog(context, true);
+        BaseWidget.showDoFollowChangeDialog(context, true);
       });
     }, onError: (res) {
       Get.back();

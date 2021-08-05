@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -124,5 +127,12 @@ class BaseTool {
 
     Clipboard.setData(ClipboardData(text: url))
         .then((value) => BaseTool.toast(msg: "复制成功"));
+  }
+
+  ///复制
+  static void copyText(String text, {String infix = ""}) {
+    String toast = infix.isNullOrEmpty() ? "已复制：$text" : "已复制：$infix：$text";
+    Clipboard.setData(ClipboardData(text: text))
+        .then((value) => BaseTool.toast(msg: toast));
   }
 }

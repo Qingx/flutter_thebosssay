@@ -40,6 +40,9 @@ userEntityFromJson(UserEntity data, Map<String, dynamic> json) {
 	if (json['wxName'] != null) {
 		data.wxName = json['wxName'].toString();
 	}
+	if (json['tags'] != null) {
+		data.tags = (json['tags'] as List).map((v) => v.toString()).toList().cast<String>();
+	}
 	return data;
 }
 
@@ -56,5 +59,6 @@ Map<String, dynamic> userEntityToJson(UserEntity entity) {
 	data['type'] = entity.type;
 	data['wxHead'] = entity.wxHead;
 	data['wxName'] = entity.wxName;
+	data['tags'] = entity.tags;
 	return data;
 }

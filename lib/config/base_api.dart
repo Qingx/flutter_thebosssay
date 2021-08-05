@@ -8,6 +8,7 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:rxdart/rxdart.dart';
@@ -60,11 +61,11 @@ class BaseApi {
     return Observable.retryWhen(() => call(), (e, s) {
       print(e.toString());
       if (e.runtimeType == TempUserMiss && count++ < 2) {
-        return BaseApi.globalToken.doOnData((event) {
+        return BaseApi.getGlobalToken().doOnData((event) {
           UserConfig.getIns().token = event;
         });
       } else if (e.runtimeType == UserMiss && count++ < 2) {
-        return BaseApi.globalRefresh.doOnData((event) {
+        return BaseApi.getGlobalRefresh().doOnData((event) {
           UserConfig.getIns().token = event;
         });
       } else {
@@ -217,27 +218,54 @@ class BaseApi {
   static Observable<String> globalSign =
       ins.refreshSign().shareReplay(maxSize: 1);
 
-  static Observable<String> globalToken = Observable.defer(() {
-    var tempId = UserConfig.getIns().tempId;
+  static var tokenTime = 0;
+  static Observable<String> globalToken;
 
-    return UserApi.ins().obtainTempLogin(tempId).map((event) {
-      UserConfig.getIns().setTempId = tempId;
-      UserConfig.getIns().token = event.token;
-      Global.user.setUser(event.userInfo);
+  static Observable<String> getGlobalToken() {
+    final nowTime = DateTime.now().millisecondsSinceEpoch;
 
-      TalkingApi.ins().obtainRegister(tempId);
-      return event.token;
-    });
-  }).shareReplay(maxSize: 1);
+    if ((nowTime - tokenTime).abs() > 10000) {
+      tokenTime = nowTime;
+      globalToken = null;
+    }
 
-  static Observable<String> globalRefresh = Observable.defer(() {
-    return UserApi.ins().obtainRefreshUser().map((event) {
-      UserConfig.getIns().token = event.token;
-      Global.user.setUser(event.userInfo);
+    return globalToken ??= Observable.defer(() {
+      var tempId = UserConfig.getIns().tempId;
 
-      return event.token;
-    });
-  }).shareReplay(maxSize: 1);
+      return UserApi.ins().obtainTempLogin(tempId).map((event) {
+        UserConfig.getIns().setTempId = tempId;
+        UserConfig.getIns().token = event.token;
+        Global.user.setUser(event.userInfo);
+
+        TalkingApi.ins().obtainRegister(event.userInfo.id);
+
+        JpushApi.ins().addAlias(event.userInfo.id);
+
+        return event.token;
+      });
+    }).shareReplay(maxSize: 1);
+  }
+
+  static var refreshTime = 0;
+  static Observable<String> globalRefresh;
+
+  static Observable<String> getGlobalRefresh() {
+    final nowTime = DateTime.now().millisecondsSinceEpoch;
+
+    if ((nowTime - refreshTime).abs() > 10000) {
+      refreshTime = nowTime;
+      globalRefresh = null;
+    }
+
+    return globalRefresh ??= Observable.defer(() {
+      return UserApi.ins().obtainRefreshUser().map((event) {
+        UserConfig.getIns().token = event.token;
+        Global.user.setUser(event.userInfo);
+
+        return event.token;
+      });
+    }).shareReplay(maxSize: 1);
+  }
 
   /// 刷新文件签名
   Observable<String> refreshSign() => post<String>("/api/file/sign").rebase();
@@ -352,7 +380,7 @@ extension ObservableEx<T> on Observable<T> {
 
     return Observable.retryWhen(() => source, (e, s) {
       if (e.runtimeType == TempUserMiss) {
-        return BaseApi.globalToken.doOnData((event) {
+        return BaseApi.getGlobalToken().doOnData((event) {
           UserConfig.getIns().token = event;
         });
       } else {

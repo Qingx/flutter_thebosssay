@@ -26,7 +26,11 @@ Future<dynamic> showFollowAskCancelDialog(BuildContext context,
                 ).marginOn(top: 16),
                 Text(
                   "确定要取消关注吗？",
-                  style: TextStyle(color: BaseColor.textDark, fontSize: 16),
+                  style: TextStyle(
+                    color: BaseColor.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                   softWrap: false,
                   maxLines: 1,

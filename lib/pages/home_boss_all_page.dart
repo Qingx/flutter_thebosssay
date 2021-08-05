@@ -9,17 +9,17 @@ import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/operation_entity.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
-import 'package:flutter_boss_says/event/refresh_user_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -187,14 +187,19 @@ class _HomeBossAllPageState extends State<HomeBossAllPage>
         Get.back();
         Get.back();
 
-        showFollowChangedDialog(context, false);
+        BaseWidget.showDoFollowChangeDialog(context, false);
 
         entity.isCollect = false;
         setState(() {});
 
-        Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+        UserEntity userEntity = Global.user.user.value;
+        userEntity.traceNum--;
+        Global.user.setUser(userEntity);
+
         Global.eventBus
             .fire(RefreshFollowEvent(id: entity.id, isFollow: false));
+
+        JpushApi.ins().deleteTags([entity.id]);
       }, onError: (res) {
         Get.back();
         BaseTool.toast(msg: " 取消失败，${res.msg}");
@@ -210,17 +215,22 @@ class _HomeBossAllPageState extends State<HomeBossAllPage>
       entity.isCollect = true;
       setState(() {});
 
-      Global.eventBus.fire(BaseEvent(RefreshUserEvent));
+      UserEntity userEntity = Global.user.user.value;
+      userEntity.traceNum++;
+      Global.user.setUser(userEntity);
+
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
+
+      JpushApi.ins().addTags([entity.id]);
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();
 
-        showFollowChangedDialog(context, true);
+        BaseWidget.showDoFollowChangeDialog(context, true);
       }, onDismiss: () {
         Get.back();
 
-        showFollowChangedDialog(context, true);
+        BaseWidget.showDoFollowChangeDialog(context, true);
       });
     }, onError: (res) {
       Get.back();

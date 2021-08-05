@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
+import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class BaseWidget {
   ///状态栏
@@ -75,21 +78,27 @@ class BaseWidget {
 
   static Widget loadingWidget() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            child: SpinKitFadingCircle(
-              color: BaseColor.accent,
-              size: 50,
-              duration: Duration(milliseconds: 2000),
-            ),
-          ),
-        ],
-      ),
+      child: Image.asset(R.assetsImgTestGif),
     );
   }
+
+  // static Widget loadingWidget() {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: <Widget>[
+  //         Container(
+  //           child: SpinKitFadingCircle(
+  //             color: BaseColor.accent,
+  //             size: 50,
+  //             duration: Duration(milliseconds: 2000),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   static Widget testItemWidget(int index) {
     return Container(
@@ -340,5 +349,17 @@ class BaseWidget {
         color: BaseColor.loadBg,
       ),
     );
+  }
+
+  static showDoFollowChangeDialog(BuildContext context, bool doFollow) {
+    showFollowChangedDialog(context, doFollow);
+    Observable.periodic(Duration(milliseconds: 800), (i) => i)
+        .take(2)
+        .listen((event) {
+      print("dialog=>$event");
+      if (event >= 1) {
+        Get.back();
+      }
+    });
   }
 }

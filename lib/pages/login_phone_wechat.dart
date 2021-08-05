@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
@@ -49,7 +50,18 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
 
     focusNode = FocusNode();
 
+    getShangjia();
+
     weChatCallback();
+  }
+
+  ///获取上架状态
+  void getShangjia() {
+    UserApi.ins().obtainCheckShangjia().onErrorReturn(false).listen((event) {
+      DataConfig.getIns().isShangjia = event;
+
+      setState(() {});
+    });
   }
 
   ///尝试微信登录
@@ -61,12 +73,13 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
         UserConfig.getIns().token = event.token;
         Global.user.setUser(event.userInfo);
 
-        ///极光推送设置别名
-        Global.jPush.setAlias(event.userInfo.id).then((value) {
-          print("jPush.setAlias:$value");
-        });
-
         TalkingApi.ins().obtainLogin(event.userInfo.id);
+
+        JpushApi.ins().addAlias(event.userInfo.id);
+
+        if (!event.userInfo.tags.isNullOrEmpty()) {
+          JpushApi.ins().addTags(event.userInfo.tags);
+        }
 
         Get.offAll(() => HomePage());
       }, onError: (res) {

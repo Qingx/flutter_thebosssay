@@ -209,12 +209,14 @@ class _SpeechTrackBossPageState extends State<SpeechTrackBossPage>
             height: 80,
             fit: BoxFit.cover,
           ),
-          Text(
-            "当前还没有追踪的老板！",
-            style: TextStyle(fontSize: 14, color: Color(0x80000000)),
-            textAlign: TextAlign.center,
-            softWrap: false,
-            maxLines: 1,
+          Obx(
+            () => Text(
+              Global.user.user.value.traceNum == 0 ? "还没有追踪的老板" : "追踪的老板暂无言论更新",
+              style: TextStyle(fontSize: 14, color: Color(0x80000000)),
+              textAlign: TextAlign.center,
+              softWrap: false,
+              maxLines: 1,
+            ),
           ),
           Container(
             height: 28,

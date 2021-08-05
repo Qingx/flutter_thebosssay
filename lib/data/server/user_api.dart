@@ -161,12 +161,13 @@ class UserApi extends BaseApi {
 
   ///检查上架状态
   Observable<bool> obtainCheckShangjia() {
-    return get<bool>("/api/status/get").rebase();
+    return autoToken(() => get<bool>("/api/status/get").rebase());
   }
 
   ///获取运营图片
   Observable<OperationEntity> obtainOperationPhoto() {
-    return get<OperationEntity>("/api/operationPicture/get").rebase();
+    return autoToken(
+        () => get<OperationEntity>("/api/operationPicture/get").rebase());
   }
 
   ///将boss置顶or取消置顶
@@ -175,6 +176,6 @@ class UserApi extends BaseApi {
       "bossId": bossId,
       "top": top,
     };
-    return post<bool>("/api/boss/top-boss", requestBody: data).success();
+    return autoToken(()=>post<bool>("/api/boss/top-boss", requestBody: data).success());
   }
 }
