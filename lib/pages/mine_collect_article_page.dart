@@ -419,7 +419,7 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
                         ).marginOn(left: 8),
                         Expanded(child: SizedBox()),
                         Text(
-                          BaseTool.getArticleItemTime(entity.releaseTime),
+                          BaseTool.getArticleItemTime(entity.getShowTime()),
                           style: TextStyle(
                             fontSize: 13,
                             color: BaseColor.textGray,

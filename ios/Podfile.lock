@@ -1,4 +1,6 @@
 PODS:
+  - appscheme (1.0.1):
+    - Flutter
   - connectivity (0.0.1):
     - Flutter
     - Reachability
@@ -28,6 +30,8 @@ PODS:
     - FMDB (>= 2.7.5)
   - talkingdata_appanalytics_plugin (0.0.1):
     - Flutter
+  - uni_links (0.0.1):
+    - Flutter
   - video_player (0.0.1):
     - Flutter
   - wakelock (0.0.1):
@@ -37,6 +41,7 @@ PODS:
   - WechatOpenSDK (1.8.7.1)
 
 DEPENDENCIES:
+  - appscheme (from `.symlinks/plugins/appscheme/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - Flutter (from `Flutter`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
@@ -46,6 +51,7 @@ DEPENDENCIES:
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - talkingdata_appanalytics_plugin (from `.symlinks/plugins/talkingdata_appanalytics_plugin/ios`)
+  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
@@ -59,6 +65,8 @@ SPEC REPOS:
     - WechatOpenSDK
 
 EXTERNAL SOURCES:
+  appscheme:
+    :path: ".symlinks/plugins/appscheme/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
   Flutter:
@@ -77,6 +85,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/ios"
   talkingdata_appanalytics_plugin:
     :path: ".symlinks/plugins/talkingdata_appanalytics_plugin/ios"
+  uni_links:
+    :path: ".symlinks/plugins/uni_links/ios"
   video_player:
     :path: ".symlinks/plugins/video_player/ios"
   wakelock:
@@ -85,6 +95,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter/ios"
 
 SPEC CHECKSUMS:
+  appscheme: 267ca8aa76ee202d400542fba8f5dd9403989348
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
@@ -98,6 +109,7 @@ SPEC CHECKSUMS:
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   talkingdata_appanalytics_plugin: 5e46f0292206686e34814936c58d14ff893d43ac
+  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
   wakelock: bfc7955c418d0db797614075aabbc58a39ab5107
   webview_flutter: d2b4d6c66968ad042ad94cbb791f5b72b4678a96

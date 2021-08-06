@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:appscheme/appscheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/home_boss_page.dart';
 import 'package:flutter_boss_says/pages/home_mine_page.dart';
 import 'package:flutter_boss_says/pages/home_speech_page.dart';
+import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -18,6 +20,7 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
+import 'package:uni_links/uni_links.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -33,8 +36,14 @@ class _HomePageState extends State<HomePage> {
   List<Widget> mPages;
 
   PageController mPageController;
-
   StreamSubscription<BaseEvent> eventDispose;
+
+  AppScheme appScheme = AppSchemeImpl.getInstance();
+
+  var linkSub;
+  var uriSub;
+  var initLinkSub;
+  var initUriSub;
 
   @override
   void dispose() {
@@ -45,6 +54,11 @@ class _HomePageState extends State<HomePage> {
     mPageController?.dispose();
 
     eventDispose?.cancel();
+
+    linkSub?.dispose();
+    uriSub?.dispose();
+    initLinkSub?.dispose();
+    initUriSub?.dispose();
   }
 
   @override
@@ -65,11 +79,53 @@ class _HomePageState extends State<HomePage> {
 
     onJPushCallback();
 
-    // doRefreshUser();
-
     doDeviceID();
 
     doPageStart();
+
+    initUniLinks();
+
+    doAppScheme();
+  }
+
+  void initUniLinks() {
+    linkSub = getLinksStream().listen((event) {
+      print('getStreamLink=>$event');
+    }, onError: (e) {
+      print("getStreamLink=>$e}");
+    });
+
+    initLinkSub = getInitialLink().then((value) {
+      print('getStreamInitialLink=>$value');
+    }, onError: (e) {
+      print("getStreamInitialLink=>$e}");
+    });
+
+    uriSub = getUriLinksStream().listen((event) {
+      print('getStreamUriLinks=>$event');
+    }, onError: (e) {
+      print("getStreamUriLinks=>$e}");
+    });
+
+    initUriSub = getInitialUri().then((value) {
+      print('getStreamInitialUri=>$value');
+    }, onError: (e) {
+      print("getStreamInitialUri=>$e}");
+    });
+  }
+
+  void doAppScheme() {
+    appScheme.getInitScheme().then((value) {
+      print('appScheme=>$value');
+    });
+
+    appScheme.getLatestScheme().then((value) {
+      print('appScheme=>$value');
+    });
+
+    appScheme.registerSchemeListener().listen((event) {
+      print('appScheme=>$event');
+    });
   }
 
   void doPageStart() {

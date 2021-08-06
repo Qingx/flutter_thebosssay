@@ -47,7 +47,7 @@ class BaseTool {
         return "$seconds秒前更新";
       }
     } else {
-      return "时间戳异常";
+      return "刚刚";
     }
   }
 
@@ -73,7 +73,7 @@ class BaseTool {
         return "$seconds秒前更新";
       }
     } else {
-      return "时间戳异常";
+      return "刚刚";
     }
   }
 

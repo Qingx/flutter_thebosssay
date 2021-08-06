@@ -11,8 +11,13 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   int readCount = 0; //阅读数
   int collect = 0; //收藏数
   int releaseTime; //发布时间
+  int articleTime; //文章时间
   List<String> files = []; //图片列表
   BossInfoEntity bossVO;
+
+  int getShowTime() {
+    return articleTime ?? releaseTime;
+  }
 
   @override
   String toString() {
@@ -22,9 +27,9 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ArticleEntity &&
-              runtimeType == other.runtimeType &&
-              id == other.id;
+      other is ArticleEntity &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;

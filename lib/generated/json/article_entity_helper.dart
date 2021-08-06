@@ -35,6 +35,11 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['releaseTime'])
 				: json['releaseTime'].toInt();
 	}
+	if (json['articleTime'] != null) {
+		data.articleTime = json['articleTime'] is String
+				? int.tryParse(json['articleTime'])
+				: json['articleTime'].toInt();
+	}
 	if (json['files'] != null) {
 		data.files = (json['files'] as List).map((v) => v.toString()).toList().cast<String>();
 	}
@@ -55,6 +60,7 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['readCount'] = entity.readCount;
 	data['collect'] = entity.collect;
 	data['releaseTime'] = entity.releaseTime;
+	data['articleTime'] = entity.articleTime;
 	data['files'] = entity.files;
 	data['bossVO'] = entity.bossVO?.toJson();
 	return data;

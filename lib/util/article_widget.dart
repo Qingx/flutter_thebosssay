@@ -102,7 +102,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  BaseTool.getArticleItemTime(entity.releaseTime),
+                  BaseTool.getArticleItemTime(entity.getShowTime()),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -254,7 +254,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  BaseTool.getArticleItemTime(entity.releaseTime),
+                  BaseTool.getArticleItemTime(entity.getShowTime()),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -355,7 +355,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  BaseTool.getArticleItemTime(entity.releaseTime),
+                  BaseTool.getArticleItemTime(entity.getShowTime()),
                   style: TextStyle(fontSize: 13, color: BaseColor.textGray),
                   textAlign: TextAlign.start,
                   maxLines: 1,
@@ -463,7 +463,7 @@ class ArticleWidget {
                               ),
                             ),
                             Text(
-                              BaseTool.getArticleItemTime(entity.releaseTime),
+                              BaseTool.getArticleItemTime(entity.getShowTime()),
                               style: TextStyle(
                                   fontSize: 13, color: BaseColor.textGray),
                               textAlign: TextAlign.start,
