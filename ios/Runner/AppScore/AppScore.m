@@ -6,10 +6,23 @@
 #import <StoreKit/StoreKit.h>
 
 @interface AppScore()
+
++ (AppScore*)shared;
+
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
 @implementation AppScore
+
+
++ (AppScore*)shared{
+    static dispatch_once_t pred;
+    static AppScore *instance;
+    dispatch_once(&pred, ^{
+        instance = [[AppScore alloc] init];
+    });
+    return instance;
+}
 
 + (void)registerWithRegistrar:(nonnull NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel
@@ -18,6 +31,7 @@
     AppScore *instance = [[AppScore alloc] init];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
+    [AppScore shared].channel = channel;
 }
 
 
@@ -48,6 +62,24 @@
         NSString *str = [NSString stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@?action=write-review", @"12323123123"];
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str] options:@{} completionHandler:nil];
     }
+}
+
+
+
+
++ (BOOL)handleOpenURL:(NSURL *)url
+{
+    
+    NSString *urlString = url.absoluteString;
+    if ([urlString containsString:@"thebosssays://"]) {
+        
+        [[AppScore shared].channel invokeMethod:@"BSAppScheme" arguments:urlString];
+        
+        return YES;
+    }
+    
+    
+    return NO;
 }
 
 

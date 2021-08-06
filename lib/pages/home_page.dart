@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:appscheme/appscheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
@@ -115,6 +116,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   void doAppScheme() {
+    const MethodChannel channel =
+        const MethodChannel('app.storescore/storescore');
+    channel.setMethodCallHandler((MethodCall call) {
+      if (call.method == "BSAppScheme") {
+        setState(() {
+          String str = call.arguments;
+          print(str);
+        });
+      }
+      return Future<dynamic>.value();
+    });
+
     appScheme.getInitScheme().then((value) {
       print('appScheme=>$value');
     });

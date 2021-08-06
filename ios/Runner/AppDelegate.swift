@@ -18,7 +18,6 @@ import UserNotificationsUI
     }
     
     AppScore.register(with: self.registrar(forPlugin: "AppScore")!)
-    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
     
@@ -28,6 +27,10 @@ import UserNotificationsUI
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if AppScore.handleOpen(url) {
+            return true
+        }
+        
         return YQResonseHandler.handleOpen(url)
     }
     
