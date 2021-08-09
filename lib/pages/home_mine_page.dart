@@ -23,6 +23,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 class HomeMinePage extends StatefulWidget {
   const HomeMinePage({Key key}) : super(key: key);
@@ -150,6 +151,8 @@ class _HomeMinePageState extends State<HomeMinePage>
     BaseWidget.showLoadingAlert("正在清除缓存...", context);
     Observable.just(true).delay(Duration(milliseconds: 1600)).listen((event) {
       BaseTool.toast(msg: "清除成功");
+      FlutterAppBadger.updateBadgeCount(11);
+
       Get.back();
     });
   }

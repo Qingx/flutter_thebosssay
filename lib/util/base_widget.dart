@@ -53,7 +53,7 @@ class BaseWidget {
             height: 184,
           ),
           Text(
-            "应用出错了",
+            "网络异常",
             style: TextStyle(
                 fontSize: 18,
                 color: BaseColor.textDark,
@@ -64,7 +64,7 @@ class BaseWidget {
             overflow: TextOverflow.ellipsis,
           ).marginOn(top: 32),
           Text(
-            "请点击尝试重新加载",
+            "请点击屏幕重新加载或检查设备网络权限",
             style: TextStyle(fontSize: 16, color: BaseColor.textGray),
             maxLines: 1,
             softWrap: false,
@@ -78,7 +78,12 @@ class BaseWidget {
 
   static Widget loadingWidget() {
     return Center(
-      child: Image.asset(R.assetsImgTestGif),
+      child: Image.asset(
+        R.assetsImgTestGif,
+        width: 200,
+        height: 150,
+        fit: BoxFit.cover,
+      ),
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -38,6 +40,23 @@ extension FunString on String {
 
   String hidePhoneNumber() {
     return this.replaceRange(3, 11, "********");
+  }
+
+  Map<String, String> getPathValue() {
+    final values = HashMap<String, String>();
+
+    try {
+      final index = this.lastIndexOf("?");
+      final valueStr = this.substring(index + 1);
+
+      final valList = valueStr.split("\\&");
+      valList.forEach((element) {
+        final l = element.split("=");
+        values[l[0]] = l[1];
+      });
+    } catch (e) {}
+
+    return values;
   }
 }
 

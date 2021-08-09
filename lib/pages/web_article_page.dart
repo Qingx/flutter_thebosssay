@@ -23,6 +23,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 class WebArticlePage extends StatelessWidget {
   String articleId = Get.arguments as String;
   var articleUrl = HttpConfig.globalEnv.baseUrl;
+
   // var articleUrl = "http://192.168.1.85:9529";
 
   WebArticlePage({Key key}) : super(key: key);
@@ -119,7 +120,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
       switch (index) {
         case 0:
           BaseTool.shareToSession(
-            mUrl: articleUrl,
+            mUrl: "$articleUrl&type=1",
             mTitle: articleTitle,
             mDes: articleDes,
             thumbnail: articleCover,
@@ -127,14 +128,14 @@ class _TopBarWidgetState extends State<TopBarWidget> {
           break;
         case 1:
           BaseTool.shareToTimeline(
-            mUrl: articleUrl,
+            mUrl: "$articleUrl&type=1",
             mTitle: articleTitle,
             mDes: articleDes,
             thumbnail: articleCover,
           );
           break;
         default:
-          BaseTool.shareCopyLink(mUrl: articleUrl);
+          BaseTool.shareCopyLink(mUrl: "$articleUrl&type=1");
           break;
       }
     });

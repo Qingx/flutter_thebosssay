@@ -62,7 +62,7 @@ class _SplashPageState extends State<SplashPage> {
   void doAgreeService() {
     BaseWidget.showLoadingAlert("努力加载Boss...", context);
 
-    BossApi.ins().obtainBossLabels().flatMap((value) {
+    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
       value = [BaseEmpty.emptyLabel, ...value];
       DataConfig.getIns().setBossLabels = value;
 
@@ -72,7 +72,6 @@ class _SplashPageState extends State<SplashPage> {
         Get.offAll(() => GuidePage(), arguments: event);
       },
       onError: (res) {
-        print("GuidePage=>$res");
         Get.offAll(() => HomePage());
       },
       onDone: () {
@@ -82,7 +81,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void doSecondUse() {
-    BossApi.ins().obtainBossLabels().listen((event) {
+    BossApi.ins().obtainBossLabels().onErrorReturn([]).listen((event) {
       event = [BaseEmpty.emptyLabel, ...event];
       DataConfig.getIns().setBossLabels = event;
       Get.offAll(() => HomePage());

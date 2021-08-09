@@ -1,19 +1,17 @@
 import 'dart:async';
 
-import 'package:appscheme/appscheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
+import 'package:flutter_boss_says/data/server/scheme_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/home_boss_page.dart';
 import 'package:flutter_boss_says/pages/home_mine_page.dart';
 import 'package:flutter_boss_says/pages/home_speech_page.dart';
-import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -21,7 +19,7 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -39,13 +37,6 @@ class _HomePageState extends State<HomePage> {
   PageController mPageController;
   StreamSubscription<BaseEvent> eventDispose;
 
-  AppScheme appScheme = AppSchemeImpl.getInstance();
-
-  var linkSub;
-  var uriSub;
-  var initLinkSub;
-  var initUriSub;
-
   @override
   void dispose() {
     super.dispose();
@@ -55,11 +46,6 @@ class _HomePageState extends State<HomePage> {
     mPageController?.dispose();
 
     eventDispose?.cancel();
-
-    linkSub?.dispose();
-    uriSub?.dispose();
-    initLinkSub?.dispose();
-    initUriSub?.dispose();
   }
 
   @override
@@ -84,61 +70,9 @@ class _HomePageState extends State<HomePage> {
 
     doPageStart();
 
-    initUniLinks();
+    SchemeApi.ins().doAppScheme();
 
-    doAppScheme();
-  }
-
-  void initUniLinks() {
-    linkSub = getLinksStream().listen((event) {
-      print('getStreamLink=>$event');
-    }, onError: (e) {
-      print("getStreamLink=>$e}");
-    });
-
-    initLinkSub = getInitialLink().then((value) {
-      print('getStreamInitialLink=>$value');
-    }, onError: (e) {
-      print("getStreamInitialLink=>$e}");
-    });
-
-    uriSub = getUriLinksStream().listen((event) {
-      print('getStreamUriLinks=>$event');
-    }, onError: (e) {
-      print("getStreamUriLinks=>$e}");
-    });
-
-    initUriSub = getInitialUri().then((value) {
-      print('getStreamInitialUri=>$value');
-    }, onError: (e) {
-      print("getStreamInitialUri=>$e}");
-    });
-  }
-
-  void doAppScheme() {
-    const MethodChannel channel =
-        const MethodChannel('app.storescore/storescore');
-    channel.setMethodCallHandler((MethodCall call) {
-      if (call.method == "BSAppScheme") {
-        setState(() {
-          String str = call.arguments;
-          print(str);
-        });
-      }
-      return Future<dynamic>.value();
-    });
-
-    appScheme.getInitScheme().then((value) {
-      print('appScheme=>$value');
-    });
-
-    appScheme.getLatestScheme().then((value) {
-      print('appScheme=>$value');
-    });
-
-    appScheme.registerSchemeListener().listen((event) {
-      print('appScheme=>$event');
-    });
+    FlutterAppBadger.removeBadge();
   }
 
   void doPageStart() {

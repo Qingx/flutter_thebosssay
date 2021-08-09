@@ -5,7 +5,6 @@ import 'package:flutter_boss_says/pages/splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:get/get.dart';
-import 'package:uni_links/uni_links.dart';
 
 void main() {
   runApp(MyApp());

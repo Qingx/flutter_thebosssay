@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/speech_square_page.dart';
-import 'package:flutter_boss_says/pages/speech_track_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/pages/speech_tack_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -38,7 +38,7 @@ class _HomeSpeechPageState extends State<HomeSpeechPage>
 
     mCurrentIndex = 0;
     mTitles = ["追踪", "广场"];
-    mPages = [FollowPage(), SpeechSquarePage()];
+    mPages = [SpeechTackPage(), SpeechSquarePage()];
     mPageController = PageController();
   }
 
