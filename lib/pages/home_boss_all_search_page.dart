@@ -282,13 +282,17 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
             softWrap: true,
             overflow: TextOverflow.ellipsis,
           ).marginOn(top: 8),
-          Text(
-            entity.role,
-            style: TextStyle(fontSize: 10, color: BaseColor.textGray),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
+          Container(
+            width: 64,
+            alignment: Alignment.center,
+            child: Text(
+              entity.role,
+              style: TextStyle(fontSize: 10, color: BaseColor.textGray),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           Container(
             width: 56,
