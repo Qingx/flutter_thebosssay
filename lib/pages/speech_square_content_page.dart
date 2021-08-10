@@ -157,8 +157,8 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
                 ArticleEntity entity = mData[index];
 
                 return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextNoContent(entity, index, context)
-                    : ArticleWidget.singleImgNoContent(entity, index, context);
+                    ? ArticleWidget.onlyTextNoContent(entity, context)
+                    : ArticleWidget.singleImgNoContent(entity, context);
               },
               childCount: mData.length,
             ),

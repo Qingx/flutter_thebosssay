@@ -245,9 +245,9 @@ class _SearchArticlePageState extends State<SearchArticlePage>
                 ArticleEntity entity = mData[index];
 
                 return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
+                    ? ArticleWidget.onlyTextWithContent(entity, context)
                     : ArticleWidget.singleImgWithContent(
-                        entity, index, context);
+                        entity, context);
               },
               childCount: mData.length,
             ),

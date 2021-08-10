@@ -108,7 +108,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         .obtainFollowBossList(widget.mLabel, true)
         .onErrorReturn([]).flatMap((value) {
       mBossList = value;
-      return BossApi.ins().obtainFollowArticle(pageParam);
+      return BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel);
     }).doOnData((event) {
       hasData = event.hasData;
       totalArticleNumber = event.total;
@@ -126,7 +126,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
           .onErrorReturn([]).flatMap((value) {
         mBossList = value;
 
-        return BossApi.ins().obtainFollowArticle(pageParam);
+        return BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel);
       }).listen((event) {
         hasData = event.hasData;
         totalArticleNumber = event.total;
@@ -138,7 +138,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         controller.finishRefresh(success: false);
       });
     } else {
-      BossApi.ins().obtainFollowArticle(pageParam).listen((event) {
+      BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel).listen(
+          (event) {
         hasData = event.hasData;
         concat(event.records, true);
         setState(() {});
@@ -291,8 +292,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         ],
       ),
     ).onClick(() {
-      DataConfig.getIns()
-          .setBossTime(entity.id, DateTime.now().millisecondsSinceEpoch);
+      DataConfig.getIns().setBossTime(entity.id);
       setState(() {});
       Get.to(() => BossHomePage(), arguments: entity);
     });
@@ -383,9 +383,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
                 ArticleEntity entity = mData[index];
 
                 return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
-                    : ArticleWidget.singleImgWithContent(
-                        entity, index, context);
+                    ? ArticleWidget.onlyTextWithContent(entity, context)
+                    : ArticleWidget.singleImgWithContent(entity, context);
               },
               childCount: mData.length,
             ),

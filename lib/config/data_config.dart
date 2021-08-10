@@ -14,7 +14,9 @@ class DataConfig extends BaseConfig {
   }
 
   ///设置Boss更新时间
-  void setBossTime(String id, int time) {
+  void setBossTime(String id, {int time}) {
+    int nowTime = time ?? DateTime.now().millisecondsSinceEpoch;
+
     Map<String, dynamic> map = Map();
 
     String jsonStr =
@@ -25,9 +27,9 @@ class DataConfig extends BaseConfig {
     }
 
     if (map.containsKey(id)) {
-      map.update(id, (value) => time);
+      map.update(id, (value) => nowTime);
     } else {
-      map[id] = time;
+      map[id] = nowTime;
     }
 
     spInstance.putString(DataKeys.K_BOSS_TIME, json.encode(map));

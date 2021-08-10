@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -147,6 +149,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     TalkingApi.ins().obtainPageStart("BossHomePage");
 
     eventBus();
+
+    DataConfig.getIns().setBossTime(entity.id, time: entity.updateTime);
   }
 
   void eventBus() {
@@ -195,24 +199,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         controller.finishRefresh(success: false);
       }
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          topWidget(),
-          numberWidget(),
-          Expanded(
-            child: FutureBuilder<WlPage.Page<ArticleEntity>>(
-              builder: builderWidget,
-              future: builderFuture,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void onFollowChange() {
@@ -288,6 +274,24 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   void onWatchMore() {
     Get.to(() => BossInfoPage(),
         arguments: entity, transition: Transition.rightToLeftWithFade);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          topWidget(),
+          numberWidget(),
+          Expanded(
+            child: FutureBuilder<WlPage.Page<ArticleEntity>>(
+              builder: builderWidget,
+              future: builderFuture,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget builderWidget(BuildContext context,
@@ -495,7 +499,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   Widget contentWidget() {
     return Container(
-      padding: EdgeInsets.only(left: 8, right: 8),
       child: BaseWidget.refreshWidgetPage(
         slivers: [bodyWidget()],
         controller: controller,
@@ -522,233 +525,40 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                 ArticleEntity entity = mData[index];
 
                 return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextWithContent(entity, index, context)
-                    : ArticleWidget.singleImgWithContent(
-                        entity, index, context);
+                    ? ArticleWidget.onlyTextWithContentBossPage(
+                        entity,
+                        context,
+                        () {
+                          if (!entity.isRead) {
+                            entity.isRead = false;
+                          }
+
+                          if (BaseTool.showRedDots(
+                              entity.bossId, entity.getShowTime())) {
+                            DataConfig.getIns().setBossTime(entity.bossId);
+                          }
+
+                          setState(() {});
+
+                          Get.to(() => WebArticlePage(), arguments: entity.id);
+                        },
+                      )
+                    : ArticleWidget.singleImgWithContentBossPage(
+                        entity,
+                        context,
+                        () {
+                          print('entity.isRead=>${entity.isRead}');
+                          entity.isRead = true;
+
+                          setState(() {});
+
+                          Get.to(() => WebArticlePage(), arguments: entity.id);
+                        },
+                      );
               },
               childCount: mData.length,
             ),
           );
-  }
-
-  Widget adWidget() {
-    return Container(
-      height: 160,
-      decoration: ShapeDecoration(
-        image: DecorationImage(
-          image: AssetImage(R.assetsImgTestPhoto),
-          fit: BoxFit.cover,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusDirectional.all(Radius.circular(4)),
-        ),
-      ),
-    );
-  }
-
-  Widget bodyItemWidget(index) {
-    bool hasLike = index % 2 == 0;
-    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
-    return Container(
-      height: 216,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-          color: Colors.white),
-      child: Stack(
-        children: [
-          Container(
-            child: Column(
-              children: [
-                Container(
-                  height: 128,
-                  decoration: ShapeDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(R.assetsImgTestHead),
-                      fit: BoxFit.cover,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusDirectional.only(
-                        topStart: Radius.circular(4),
-                        topEnd: Radius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.only(left: 8, right: 8),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: BaseColor.textDark,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            softWrap: true,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.remove_red_eye_outlined,
-                            size: 16,
-                            color: BaseColor.accent,
-                          ),
-                          Text(
-                            "19.9w",
-                            style: TextStyle(
-                                fontSize: 12, color: BaseColor.textGray),
-                            softWrap: false,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ).marginOn(left: 8),
-                          Expanded(child: SizedBox()),
-                          Icon(
-                            hasLike ? Icons.star : Icons.star_border_outlined,
-                            size: 16,
-                            color: hasLike ? Colors.orange : BaseColor.textGray,
-                          ).marginOn(right: 8),
-                          Text(
-                            "1230",
-                            style: TextStyle(
-                                fontSize: 12, color: BaseColor.textGray),
-                            softWrap: false,
-                            textAlign: TextAlign.end,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
-                      ).marginOn(bottom: 8, left: 8, right: 8)
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            "2020/5/30",
-            style: TextStyle(fontSize: 12, color: Colors.white),
-            textAlign: TextAlign.center,
-            softWrap: false,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ).positionOn(top: 12, left: 0, right: 0),
-        ],
-      ),
-    );
-  }
-
-  Widget bodyItemLargeWidget(index) {
-    bool hasLike = index % 2 == 0;
-    String title = "搞什么副业可以月入过万搞什么副业可以月入过万搞什么副业可以月入过万";
-    return Container(
-      height: 304,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
-          color: Colors.white),
-      child: Stack(
-        children: [
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  height: 224,
-                  decoration: ShapeDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(R.assetsImgTestSplash),
-                      fit: BoxFit.cover,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusDirectional.only(
-                        topStart: Radius.circular(4),
-                        topEnd: Radius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.only(left: 8, right: 8),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: BaseColor.textDark,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            softWrap: true,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.remove_red_eye_outlined,
-                            size: 16,
-                            color: BaseColor.accent,
-                          ),
-                          Text(
-                            "19.9w",
-                            style: TextStyle(
-                                fontSize: 12, color: BaseColor.textGray),
-                            softWrap: false,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ).marginOn(left: 8),
-                          Expanded(child: SizedBox()),
-                          Icon(
-                            hasLike ? Icons.star : Icons.star_border_outlined,
-                            size: 16,
-                            color: hasLike ? Colors.orange : BaseColor.textGray,
-                          ).marginOn(right: 8),
-                          Text(
-                            "1230",
-                            style: TextStyle(
-                                fontSize: 12, color: BaseColor.textGray),
-                            softWrap: false,
-                            textAlign: TextAlign.end,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
-                      ).marginOn(bottom: 8, left: 8, right: 8)
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            "2020/5/30",
-            style: TextStyle(fontSize: 12, color: Colors.white),
-            textAlign: TextAlign.center,
-            softWrap: false,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ).positionOn(top: 12, left: 0, right: 0),
-        ],
-      ),
-    );
   }
 
   Widget emptyBodyWidget() {
