@@ -29,6 +29,8 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
 
 class BossHomePage extends StatelessWidget {
+  BossInfoEntity entity = Get.arguments as BossInfoEntity;
+
   BossHomePage({Key key}) : super(key: key);
 
   @override
@@ -39,7 +41,7 @@ class BossHomePage extends StatelessWidget {
       body: Container(
         child: Stack(
           children: [
-            BodyWidget(),
+            BodyWidget(entity),
             topBar(context),
           ],
         ),
@@ -49,6 +51,7 @@ class BossHomePage extends StatelessWidget {
 
   void onBack() {
     Get.back();
+    DataConfig.getIns().setBossTime(entity.id);
   }
 
   void onShare(context) {
@@ -107,7 +110,9 @@ class BossHomePage extends StatelessWidget {
 }
 
 class BodyWidget extends StatefulWidget {
-  const BodyWidget({Key key}) : super(key: key);
+  BossInfoEntity entity;
+
+  BodyWidget(this.entity, {Key key}) : super(key: key);
 
   @override
   _BodyWidgetState createState() => _BodyWidgetState();
@@ -134,12 +139,14 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     eventDispose?.cancel();
 
     TalkingApi.ins().obtainPageEnd("BossHomePage");
+
+    DataConfig.getIns().setBossTime(entity.id);
   }
 
   @override
   void initState() {
     super.initState();
-    entity = Get.arguments as BossInfoEntity;
+    entity = widget.entity;
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -149,8 +156,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     TalkingApi.ins().obtainPageStart("BossHomePage");
 
     eventBus();
-
-    DataConfig.getIns().setBossTime(entity.id, time: entity.updateTime);
   }
 
   void eventBus() {
@@ -547,8 +552,14 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                         entity,
                         context,
                         () {
-                          print('entity.isRead=>${entity.isRead}');
-                          entity.isRead = true;
+                          if (!entity.isRead) {
+                            entity.isRead = false;
+                          }
+
+                          if (BaseTool.showRedDots(
+                              entity.bossId, entity.getShowTime())) {
+                            DataConfig.getIns().setBossTime(entity.bossId);
+                          }
 
                           setState(() {});
 

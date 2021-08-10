@@ -14,8 +14,10 @@ class DataConfig extends BaseConfig {
   }
 
   ///设置Boss更新时间
-  void setBossTime(String id, {int time}) {
-    int nowTime = time ?? DateTime.now().millisecondsSinceEpoch;
+  void setBossTime(
+    String id,
+  ) {
+    int nowTime = DateTime.now().millisecondsSinceEpoch;
 
     Map<String, dynamic> map = Map();
 

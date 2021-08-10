@@ -292,9 +292,10 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         ],
       ),
     ).onClick(() {
-      DataConfig.getIns().setBossTime(entity.id);
-      setState(() {});
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(), arguments: entity).then((value) {
+        DataConfig.getIns().setBossTime(entity.id);
+        setState(() {});
+      });
     });
   }
 
