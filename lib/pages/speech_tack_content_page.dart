@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
@@ -40,6 +43,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
   var followDispose;
   var onTopDispose;
+  var articleDispose;
 
   @override
   bool get wantKeepAlive => true;
@@ -53,6 +57,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
     followDispose?.cancel();
     onTopDispose?.cancel();
+    articleDispose?.cancel();
   }
 
   @override
@@ -83,6 +88,15 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
           duration: Duration(milliseconds: 480),
           curve: Curves.ease,
         );
+      }
+    });
+
+    articleDispose = Global.eventBus.on<JpushArticleEvent>().listen((event) {
+      var index = mBossList.indexWhere((element) => element.id == event.bossId);
+
+      if (index != -1) {
+        mBossList[index].updateTime = event.updateTime;
+        setState(() {});
       }
     });
   }
@@ -246,17 +260,13 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
                   ),
                 ),
                 Container(
-                  height: 16,
-                  padding: EdgeInsets.only(left: 8, right: 8),
+                  height: 12,
+                  width: 12,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Colors.red,
-                  ),
-                  child: Center(
-                    child: Text(
-                      entity.updateCount.toString(),
-                      style: TextStyle(color: Colors.white, fontSize: 8),
-                    ),
+                    color: BaseTool.showRedDots(entity.id, entity.updateTime)
+                        ? Colors.red
+                        : Colors.transparent,
                   ),
                 ).positionOn(top: 0, right: 0),
               ],
@@ -281,6 +291,9 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         ],
       ),
     ).onClick(() {
+      DataConfig.getIns()
+          .setBossTime(entity.id, DateTime.now().millisecondsSinceEpoch);
+      setState(() {});
       Get.to(() => BossHomePage(), arguments: entity);
     });
   }

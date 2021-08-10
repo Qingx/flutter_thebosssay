@@ -80,7 +80,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
   void eventBus() {
     eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
       var index = mData.indexWhere((element) => element.id == event.id);
-      if (index != null) {
+      if (index != -1) {
         mData[index].isCollect = event.isFollow;
         setState(() {});
       }

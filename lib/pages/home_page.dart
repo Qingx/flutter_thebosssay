@@ -8,6 +8,7 @@ import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/scheme_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/home_boss_page.dart';
 import 'package:flutter_boss_says/pages/home_mine_page.dart';
@@ -118,12 +119,20 @@ class _HomePageState extends State<HomePage> {
         //消息回调
         print('message:$msg');
         Global.hint.setHint(msg["content"]);
-        setState(() {});
       },
       onReceiveNotification: (msg) async {
         //通知回调
         print('notification:$msg');
-        setState(() {});
+
+        if (msg["extras"]["articleId"] != null) {
+          String bossId = msg["extras"]["bossId"];
+          String updateTime = msg["extras"]["updateTime"];
+          print('notification:$bossId');
+          print('notification:$updateTime');
+
+          Global.eventBus.fire(JpushArticleEvent(
+              bossId: bossId, updateTime: int.parse(updateTime)));
+        }
       },
       onOpenNotification: (Map<String, dynamic> message) async {
         //点击通知

@@ -80,7 +80,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
         controller.callRefresh();
       } else {
         var index = mData.indexWhere((element) => element.id == event.id);
-        if (index != null) {
+        if (index != -1) {
           mData.removeAt(index);
           setState(() {});
         }
@@ -132,7 +132,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   ///置顶
   void doAddTop(String id) {
     var index = mData.indexWhere((element) => element.id == id);
-    if (index != null) {
+    if (index != -1) {
       UserApi.ins().obtainBossTopOrMove(id, true).listen((event) {
         var entity = mData[index];
         entity.top = true;
@@ -155,7 +155,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   ///取消置顶
   void doCancelTop(String id) {
     var index = mData.indexWhere((element) => element.id == id);
-    if (index != null) {
+    if (index != -1) {
       UserApi.ins().obtainBossTopOrMove(id, false).listen((event) {
         var entity = mData[index];
         entity.top = false;
@@ -172,7 +172,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   ///取消追踪
   void doCancelFollow(String id) {
     var index = mData.indexWhere((element) => element.id == id);
-    if (index != null) {
+    if (index != -1) {
       showFollowAskCancelDialog(context, onDismiss: () {
         Get.back();
       }, onConfirm: () {
@@ -375,7 +375,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           closeOnTap: false,
           onTap: () {
             var index = mData.indexWhere((element) => element.id == entity.id);
-            if (index != null) {
+            if (index != -1) {
               Global.eventBus
                   .fire(TopOrCancelEvent(id: entity.id, doTop: !entity.top));
             }

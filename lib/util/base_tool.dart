@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -134,5 +136,11 @@ class BaseTool {
     String toast = infix.isNullOrEmpty() ? "已复制：$text" : "已复制：$infix：$text";
     Clipboard.setData(ClipboardData(text: text))
         .then((value) => BaseTool.toast(msg: toast));
+  }
+
+  ///是否展示小红点
+  static bool showRedDots(String id, int currentTime) {
+    int lastTime = DataConfig.getIns().getBossTime(id);
+    return currentTime >= lastTime;
   }
 }

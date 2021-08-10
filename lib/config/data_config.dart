@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 
@@ -9,6 +11,57 @@ class DataConfig extends BaseConfig {
 
   factory DataConfig.getIns() {
     return _mIns ??= DataConfig._();
+  }
+
+  ///设置Boss更新时间
+  void setBossTime(String id, int time) {
+    Map<String, dynamic> map = Map();
+
+    String jsonStr =
+        spInstance.getString(DataKeys.K_BOSS_TIME, defaultVal: "empty");
+
+    if (jsonStr != "empty") {
+      map = json.decode(jsonStr);
+    }
+
+    if (map.containsKey(id)) {
+      map.update(id, (value) => time);
+    } else {
+      map[id] = time;
+    }
+
+    spInstance.putString(DataKeys.K_BOSS_TIME, json.encode(map));
+  }
+
+  ///获取Boss更新时间
+  int getBossTime(String id) {
+    String jsonStr =
+        spInstance.getString(DataKeys.K_BOSS_TIME, defaultVal: "empty");
+
+    int time = -1;
+
+    if (jsonStr != "empty") {
+      Map<String, dynamic> map = json.decode(jsonStr);
+      if (map.containsKey(id)) {
+        time = map[id];
+      }
+    }
+
+    return time;
+  }
+
+  ///获取全部Boss更新时间
+  Map<String, dynamic> getAllBossTime() {
+    Map<String, dynamic> map = Map();
+
+    String jsonStr =
+        spInstance.getString(DataKeys.K_BOSS_TIME, defaultVal: "empty");
+
+    if (jsonStr != "empty") {
+      map = json.decode(jsonStr);
+    }
+
+    return map;
   }
 
   /// 设置是否为第一次使用APP
@@ -47,6 +100,7 @@ class DataKeys {
   static const K_BOSS_LABELS = "K_BOSS_LABELS";
   static const K_UPDATE_TIME = "K_UPDATE_TIME";
   static const K_IS_SHANGJIA = "K_IS_SHANGJIA";
+  static const K_BOSS_TIME = "K_BOSS_TIME";
 }
 
 class BaseConfig {

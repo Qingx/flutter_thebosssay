@@ -8,6 +8,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   String descContent = ""; //摘要
   bool isCollect; //是否收藏
   bool isPoint; //是否点赞
+  bool isRead = false; //是否已读
   int readCount = 0; //阅读数
   int collect = 0; //收藏数
   int releaseTime; //发布时间
@@ -19,9 +20,10 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
     return articleTime ?? releaseTime;
   }
 
+
   @override
   String toString() {
-    return 'ArticleEntity{id: $id, bossId: $bossId, title: $title, descContent: $descContent, isCollect: $isCollect, isPoint: $isPoint, point: $readCount, collect: $collect, releaseTime: $releaseTime, files: $files, bossVO: $bossVO}';
+    return 'ArticleEntity{id: $id, bossId: $bossId, title: $title, descContent: $descContent, isCollect: $isCollect, isPoint: $isPoint, isRead: $isRead, readCount: $readCount, collect: $collect, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossVO: $bossVO}';
   }
 
   @override
