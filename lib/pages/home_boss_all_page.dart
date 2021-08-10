@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/event/refresh_search_boss_event.dart';
 import 'package:flutter_boss_says/pages/home_boss_all_add_page.dart';
 import 'package:flutter_boss_says/pages/home_boss_all_search_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -62,7 +63,11 @@ class _HomeBossAllPageState extends State<HomeBossAllPage> {
     } else {
       searchText = text;
       searchPage.searchText = searchText;
-      mPageController.jumpToPage(1);
+      if (mCurrentIndex == 0) {
+        mPageController.jumpToPage(1);
+      } else {
+        Global.eventBus.fire(RefreshSearchBossEvent());
+      }
     }
   }
 

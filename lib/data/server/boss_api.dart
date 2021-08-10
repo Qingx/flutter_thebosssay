@@ -74,14 +74,13 @@ class BossApi extends BaseApi {
   ///获取boss列表
   Observable<List<BossInfoEntity>> obtainAllBossList() {
     return autoToken(
-        () => post<List<BossInfoEntity>>("/api/boss/noPageList").rebase());
+        () => get<List<BossInfoEntity>>("/api/boss/noPageList/").rebase());
   }
 
   ///搜索boss列表
   Observable<List<BossInfoEntity>> obtainAllBossSearchList(String search) {
-    var data = {"name": search};
     return autoToken(() =>
-        post<List<BossInfoEntity>>("/api/boss/noPageList", requestBody: data)
+        get<List<BossInfoEntity>>("/api/boss/noPageList/?name=$search")
             .rebase());
   }
 

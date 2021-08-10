@@ -8,6 +8,7 @@ import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/refresh_search_boss_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/test/test_boss_info_entity.dart';
@@ -37,6 +38,8 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
   ScrollController scrollController;
   EasyRefreshController controller;
 
+  var searchDispose;
+
   @override
   bool get wantKeepAlive => false;
 
@@ -46,6 +49,8 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
 
     scrollController?.dispose();
     controller?.dispose();
+
+    searchDispose?.cancel();
   }
 
   @override
@@ -57,6 +62,16 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+
+    eventBus();
+  }
+
+  void eventBus() {
+    searchDispose =
+        Global.eventBus.on<RefreshSearchBossEvent>().listen((event) {
+      builderFuture = loadInitData();
+      setState(() {});
+    });
   }
 
   Future<List<BossInfoEntity>> loadInitData() {
@@ -138,14 +153,14 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<TestBossInfoEntity>(
+    return FutureBuilder<List<BossInfoEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
   Widget builderWidget(
-      BuildContext context, AsyncSnapshot<TestBossInfoEntity> snapshot) {
+      BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
