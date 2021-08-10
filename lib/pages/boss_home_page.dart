@@ -14,7 +14,6 @@ import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
-import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';

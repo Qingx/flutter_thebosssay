@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
+import 'package:flutter_boss_says/test/test_boss_info_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BossApi extends BaseApi {
@@ -82,6 +83,20 @@ class BossApi extends BaseApi {
     return autoToken(() =>
         postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
             .rebase(pageParam: pageParam));
+  }
+
+  ///获取boss列表
+  Observable<TestBossInfoEntity> obtainTestAllBossList() {
+    var data = {"page": 1, "pageSize": 99};
+    return autoToken(() =>
+        post<TestBossInfoEntity>("/api/boss/list", requestBody: data).rebase());
+  }
+
+  ///搜索boss列表
+  Observable<TestBossInfoEntity> obtainTestSearchBossList(String search) {
+    var data = {"page": 1, "pageSize": 99, "name": search};
+    return autoToken(() =>
+        post<TestBossInfoEntity>("/api/boss/list", requestBody: data).rebase());
   }
 
   ///获取boss的文章列表

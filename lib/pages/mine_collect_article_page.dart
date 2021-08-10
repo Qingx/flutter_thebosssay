@@ -256,12 +256,13 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
     return Container(
       color: BaseColor.pageBg,
       child: BaseWidget.refreshWidget(
-          slivers: [
-            listWidget(),
-          ],
-          controller: controller,
-          scrollController: scrollController,
-          loadData: loadData),
+        slivers: [
+          listWidget(),
+        ],
+        controller: controller,
+        scrollController: scrollController,
+        loadData: loadData,
+      ),
     );
   }
 
