@@ -4,7 +4,7 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 
 Future<dynamic> showAskPushDialog(BuildContext context,
-    {Function onDismiss, Function onConfirm}) {
+    {Function onDismiss, Function onConfirm, bool isBatch = false}) {
   return showDialog(
     barrierDismissible: false,
     context: context,
@@ -37,7 +37,7 @@ Future<dynamic> showAskPushDialog(BuildContext context,
                   overflow: TextOverflow.ellipsis,
                 ).marginOn(top: 8),
                 Text(
-                  "需要实时推送该老板的言论吗？",
+                  isBatch ? "需要实时推送老板的言论吗？" : "需要实时推送该老板的言论吗？",
                   style: TextStyle(color: BaseColor.textGray, fontSize: 14),
                   textAlign: TextAlign.center,
                   softWrap: false,

@@ -59,11 +59,11 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
     controller = EasyRefreshController();
   }
 
-  Future<TestBossInfoEntity> loadInitData() {
+  Future<List<BossInfoEntity>> loadInitData() {
     return BossApi.ins()
-        .obtainTestSearchBossList(widget.searchText)
+        .obtainAllBossSearchList(widget.searchText)
         .doOnData((event) {
-      mData = event.records;
+      mData = event;
     }).last;
   }
 

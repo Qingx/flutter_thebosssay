@@ -16,7 +16,6 @@ import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/test/test_boss_info_entity.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -41,6 +40,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
   List<BossInfoEntity> mData;
   OperationEntity operationEntity;
   bool isBatch; //是否开启批量追踪
+  List<String> mSelectList; //选中的boss
 
   var eventDispose;
 
@@ -67,6 +67,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     mLabels = DataConfig.getIns().bossLabels;
     mData = [];
     isBatch = false;
+    mSelectList = [];
 
     builderFuture = loadInitData();
 
@@ -86,13 +87,13 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     });
   }
 
-  Future<TestBossInfoEntity> loadInitData() {
+  Future<List<BossInfoEntity>> loadInitData() {
     return UserApi.ins().obtainOperationPhoto().flatMap((value) {
       operationEntity = value;
 
-      return BossApi.ins().obtainTestAllBossList();
+      return BossApi.ins().obtainAllBossList();
     }).doOnData((event) {
-      mData = event.records;
+      mData = event;
     }).last;
   }
 
@@ -100,9 +101,9 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     UserApi.ins().obtainOperationPhoto().flatMap((value) {
       operationEntity = value;
 
-      return BossApi.ins().obtainTestAllBossList();
+      return BossApi.ins().obtainAllBossList();
     }).listen((event) {
-      mData = event.records;
+      mData = event;
 
       setState(() {});
 
@@ -112,11 +113,26 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     });
   }
 
-  void onFollowChanged(BossInfoEntity entity) {
-    if (entity.isCollect) {
-      cancelFollow(entity);
+  void onItemClick(BossInfoEntity entity) {
+    if (isBatch) {
+      if (mSelectList.contains(entity.id)) {
+        mSelectList.remove(entity.id);
+      } else {
+        mSelectList.add(entity.id);
+      }
+      setState(() {});
     } else {
-      doFollow(entity);
+      Get.to(() => BossHomePage(), arguments: entity);
+    }
+  }
+
+  void onFollowChanged(BossInfoEntity entity) {
+    if (!isBatch) {
+      if (entity.isCollect) {
+        cancelFollow(entity);
+      } else {
+        doFollow(entity);
+      }
     }
   }
 
@@ -164,10 +180,10 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
 
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
-      JpushApi.ins().addTags([entity.id]);
-
       showAskPushDialog(context, onConfirm: () {
         Get.back();
+
+        JpushApi.ins().addTags([entity.id]);
 
         BaseWidget.showDoFollowChangeDialog(context, true);
       }, onDismiss: () {
@@ -179,6 +195,47 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
       Get.back();
       BaseTool.toast(msg: " 追踪失败，${res.msg}");
     });
+  }
+
+  void doBatchTack() {
+    if (!mSelectList.isNullOrEmpty()) {
+      BaseWidget.showLoadingAlert("尝试批量追踪...", context);
+
+      BossApi.ins().obtainGuideFollowList(mSelectList).listen((event) {
+        Get.back();
+
+        List<BossInfoEntity> select =
+            mData.where((element) => mSelectList.contains(element.id)).toList();
+        List.generate(select.length, (index) => select[index].isCollect = true);
+        setState(() {});
+
+        UserEntity userEntity = Global.user.user.value;
+        userEntity.traceNum += select.length;
+        Global.user.setUser(userEntity);
+
+        Global.eventBus.fire(RefreshFollowEvent(needLoading: true));
+
+        showAskPushDialog(context, isBatch: true, onConfirm: () {
+          Get.back();
+
+          JpushApi.ins().addTags(mSelectList);
+
+          isBatch = false;
+          mSelectList = [];
+          setState(() {});
+
+          BaseWidget.showDoFollowChangeDialog(context, true);
+        }, onDismiss: () {
+          Get.back();
+
+          BaseWidget.showDoFollowChangeDialog(context, true);
+        });
+      }, onError: (res) {
+        BaseTool.toast(msg: "追踪失败，${res.msg}");
+      });
+    } else {
+      BaseTool.toast(msg: "请至少选择一位Boss");
+    }
   }
 
   @override
@@ -313,7 +370,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
                     "确定",
                     style: TextStyle(color: BaseColor.accent, fontSize: 14),
                   ),
-                ),
+                ).onClick(doBatchTack),
                 Container(
                   width: 100,
                   padding: EdgeInsets.only(top: 8, bottom: 40),
@@ -324,6 +381,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
                   ),
                 ).onClick(() {
                   isBatch = false;
+                  mSelectList = [];
                   setState(() {});
                 })
               ],
@@ -353,14 +411,14 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
   }
 
   Widget bodyWidget() {
-    return FutureBuilder<TestBossInfoEntity>(
+    return FutureBuilder<List<BossInfoEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
   Widget builderWidget(
-      BuildContext context, AsyncSnapshot<TestBossInfoEntity> snapshot) {
+      BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
@@ -426,7 +484,9 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
         : SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return bossItemWidget(bossList[index], index);
+                return bossItemWidget(bossList[index]).onClick(() {
+                  onItemClick(bossList[index]);
+                });
               },
               childCount: bossList.length,
             ),
@@ -439,7 +499,15 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
           );
   }
 
-  Widget bossItemWidget(BossInfoEntity entity, int index) {
+  Widget bossItemWidget(BossInfoEntity entity) {
+    return entity.isCollect
+        ? normalItemWidget(entity)
+        : isBatch
+            ? batchItemWidget(entity)
+            : normalItemWidget(entity);
+  }
+
+  Widget normalItemWidget(BossInfoEntity entity) {
     Color labelColor = entity.isCollect ? BaseColor.loadBg : BaseColor.accent;
     String label = entity.isCollect
         ? R.assetsImgBossOrderSelect
@@ -508,9 +576,86 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
           }),
         ],
       ),
-    ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
-    });
+    );
+  }
+
+  Widget batchItemWidget(BossInfoEntity entity) {
+    bool isSelect = mSelectList.contains(entity.id);
+
+    return Container(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 64,
+          height: 56,
+          child: Stack(
+            children: [
+              ClipOval(
+                child: Image.network(
+                  HttpConfig.fullUrl(entity.head),
+                  width: 56,
+                  height: 56,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      R.assetsImgDefaultHead,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
+              ).positionOn(top: 0, bottom: 0, right: 4, left: 4),
+              Icon(
+                isSelect ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: BaseColor.accent,
+                size: 20,
+              ).positionOn(top: 0, right: 0),
+            ],
+          ),
+        ),
+        Text(
+          entity.name,
+          style: TextStyle(
+              fontSize: 14,
+              color: BaseColor.textDark,
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
+        ).marginOn(top: 8),
+        Container(
+          width: 64,
+          alignment: Alignment.center,
+          child: Text(
+            entity.role,
+            style: TextStyle(fontSize: 10, color: BaseColor.textGray),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Container(
+          width: 56,
+          height: 24,
+          margin: EdgeInsets.only(top: 4),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: BaseColor.accent,
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+          ),
+          child: Image.asset(
+            R.assetsImgBossOrderNormal,
+            width: 15,
+            height: 15,
+          ),
+        ),
+      ],
+    ));
   }
 
   Widget emptyBossWidget() {

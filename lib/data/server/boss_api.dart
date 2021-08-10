@@ -72,31 +72,17 @@ class BossApi extends BaseApi {
   }
 
   ///获取boss列表
-  Observable<Page<BossInfoEntity>> obtainAllBossList(
-      PageParam pageParam, String label) {
-    final param = pageParam.toParam(doCreate: (map) {
-      var data = {
-        "labels": label == "-1" ? null : [label]
-      };
-      map.addAll(data);
-    });
-    return autoToken(() =>
-        postPage<BossInfoEntity>("/api/boss/list", requestBody: param)
-            .rebase(pageParam: pageParam));
-  }
-
-  ///获取boss列表
-  Observable<TestBossInfoEntity> obtainTestAllBossList() {
-    var data = {"page": 1, "pageSize": 99};
-    return autoToken(() =>
-        post<TestBossInfoEntity>("/api/boss/list", requestBody: data).rebase());
+  Observable<List<BossInfoEntity>> obtainAllBossList() {
+    return autoToken(
+        () => post<List<BossInfoEntity>>("/api/boss/noPageList").rebase());
   }
 
   ///搜索boss列表
-  Observable<TestBossInfoEntity> obtainTestSearchBossList(String search) {
-    var data = {"page": 1, "pageSize": 99, "name": search};
+  Observable<List<BossInfoEntity>> obtainAllBossSearchList(String search) {
+    var data = {"name": search};
     return autoToken(() =>
-        post<TestBossInfoEntity>("/api/boss/list", requestBody: data).rebase());
+        post<List<BossInfoEntity>>("/api/boss/noPageList", requestBody: data)
+            .rebase());
   }
 
   ///获取boss的文章列表
