@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
-import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
-import 'package:flutter_boss_says/pages/mine_about_app_page.dart';
-import 'package:flutter_boss_says/pages/mine_contact_author_page.dart';
-import 'package:flutter_boss_says/pages/mine_collect_article_page.dart';
-import 'package:flutter_boss_says/pages/mine_history_all_page.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
-import 'package:flutter_boss_says/pages/mine_history_today_page.dart';
+import 'package:flutter_boss_says/pages/mine_about_app_page.dart';
 import 'package:flutter_boss_says/pages/mine_change_user_page.dart';
+import 'package:flutter_boss_says/pages/mine_collect_article_page.dart';
+import 'package:flutter_boss_says/pages/mine_contact_author_page.dart';
+import 'package:flutter_boss_says/pages/mine_history_all_page.dart';
+import 'package:flutter_boss_says/pages/mine_history_today_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
@@ -25,7 +22,6 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 class HomeMinePage extends StatefulWidget {
   const HomeMinePage({Key key}) : super(key: key);
