@@ -205,8 +205,8 @@ class UserApi extends BaseApi {
   }
 
   ///检查app版本
-  Observable<bool> obtainCheckUpdate(String bossId, bool top) {
-    return autoToken(
-        () => get<bool>("/api/version/check/${Global.versionCode}").success());
+  Observable<dynamic> obtainCheckUpdate() {
+    return autoToken(() =>
+        get<dynamic>("/api/version/check/${Global.versionCode}").rebase());
   }
 }

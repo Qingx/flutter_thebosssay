@@ -594,7 +594,6 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         ),
       ),
     ).onClick(() {
-      print('controller.callRefresh()');
       controller.callRefresh();
     });
   }
