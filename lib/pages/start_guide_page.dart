@@ -19,14 +19,14 @@ import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
-class GuidePage extends StatefulWidget {
-  const GuidePage({Key key}) : super(key: key);
+class StartGuidePage extends StatefulWidget {
+  const StartGuidePage({Key key}) : super(key: key);
 
   @override
-  _GuidePageState createState() => _GuidePageState();
+  _StartGuidePageState createState() => _StartGuidePageState();
 }
 
-class _GuidePageState extends State<GuidePage> {
+class _StartGuidePageState extends State<StartGuidePage> {
   int currentTime = 5;
   String countText = "5s";
 

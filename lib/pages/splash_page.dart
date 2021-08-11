@@ -9,7 +9,7 @@ import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/service_privacy_dialog.dart';
-import 'package:flutter_boss_says/pages/guide_page.dart';
+import 'package:flutter_boss_says/pages/start_guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
@@ -69,7 +69,7 @@ class _SplashPageState extends State<SplashPage> {
       return BossApi.ins().obtainGuideBoss();
     }).listen(
       (event) {
-        Get.offAll(() => GuidePage(), arguments: event);
+        Get.offAll(() => StartGuidePage(), arguments: event);
       },
       onError: (res) {
         Get.offAll(() => HomePage());

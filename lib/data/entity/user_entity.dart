@@ -11,7 +11,7 @@ class UserEntity with JsonConvert<UserEntity> {
   int traceNum = 0; //追踪数量
   String type; //0->游客 1->正式
   String wxHead;
-  String wxName;
+  String wxName; //微信昵称
   List<String> tags = [];
 
   bool isNotEmpty() => id != null;

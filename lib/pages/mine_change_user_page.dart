@@ -6,7 +6,8 @@ import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
 import 'package:flutter_boss_says/dialog/change_phone_dialog.dart';
-import 'package:flutter_boss_says/pages/change_phone_page.dart';
+import 'package:flutter_boss_says/pages/user_bind_phone_page.dart';
+import 'package:flutter_boss_says/pages/user_change_phone_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -15,11 +16,29 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 
-class MineChangeUserPage extends StatelessWidget {
-  MineChangeUserPage({Key key}) : super(key: key);
+class MineChangeUserPage extends StatefulWidget {
+  const MineChangeUserPage({Key key}) : super(key: key);
 
-  List<String> names = ["账号昵称", "账号ID", "登录手机号"];
+  @override
+  _MineChangeUserPageState createState() => _MineChangeUserPageState();
+}
+
+class _MineChangeUserPageState extends State<MineChangeUserPage> {
+  List<String> names = ["账号昵称", "账号ID", "登录手机号", "登录微信昵称"];
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    weChatCallback();
+  }
 
   ///尝试退出登录
   void tryLogout(context) {
@@ -33,27 +52,55 @@ class MineChangeUserPage extends StatelessWidget {
     Get.offAll(() => HomePage());
   }
 
-  ///点击修改
-  void onClickChange(index, context) {
-    switch (index) {
-      case 0:
-        showChangeName(context, onDismiss: () {
-          Get.back();
-        }, onConfirm: (name) {
-          tryChangeName(name, context);
-        });
-        break;
-      default:
-        if (Global.user.user.value.type != BaseEmpty.emptyUser.type &&
-            Global.user.user.value.phone != null) {
-          tryChangePhone(context);
-        } else {
-          BaseTool.toast(msg: "微信用户暂不支持修改");
-        }
-        break;
-    }
+  ///微信登录回调
+  void weChatCallback() {
+    fluwx.weChatResponseEventHandler.distinct((a, b) => a == b).listen((resp) {
+      if (mounted) {}
+      if (resp is fluwx.WeChatAuthResponse) {
+        print('wxAuthCode:${resp.code}');
+        tryBindWeChat(resp.code);
+      }
+    });
   }
 
+  ///尝试跳转微信授权
+  Future<void> tryJumpWechat() async {
+    BaseTool.isWeChatInstalled().then((result) {
+      if (result) {
+        fluwx
+            .sendWeChatAuth(
+                scope: "snsapi_userinfo", state: "flutter_boss_says")
+            .then((value) {
+          print("jumpToWx:$value");
+        }).catchError((error) {
+          print('jumpToWx:$error');
+        });
+      } else {
+        print('jumpToWx:未安装微信应用');
+        BaseTool.toast(msg: "请先下载并安装微信");
+      }
+    });
+  }
+
+  ///尝试绑定微信
+  void tryBindWeChat(String code) {
+    BaseWidget.showLoadingAlert("正在尝试绑定...", context);
+
+    UserApi.ins().obtainWechatBind(code).listen((event) {
+      Global.user.setUser(event.userInfo);
+      Get.back();
+    }, onError: (res) {
+      Get.back();
+      BaseTool.toast(msg: "绑定失败,${res.msg}");
+    });
+  }
+
+  ///尝试绑定手机号
+  void tryBindPhone() {
+    Get.to(() => UserBindPhonePage());
+  }
+
+  ///尝试修改手机号
   void tryChangePhone(context) {
     showPhoneName(context, onDismiss: () {
       Get.back();
@@ -63,7 +110,7 @@ class MineChangeUserPage extends StatelessWidget {
         UserApi.ins().obtainSendCode(phone, 1).listen((event) {
           Get.back();
           var data = {"phoneNumber": phone, "rnd": event};
-          Get.off(() => ChangePhonePage(), arguments: data);
+          Get.off(() => UserChangePhonePage(), arguments: data);
         }, onError: (res) {
           Get.back();
           BaseTool.toast(msg: "发送失败，${res.msg}");
@@ -91,6 +138,36 @@ class MineChangeUserPage extends StatelessWidget {
     return true;
   }
 
+  ///点击修改
+  void onClickChange(index, context) {
+    switch (index) {
+      case 0:
+        showChangeName(context, onDismiss: () {
+          Get.back();
+        }, onConfirm: (name) {
+          tryChangeName(name, context);
+        });
+        break;
+      case 2:
+        if (Global.user.user.value.type != BaseEmpty.emptyUser.type &&
+            Global.user.user.value.phone != null) {
+          tryChangePhone(context);
+        } else {
+          tryBindPhone();
+        }
+        break;
+      case 3:
+        if (Global.user.user.value.type != BaseEmpty.emptyUser.type &&
+            Global.user.user.value.wxName == null) {
+          tryJumpWechat();
+        } else {
+          BaseTool.toast(msg: "暂不支持换绑微信");
+        }
+        break;
+    }
+  }
+
+  ///点击item
   void onClickItem(index) {
     switch (index) {
       case 0:
@@ -104,6 +181,7 @@ class MineChangeUserPage extends StatelessWidget {
     }
   }
 
+  ///尝试修改账户昵称
   void tryChangeName(name, context) {
     UserEntity entity = Global.user.user.value;
 
@@ -213,7 +291,7 @@ class MineChangeUserPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return listItemWidget(index, context);
         },
-        itemCount: 3,
+        itemCount: 4,
       ),
     );
   }
@@ -251,16 +329,20 @@ class MineChangeUserPage extends StatelessWidget {
                               ? Global.user.user.value.type ==
                                       BaseEmpty.emptyUser.type
                                   ? "游客：${UserConfig.getIns().tempId.substring(0, 12)}..."
-                                  : Global.user.user.value.id
-                              : Global.user.user.value.type ==
-                                      BaseEmpty.emptyUser.type
-                                  ? "ID：${Global.user.user.value.id}"
-                                  : Global.user.user.value.type !=
-                                              BaseEmpty.emptyUser.type &&
-                                          Global.user.user.value.phone != null
-                                      ? Global.user.user.value.phone
-                                          .hidePhoneNumber()
-                                      : "微信用户暂无手机号",
+                                  : "ID：${Global.user.user.value.id}"
+                              : index == 2
+                                  ? Global.user.user.value.type ==
+                                          BaseEmpty.emptyUser.type
+                                      ? "请先登录！"
+                                      : Global.user.user.value.phone
+                                              .isNullOrEmpty()
+                                          ? "绑定手机号"
+                                          : Global.user.user.value.phone
+                                              .hidePhoneNumber()
+                                  : Global.user.user.value.wxName
+                                          .isNullOrEmpty()
+                                      ? "绑定微信"
+                                      : Global.user.user.value.wxName,
                       style: TextStyle(fontSize: 14, color: BaseColor.accent),
                       softWrap: false,
                       textAlign: TextAlign.end,

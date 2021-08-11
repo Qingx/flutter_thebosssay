@@ -1,4 +1,5 @@
 import 'package:flutter_boss_says/config/base_api.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
@@ -23,7 +24,7 @@ class UserApi extends BaseApi {
             .rebase());
   }
 
-  ///发送验证码 type==>验证码类型: 0.登录; 1.确认当前手机号; 2.修改手机号
+  ///发送验证码 type==>验证码类型: 0.登录; 1.确认当前手机号; 2.修改手机号; 3.绑定手机号
   Observable<String> obtainSendCode(String phone, int type) {
     var data = {"call": phone, "type": type};
     return autoToken(() =>
@@ -52,6 +53,16 @@ class UserApi extends BaseApi {
     };
     return autoToken(() =>
         post<TokenEntity>("/api/account/wechat/sign", requestBody: data)
+            .rebase());
+  }
+
+  ///微信绑定
+  Observable<TokenEntity> obtainWechatBind(String code) {
+    var data = {
+      "code": code,
+    };
+    return autoToken(() =>
+        post<TokenEntity>("/api/account/wechat/bound", requestBody: data)
             .rebase());
   }
 
@@ -84,9 +95,22 @@ class UserApi extends BaseApi {
         post<bool>("/api/account/check-change", requestBody: data).success());
   }
 
+  ///绑定手机号
+  Observable<bool> obtainBindPhone(String phone, String code, String rnd) {
+    var data = {
+      "call": phone,
+      "code": code,
+      "rnd": rnd,
+    };
+    return autoToken(() =>
+        post<bool>("/api/account/check-bound", requestBody: data).success());
+  }
+
   ///刷新用户信息
   Observable<TokenEntity> obtainRefreshUser() {
-    return autoToken(() => get<TokenEntity>("/api/account/refresh").rebase());
+    return autoToken(() => get<TokenEntity>(
+            "/api/account/tokenRefresh/${Global.user.user.value.id}")
+        .rebase());
   }
 
   ///获取用户收藏夹列表
@@ -176,6 +200,13 @@ class UserApi extends BaseApi {
       "bossId": bossId,
       "top": top,
     };
-    return autoToken(()=>post<bool>("/api/boss/top-boss", requestBody: data).success());
+    return autoToken(
+        () => post<bool>("/api/boss/top-boss", requestBody: data).success());
+  }
+
+  ///检查app版本
+  Observable<bool> obtainCheckUpdate(String bossId, bool top) {
+    return autoToken(
+        () => get<bool>("/api/version/check/${Global.versionCode}").success());
   }
 }

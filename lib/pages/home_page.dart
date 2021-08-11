@@ -104,14 +104,6 @@ class _HomePageState extends State<HomePage> {
         duration: Duration(milliseconds: 240), curve: Curves.easeInOutExpo);
   }
 
-  ///刷新userInfo
-  void doRefreshUser() {
-    UserApi.ins().obtainRefreshUser().listen((event) {
-      UserConfig.getIns().token = event.token;
-      Global.user.setUser(event.userInfo);
-    });
-  }
-
   void onJPushCallback() {
     ///极光推送回调
     JpushApi.ins().jPush.addEventHandler(

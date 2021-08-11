@@ -106,10 +106,12 @@ class _SearchBossPageState extends State<SearchBossPage>
   }
 
   ///搜索框：提交
-  void onEditSubmitted(text) {
-    searchText = text;
-    builderFuture = loadInitData();
-    setState(() {});
+  void onEditSubmitted(String text) {
+    if (!text.isNullOrEmpty()) {
+      searchText = text;
+      builderFuture = loadInitData();
+      setState(() {});
+    }
   }
 
   void onEditChanged(text) {

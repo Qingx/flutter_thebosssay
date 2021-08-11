@@ -5,7 +5,6 @@ import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
-import 'package:flutter_boss_says/test/test_boss_info_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BossApi extends BaseApi {

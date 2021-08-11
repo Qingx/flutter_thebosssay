@@ -11,6 +11,7 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class SearchArticlePage extends StatefulWidget {
   SearchArticlePage({Key key}) : super(key: key);
@@ -101,9 +102,11 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   }
 
   ///搜索框：提交
-  void onEditSubmitted(text) {
-    searchText = text;
-    controller.callRefresh();
+  void onEditSubmitted(String text) {
+    if (!text.isNullOrEmpty()) {
+      searchText = text;
+      controller.callRefresh();
+    }
   }
 
   void onEditChanged(text) {
@@ -156,7 +159,9 @@ class _SearchArticlePageState extends State<SearchArticlePage>
                 autofocus: false,
                 style: TextStyle(fontSize: 16, color: BaseColor.textDark),
                 decoration: InputDecoration(
-                  hintText: Global.hint.hint.value=="-1"?"请输入内容":Global.hint.hint.value,
+                  hintText: Global.hint.hint.value == "-1"
+                      ? "请输入内容"
+                      : Global.hint.hint.value,
                   hintStyle: TextStyle(fontSize: 16, color: BaseColor.textGray),
                   fillColor: BaseColor.loadBg,
                   filled: true,
@@ -246,8 +251,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
 
                 return entity.files.isNullOrEmpty()
                     ? ArticleWidget.onlyTextWithContent(entity, context)
-                    : ArticleWidget.singleImgWithContent(
-                        entity, context);
+                    : ArticleWidget.singleImgWithContent(entity, context);
               },
               childCount: mData.length,
             ),
