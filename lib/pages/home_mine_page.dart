@@ -55,7 +55,7 @@ class _HomeMinePageState extends State<HomeMinePage>
       "关于boss说",
       "联系我们",
       "给app评分",
-      "清除缓存",
+      // "清除缓存",
     ];
     itemIcons = [
       R.assetsImgItemFavorite,
