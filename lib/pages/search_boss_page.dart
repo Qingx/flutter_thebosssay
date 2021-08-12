@@ -29,6 +29,7 @@ class _SearchBossPageState extends State<SearchBossPage>
   TextEditingController editingController;
   ScrollController scrollController;
   EasyRefreshController controller;
+  FocusNode focusNode;
 
   bool hasData = false;
 
@@ -38,6 +39,7 @@ class _SearchBossPageState extends State<SearchBossPage>
     editingController?.dispose();
     controller?.dispose();
     scrollController?.dispose();
+    focusNode?.dispose();
   }
 
   @override
@@ -51,6 +53,7 @@ class _SearchBossPageState extends State<SearchBossPage>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+    focusNode = FocusNode();
   }
 
   ///初始化数据
@@ -108,6 +111,7 @@ class _SearchBossPageState extends State<SearchBossPage>
   ///搜索框：提交
   void onEditSubmitted(String text) {
     if (!text.isNullOrEmpty()) {
+      focusNode.unfocus();
       searchText = text;
       builderFuture = loadInitData();
       setState(() {});
@@ -157,6 +161,7 @@ class _SearchBossPageState extends State<SearchBossPage>
           Expanded(
             child: Obx(
               () => TextField(
+                focusNode: focusNode,
                 controller: editingController,
                 cursorColor: BaseColor.accent,
                 maxLines: 1,

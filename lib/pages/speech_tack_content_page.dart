@@ -10,6 +10,7 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -44,6 +45,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
   var followDispose;
   var onTopDispose;
   var articleDispose;
+  var bossTimeDispose;
 
   @override
   bool get wantKeepAlive => true;
@@ -58,6 +60,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     followDispose?.cancel();
     onTopDispose?.cancel();
     articleDispose?.cancel();
+    bossTimeDispose?.cancel();
   }
 
   @override
@@ -96,6 +99,14 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
       if (index != -1) {
         mBossList[index].updateTime = event.updateTime;
+        setState(() {});
+      }
+    });
+
+    bossTimeDispose = Global.eventBus.on<SetBossTimeEvent>().listen((event) {
+      var index = mBossList.indexWhere((element) => element.id == event.bossId);
+
+      if (index != -1) {
         setState(() {});
       }
     });
@@ -292,10 +303,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity).then((value) {
-        DataConfig.getIns().setBossTime(entity.id);
-        setState(() {});
-      });
+      Get.to(() => BossHomePage(), arguments: entity);
     });
   }
 

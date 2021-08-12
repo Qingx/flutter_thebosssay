@@ -29,6 +29,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   TextEditingController editingController;
   ScrollController scrollController;
   EasyRefreshController controller;
+  FocusNode focusNode;
 
   bool hasData = false;
 
@@ -38,6 +39,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
     editingController?.dispose();
     controller?.dispose();
     scrollController?.dispose();
+    focusNode?.dispose();
   }
 
   @override
@@ -51,6 +53,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
+    focusNode = FocusNode();
   }
 
   ///初始化数据
@@ -104,6 +107,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
   ///搜索框：提交
   void onEditSubmitted(String text) {
     if (!text.isNullOrEmpty()) {
+      focusNode.unfocus();
       searchText = text;
       controller.callRefresh();
     }
@@ -152,6 +156,7 @@ class _SearchArticlePageState extends State<SearchArticlePage>
           Expanded(
             child: Obx(
               () => TextField(
+                focusNode: focusNode,
                 controller: editingController,
                 cursorColor: BaseColor.accent,
                 maxLines: 1,

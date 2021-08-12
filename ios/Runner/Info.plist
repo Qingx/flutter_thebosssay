@@ -54,7 +54,7 @@
 		<string>weixin</string>
 		<string>weixinULAPI</string>
 		<string>https</string>
-        <string>http</string>
+		<string>http</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

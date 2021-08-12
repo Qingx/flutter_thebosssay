@@ -17,6 +17,7 @@ import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -141,6 +142,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     TalkingApi.ins().obtainPageEnd("BossHomePage");
 
     DataConfig.getIns().setBossTime(entity.id);
+    Global.eventBus.fire(SetBossTimeEvent(entity.id));
   }
 
   @override
@@ -535,7 +537,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                         context,
                         () {
                           if (!entity.isRead) {
-                            entity.isRead = false;
+                            entity.isRead = true;
                           }
 
                           if (BaseTool.showRedDots(
@@ -553,7 +555,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                         context,
                         () {
                           if (!entity.isRead) {
-                            entity.isRead = false;
+                            entity.isRead = true;
                           }
 
                           if (BaseTool.showRedDots(

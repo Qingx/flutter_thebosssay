@@ -126,6 +126,8 @@ class _HomePageState extends State<HomePage> {
         //消息回调
         print('message:$msg');
         Global.hint.setHint(msg["content"]);
+
+        FlutterAppBadger.removeBadge();
       },
       onReceiveNotification: (msg) async {
         //通知回调
@@ -139,6 +141,8 @@ class _HomePageState extends State<HomePage> {
 
           Global.eventBus.fire(JpushArticleEvent(
               bossId: bossId, updateTime: int.parse(updateTime)));
+
+          FlutterAppBadger.removeBadge();
         }
       },
       onOpenNotification: (Map<String, dynamic> message) async {

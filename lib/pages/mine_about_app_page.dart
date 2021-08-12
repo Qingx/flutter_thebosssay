@@ -119,7 +119,7 @@ class _MineAboutAppPageState extends State<MineAboutAppPage> {
             ),
           ),
           Text(
-            "当前版本：${Global.versionCode}${Global.build}",
+            "当前版本：${Global.versionName}${Global.build}",
             style: TextStyle(fontSize: 12, color: BaseColor.textDark),
             softWrap: false,
             maxLines: 1,
