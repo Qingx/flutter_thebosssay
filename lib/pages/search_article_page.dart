@@ -11,7 +11,6 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class SearchArticlePage extends StatefulWidget {
   SearchArticlePage({Key key}) : super(key: key);

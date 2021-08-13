@@ -42,6 +42,14 @@ class UserConfig extends BaseConfig {
   /// 获取tempId
   String get tempId => spInstance.getString(UserKeys.K_TEMP_ID,
       defaultVal: BaseTool.createTempId());
+
+  ///上次阅读文章时间
+  set setLastReadTime(int time) =>
+      spInstance.putInt(UserKeys.k_LAST_READ, time);
+
+  ///上次阅读文章时间
+  int get lastReadTime => spInstance.getInt(UserKeys.k_LAST_READ,
+      defaultVal: DateTime.now().millisecondsSinceEpoch);
 }
 
 class UserKeys {
@@ -49,4 +57,5 @@ class UserKeys {
   static const K_HTTP_SIGN = "K_HTTP_SIGN";
   static const K_HTTP_TOKEN = "K_HTTP_TOKEN";
   static const K_TEMP_ID = "K_YK_ID";
+  static const k_LAST_READ = "k_LAST_READ";
 }

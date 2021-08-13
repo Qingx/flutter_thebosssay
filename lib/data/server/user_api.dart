@@ -207,6 +207,6 @@ class UserApi extends BaseApi {
   ///检查app版本
   Observable<dynamic> obtainCheckUpdate() {
     return autoToken(() =>
-        get<dynamic>("/api/version/check/${Global.versionName}").rebase());
+        get<dynamic>("/api/version/check/iOS/${Global.versionName}").rebase());
   }
 }

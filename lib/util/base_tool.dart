@@ -143,4 +143,14 @@ class BaseTool {
     int lastTime = DataConfig.getIns().getBossTime(id);
     return currentTime >= lastTime;
   }
+
+  ///是否为同一天
+  static bool isSameDay(int lastTime) {
+    DateTime lastDate = DateTime.fromMillisecondsSinceEpoch(lastTime);
+    DateTime nowDate = DateTime.now();
+
+    return lastDate.year == nowDate.year &&
+        lastDate.month == nowDate.month &&
+        lastDate.day == nowDate.day;
+  }
 }

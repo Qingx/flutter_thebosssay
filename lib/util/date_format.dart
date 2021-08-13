@@ -3,9 +3,18 @@ import 'package:date_format/date_format.dart';
 class DateFormat {
   static const List<String> mmddhhnn = [mm, '月', dd, '日 ', HH, ':', nn];
   static const List<String> yymmdd = [yy, '/', mm, '/', dd];
+  static const List<String> yyyymmddhhnn = [yyyy, '/', mm, '/', dd, ' ', HH, ':', nn];
   static const List<String> yyyymmdd = [yyyy, '/', mm, '/', dd, ' ', HH, ':', nn];
   static const List<String> nnss = [nn, ':', ss];
   static const List<String> hhnn = [HH, ':', nn];
+
+  ///2020/12/12
+  static String getYYYYMMDD(int time) {
+    if (time == null || time < 1000) return "";
+
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(time);
+    return formatDate(dateTime, yyyymmdd);
+  }
 
   ///12:12 分秒
   static String getNNSS(int time) {
@@ -32,11 +41,11 @@ class DateFormat {
   }
 
   ///2020/12/12 12:12
-  static String getYYYYMMDD(int time) {
+  static String getYYYYMMDDHHNN(int time) {
     if (time == null || time < 1000) return "";
 
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(time);
-    return formatDate(dateTime, yyyymmdd);
+    return formatDate(dateTime, yyyymmddhhnn);
   }
 
   ///12/12/12

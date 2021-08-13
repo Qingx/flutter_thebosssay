@@ -89,20 +89,11 @@ class DataConfig extends BaseConfig {
 
   List<BossLabelEntity> get bossLabels => spInstance
       .getObject<List<BossLabelEntity>>(DataKeys.K_BOSS_LABELS, defaultVal: []);
-
-  ///上次拉取boss缓存时间
-  set setUpdateTime(int time) =>
-      spInstance.putInt(DataKeys.K_UPDATE_TIME, time);
-
-  ///上次拉取boss缓存时间
-  int get updateTime =>
-      spInstance.getInt(DataKeys.K_UPDATE_TIME, defaultVal: 1);
 }
 
 class DataKeys {
   static const K_FIRST_USE = "K_FIRST_USE";
   static const K_BOSS_LABELS = "K_BOSS_LABELS";
-  static const K_UPDATE_TIME = "K_UPDATE_TIME";
   static const K_IS_SHANGJIA = "K_IS_SHANGJIA";
   static const K_BOSS_TIME = "K_BOSS_TIME";
 }

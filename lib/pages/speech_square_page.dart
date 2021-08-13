@@ -64,7 +64,7 @@ class _SpeechSquarePageState extends State<SpeechSquarePage>
         DataConfig.getIns().setBossLabels = mLabels;
         mPages = mLabels.map((e) => SpeechSquareContentPage(e.id)).toList();
 
-        return Observable.just(!value.isLabelEmpty());
+        return Observable.just(!mLabels.isLabelEmpty());
       }).last;
     }
   }

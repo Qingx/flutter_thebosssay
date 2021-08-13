@@ -227,7 +227,7 @@ class _HomePageState extends State<HomePage> {
         mPageController.jumpToPage(mCurrentIndex);
         setState(() {});
       } else {
-        BaseTool.toast(msg: "应用出错了");
+        BaseTool.toast(msg: "网络异常");
       }
     });
   }

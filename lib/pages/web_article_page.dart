@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
@@ -23,8 +24,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 class WebArticlePage extends StatelessWidget {
   String articleId = Get.arguments as String;
   var articleUrl = HttpConfig.globalEnv.baseUrl;
-
-  // var articleUrl = "http://192.168.1.85:9529";
 
   WebArticlePage({Key key}) : super(key: key);
 
@@ -144,7 +143,16 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   ///阅读文章
   void doReadArticle() {
     UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {
+      int lastTime = UserConfig.getIns().lastReadTime;
+      int nowTime = DateTime.now().millisecondsSinceEpoch;
+      UserConfig.getIns().setLastReadTime = nowTime;
+
       UserEntity user = Global.user.user.value;
+
+      if (!BaseTool.isSameDay(lastTime)) {
+        user.readNum = 0;
+      }
+
       user.readNum++;
       Global.user.setUser(user);
     });

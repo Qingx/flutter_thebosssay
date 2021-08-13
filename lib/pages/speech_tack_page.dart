@@ -69,7 +69,7 @@ class _SpeechTackPageState extends State<SpeechTackPage>
         DataConfig.getIns().setBossLabels = mLabels;
         mPages = mLabels.map((e) => SpeechTackContentPage(e.id)).toList();
 
-        return Observable.just(mLabels.isLabelEmpty());
+        return Observable.just(!mLabels.isLabelEmpty());
       }).last;
     }
   }
