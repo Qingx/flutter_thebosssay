@@ -115,7 +115,7 @@ class _UserBindPhonePageState extends State<UserBindPhonePage> {
       Get.back();
 
       print(res.msg);
-      BaseTool.toast(msg: "发送失败，${res.msg}");
+      BaseTool.toast(msg: res.msg);
     });
   }
 

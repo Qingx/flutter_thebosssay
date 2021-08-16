@@ -358,7 +358,7 @@ class BaseWidget {
 
   static showDoFollowChangeDialog(BuildContext context, bool doFollow) {
     showFollowChangedDialog(context, doFollow);
-    Observable.periodic(Duration(milliseconds: 800), (i) => i)
+    Observable.periodic(Duration(milliseconds: 320), (i) => i)
         .take(2)
         .listen((event) {
       print("dialog=>$event");

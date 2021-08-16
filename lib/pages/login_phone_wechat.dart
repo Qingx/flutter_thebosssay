@@ -153,7 +153,7 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
             arguments: data, transition: Transition.fadeIn);
       }, onError: (res) {
         Get.back();
-        BaseTool.toast(msg: "验证码发送失败");
+        BaseTool.toast(msg: res.msg);
       });
     }
   }

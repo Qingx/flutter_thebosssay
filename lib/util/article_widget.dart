@@ -551,7 +551,7 @@ class ArticleWidget {
                     : isShowRed
                         ? Container(
                             padding: EdgeInsets.only(
-                                left: 4, right: 4, top: 2, bottom: 2),
+                                left: 4, right: 4, top: 1, bottom: 1),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(
@@ -562,8 +562,10 @@ class ArticleWidget {
                             ),
                             child: Text(
                               "最近更新",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                              ),
                             ),
                           ).positionOn(right: 0)
                         : SizedBox(),
@@ -690,7 +692,7 @@ class ArticleWidget {
                     : isShowRed
                         ? Container(
                             padding: EdgeInsets.only(
-                                left: 4, right: 4, top: 2, bottom: 2),
+                                left: 4, right: 4, top: 1, bottom: 1),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(
@@ -701,8 +703,10 @@ class ArticleWidget {
                             ),
                             child: Text(
                               "最近更新",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                              ),
                             ),
                           ).positionOn(right: 0)
                         : SizedBox(),

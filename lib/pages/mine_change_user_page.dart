@@ -113,7 +113,7 @@ class _MineChangeUserPageState extends State<MineChangeUserPage> {
           Get.off(() => UserChangePhonePage(), arguments: data);
         }, onError: (res) {
           Get.back();
-          BaseTool.toast(msg: "发送失败，${res.msg}");
+          BaseTool.toast(msg: res.msg);
         });
       }
     });

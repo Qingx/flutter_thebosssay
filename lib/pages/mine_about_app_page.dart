@@ -126,12 +126,13 @@ class _MineAboutAppPageState extends State<MineAboutAppPage> {
             textAlign: TextAlign.start,
           ).marginOn(left: 56),
           Text(
-            """Boss说是一款可以追踪知名老板最新文章和言论的资讯分享APP，这里汇总了大家熟知的企业家，投资人，媒体人，创业者的新闻资讯，追踪有深度的大佬，欣赏不一样的思想和境界。""",
+            """Boss说是一款深度追踪知名老板文章和言论的资讯分享类APP，将大家熟知的企业家、投资人、媒体人、创业者等等商业优秀人物归纳分类，生成boss主页。同时将boss的新闻资讯、生平经历，思考感悟等相关文章精编汇总，成为以boss自身为出发点的专题合集，为从商的用户提供有价值的参考学习资料。
+Boss说APP期待和同志者一起追踪有深度的大佬，欣赏不一样的思想和境界，找寻他们成功的法则。""",
             style: TextStyle(
               fontSize: 15,
               color: BaseColor.textGray,
-              fontWeight: FontWeight.bold,
             ),
+            textAlign: TextAlign.justify,
             softWrap: true,
           ).marginOn(left: 52, right: 52, top: 56),
         ],
