@@ -457,7 +457,11 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(), arguments: entity.id);
+      if(!entity.isRead){
+        BaseTool.doAddRead();
+      }
+
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
   }
 

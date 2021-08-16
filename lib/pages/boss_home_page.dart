@@ -546,7 +546,12 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
                           setState(() {});
 
-                          Get.to(() => WebArticlePage(), arguments: entity.id);
+                          if(!entity.isRead){
+                            BaseTool.doAddRead();
+                          }
+
+                          Get.to(() => WebArticlePage(fromBoss: true),
+                              arguments: entity.id);
                         },
                       )
                     : ArticleWidget.singleImgWithContentBossPage(
@@ -564,7 +569,12 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
                           setState(() {});
 
-                          Get.to(() => WebArticlePage(), arguments: entity.id);
+                          if(!entity.isRead){
+                            BaseTool.doAddRead();
+                          }
+
+                          Get.to(() => WebArticlePage(fromBoss: true),
+                              arguments: entity.id);
                         },
                       );
               },

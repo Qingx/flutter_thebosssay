@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,7 +27,8 @@ class SchemeApi {
           Map<String, String> map = url.getPathValue();
           print('url scheme=>$map}');
           if (map.containsKey("id")) {
-            Get.to(() => WebArticlePage(), arguments: map["id"]);
+            BaseTool.doAddRead();
+            Get.to(() => WebArticlePage(fromBoss: false), arguments: map["id"]);
           }
         }
       }

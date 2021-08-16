@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/date_format.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -152,5 +154,20 @@ class BaseTool {
     return lastDate.year == nowDate.year &&
         lastDate.month == nowDate.month &&
         lastDate.day == nowDate.day;
+  }
+
+  static void doAddRead() {
+    int lastTime = UserConfig.getIns().lastReadTime;
+    int nowTime = DateTime.now().millisecondsSinceEpoch;
+    UserConfig.getIns().setLastReadTime = nowTime;
+
+    UserEntity user = Global.user.user.value;
+
+    if (!isSameDay(lastTime)) {
+      user.readNum = 0;
+    }
+
+    user.readNum++;
+    Global.user.setUser(user);
   }
 }

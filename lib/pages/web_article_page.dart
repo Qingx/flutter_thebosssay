@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -28,7 +30,9 @@ class WebArticlePage extends StatefulWidget {
   String articleId = Get.arguments as String;
   var articleUrl = HttpConfig.globalEnv.baseUrl;
 
-  WebArticlePage({Key key}) : super(key: key);
+  bool fromBoss = false;
+
+  WebArticlePage({Key key, this.fromBoss}) : super(key: key);
 
   @override
   _WebArticlePageState createState() => _WebArticlePageState();
@@ -61,6 +65,7 @@ class _WebArticlePageState extends State<WebArticlePage> {
       topKey.currentState.bossName = event.bossVO.name;
       topKey.currentState.bossRole = event.bossVO.role;
       topKey.currentState.hasTack = event.bossVO.isCollect;
+      topKey.currentState.bossEntity = event.bossVO;
 
       bottomKey.currentState.hasCollect = event.isCollect;
       bottomKey.currentState.articleTitle = event.title;
@@ -86,6 +91,7 @@ class _WebArticlePageState extends State<WebArticlePage> {
             BaseWidget.statusBar(context, true),
             TopBarWidget(
               widget.articleId,
+              widget.fromBoss,
               key: topKey,
             ),
             Expanded(
@@ -116,8 +122,9 @@ class _WebArticlePageState extends State<WebArticlePage> {
 
 class TopBarWidget extends StatefulWidget {
   String articleId;
+  bool fromBoss;
 
-  TopBarWidget(this.articleId, {Key key}) : super(key: key);
+  TopBarWidget(this.articleId, this.fromBoss, {Key key}) : super(key: key);
 
   @override
   _TopBarWidgetState createState() => _TopBarWidgetState();
@@ -129,6 +136,8 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   String bossHead;
   String bossName;
   String bossRole;
+
+  BossInfoEntity bossEntity;
 
   @override
   void dispose() {
@@ -229,76 +238,84 @@ class _TopBarWidgetState extends State<TopBarWidget> {
           ).onClick(() {
             Get.back();
           }),
-          bossName.isNullOrEmpty()
-              ? SizedBox()
-              : Container(
-                  width: 28,
-                  height: 28,
-                  margin: EdgeInsets.only(left: 16, right: 8),
-                  child: ClipOval(
-                    child: Image.network(
-                      HttpConfig.fullUrl(bossHead),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          R.assetsImgDefaultHead,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-          bossName.isNullOrEmpty()
-              ? SizedBox()
-              : Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+          Expanded(
+            child: bossName.isNullOrEmpty()
+                ? SizedBox()
+                : Row(
                     children: [
-                      Text(
-                        bossName,
-                        style: TextStyle(
-                          color: BaseColor.textDark,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                      Container(
+                        width: 28,
+                        height: 28,
+                        margin: EdgeInsets.only(left: 16, right: 8),
+                        child: ClipOval(
+                          child: Image.network(
+                            HttpConfig.fullUrl(bossHead),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                R.assetsImgDefaultHead,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
                         ),
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        bossRole,
-                        style: TextStyle(
-                          color: BaseColor.textGray,
-                          fontSize: 10,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              bossName,
+                              style: TextStyle(
+                                color: BaseColor.textDark,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              bossRole,
+                              style: TextStyle(
+                                color: BaseColor.textGray,
+                                fontSize: 10,
+                              ),
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
                       ),
+                      Container(
+                        width: 64,
+                        height: 28,
+                        margin: EdgeInsets.only(left: 16),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(14)),
+                          color: hasTack ? BaseColor.loadBg : BaseColor.accent,
+                        ),
+                        child: Text(
+                          hasTack ? "已追踪" : "追踪",
+                          style: TextStyle(color: Colors.white, fontSize: 13),
+                          softWrap: false,
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ).onClick(onFollowChange),
                     ],
-                  ),
-                ),
-          bossName.isNullOrEmpty()
-              ? SizedBox()
-              : Container(
-                  width: 64,
-                  height: 28,
-                  margin: EdgeInsets.only(left: 16),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    color: hasTack ? BaseColor.loadBg : BaseColor.accent,
-                  ),
-                  child: Text(
-                    hasTack ? "已追踪" : "追踪",
-                    style: TextStyle(color: Colors.white, fontSize: 13),
-                    softWrap: false,
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ).onClick(onFollowChange),
+                  ).onClick(() {
+                    if (widget.fromBoss) {
+                      Get.back();
+                    } else {
+                      Get.to(() => BossHomePage(), arguments: bossEntity);
+                    }
+                  }),
+          ),
         ],
       ),
     );
@@ -366,20 +383,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
 
   ///阅读文章
   void doReadArticle() {
-    UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {
-      int lastTime = UserConfig.getIns().lastReadTime;
-      int nowTime = DateTime.now().millisecondsSinceEpoch;
-      UserConfig.getIns().setLastReadTime = nowTime;
-
-      UserEntity user = Global.user.user.value;
-
-      if (!BaseTool.isSameDay(lastTime)) {
-        user.readNum = 0;
-      }
-
-      user.readNum++;
-      Global.user.setUser(user);
-    });
+    UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {});
   }
 
   void onFavoriteChange() {

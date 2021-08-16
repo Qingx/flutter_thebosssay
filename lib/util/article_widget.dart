@@ -114,7 +114,10 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(), arguments: entity.id);
+      if (!entity.isRead) {
+        BaseTool.doAddRead();
+      }
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
   }
 
@@ -266,7 +269,10 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(), arguments: entity.id);
+      if (!entity.isRead) {
+        BaseTool.doAddRead();
+      }
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
   }
 
@@ -366,7 +372,10 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(), arguments: entity.id);
+      if (!entity.isRead) {
+        BaseTool.doAddRead();
+      }
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
   }
 
@@ -501,7 +510,10 @@ class ArticleWidget {
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(), arguments: entity.id);
+      if (!entity.isRead) {
+        BaseTool.doAddRead();
+      }
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
   }
 

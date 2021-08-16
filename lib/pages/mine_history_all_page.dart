@@ -307,7 +307,7 @@ class _MineHistoryAllPageState extends State<MineHistoryAllPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(), arguments: entity.articleId);
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.articleId);
     });
   }
 
