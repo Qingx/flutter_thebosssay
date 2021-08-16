@@ -3,6 +3,7 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -40,6 +41,8 @@ class _SearchBossPageState extends State<SearchBossPage>
     controller?.dispose();
     scrollController?.dispose();
     focusNode?.dispose();
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.SearchBoss);
   }
 
   @override
@@ -54,6 +57,8 @@ class _SearchBossPageState extends State<SearchBossPage>
     scrollController = ScrollController();
     controller = EasyRefreshController();
     focusNode = FocusNode();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.SearchBoss);
   }
 
   ///初始化数据

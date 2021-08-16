@@ -133,11 +133,10 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
 
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
-      JpushApi.ins().addTags([entity.id]);
-
       showAskPushDialog(context, onConfirm: () {
         Get.back();
 
+        JpushApi.ins().addTags([entity.id]);
         BaseWidget.showDoFollowChangeDialog(context, true);
       }, onDismiss: () {
         Get.back();

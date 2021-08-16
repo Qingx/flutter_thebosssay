@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
@@ -45,6 +46,8 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
     scrollController?.dispose();
 
     eventDispose?.cancel();
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.ArticleCollect);
   }
 
   @override
@@ -57,6 +60,8 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
     controller = EasyRefreshController();
 
     eventBus();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.ArticleCollect);
   }
 
   void eventBus() {

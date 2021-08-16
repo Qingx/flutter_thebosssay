@@ -9,7 +9,6 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
-import 'package:flutter_boss_says/dialog/follow_changed_dialog.dart';
 import 'package:flutter_boss_says/event/on_top_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
@@ -328,7 +327,9 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
                                     },
                                     itemCount: entity?.photoUrl?.isNullOrEmpty()
                                         ? 0
-                                        : entity?.photoUrl?.length,
+                                        : entity?.photoUrl?.length >= 3
+                                            ? 2
+                                            : entity?.photoUrl?.length,
                                   ),
                                 ),
                               ),

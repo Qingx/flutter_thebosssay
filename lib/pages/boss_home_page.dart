@@ -139,10 +139,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
     eventDispose?.cancel();
 
-    TalkingApi.ins().obtainPageEnd("BossHomePage");
-
     DataConfig.getIns().setBossTime(entity.id);
     Global.eventBus.fire(SetBossTimeEvent(entity.id));
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.BossHome);
   }
 
   @override
@@ -155,9 +155,9 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
     builderFuture = loadInitData();
 
-    TalkingApi.ins().obtainPageStart("BossHomePage");
-
     eventBus();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.BossHome);
   }
 
   void eventBus() {
@@ -261,11 +261,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
       Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
 
-      JpushApi.ins().addTags([entity.id]);
-
       showAskPushDialog(context, onConfirm: () {
         Get.back();
 
+        JpushApi.ins().addTags([entity.id]);
         BaseWidget.showDoFollowChangeDialog(context, true);
       }, onDismiss: () {
         Get.back();

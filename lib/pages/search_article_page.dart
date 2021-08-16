@@ -4,6 +4,7 @@ import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -39,6 +40,8 @@ class _SearchArticlePageState extends State<SearchArticlePage>
     controller?.dispose();
     scrollController?.dispose();
     focusNode?.dispose();
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.SearchArticle);
   }
 
   @override
@@ -53,6 +56,8 @@ class _SearchArticlePageState extends State<SearchArticlePage>
     scrollController = ScrollController();
     controller = EasyRefreshController();
     focusNode = FocusNode();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.SearchArticle);
   }
 
   ///初始化数据

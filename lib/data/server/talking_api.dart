@@ -9,6 +9,14 @@ class TalkingApi {
 
   factory TalkingApi.ins() => _mIns ??= TalkingApi._();
 
+  static const String Article = "文章";
+  static const String BossHome = "Boss详情";
+  static const String SearchBoss = "搜索Boss";
+  static const String SearchArticle = "搜索文章";
+  static const String HistoryAll = "全部历史记录";
+  static const String HistoryToday = "今天历史记录";
+  static const String ArticleCollect = "文章收藏";
+
   ///获取设备id
   Observable<String> obtainDeviceId() {
     return Observable.fromFuture(TalkingDataAppAnalytics.getDeviceID());

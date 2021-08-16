@@ -5,6 +5,7 @@ import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
+import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -43,6 +44,8 @@ class _MineHistoryAllPageState extends State<MineHistoryAllPage>
     scrollController?.dispose();
 
     eventDispose?.cancel();
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.HistoryAll);
   }
 
   @override
@@ -53,6 +56,8 @@ class _MineHistoryAllPageState extends State<MineHistoryAllPage>
     controller = EasyRefreshController();
 
     builderFuture = loadInitData();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.HistoryAll);
   }
 
   Future<WlPage.Page<HistoryEntity>> loadInitData() {

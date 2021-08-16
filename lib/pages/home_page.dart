@@ -44,8 +44,6 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
 
-    doPageEnd();
-
     mPageController?.dispose();
 
     eventDispose?.cancel();
@@ -71,21 +69,11 @@ class _HomePageState extends State<HomePage> {
 
     doDeviceID();
 
-    doPageStart();
-
     SchemeApi.ins().doAppScheme();
 
     FlutterAppBadger.removeBadge();
 
     checkUpdate();
-  }
-
-  void doPageStart() {
-    TalkingApi.ins().obtainPageStart("HomePage");
-  }
-
-  void doPageEnd() {
-    TalkingApi.ins().obtainPageStart("HomePage");
   }
 
   void doDeviceID() async {
