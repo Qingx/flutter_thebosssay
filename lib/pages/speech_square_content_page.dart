@@ -13,6 +13,8 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 class SpeechSquareContentPage extends StatefulWidget {
   String label;
@@ -134,11 +136,54 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
 
   Widget contentWidget() {
     return BaseWidget.refreshWidgetPage(
-        slivers: [bodyWidget()],
-        controller: controller,
-        scrollController: scrollController,
-        hasData: hasData,
-        loadData: loadData);
+      slivers: [
+        bannerWidget(),
+        bodyWidget(),
+      ],
+      controller: controller,
+      scrollController: scrollController,
+      hasData: hasData,
+      loadData: loadData,
+    );
+  }
+
+  Widget bannerWidget() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Container(
+            height: 144,
+            margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Swiper(
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return Image.asset(
+                    R.assetsImgTestPhoto,
+                    fit: BoxFit.cover,
+                  );
+                },
+                pagination: SwiperPagination(
+                  alignment: Alignment.bottomCenter,
+                  margin: EdgeInsets.only(bottom: 2),
+                  builder: DotSwiperPaginationBuilder(
+                    activeColor: BaseColor.accent,
+                    color: BaseColor.pageBg,
+                    size: 6,
+                    activeSize: 6,
+                  ),
+                ),
+                autoplay: true,
+                autoplayDelay: 4000,
+                autoplayDisableOnInteraction: true,
+              ),
+            ),
+          );
+        },
+        childCount: 1,
+      ),
+    );
   }
 
   Widget bodyWidget() {
@@ -180,11 +225,12 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
           children: [
             Image.asset(path, width: 160, height: 160),
             Flexible(
-                child: Text(content,
-                        style:
-                            TextStyle(fontSize: 18, color: BaseColor.textGray),
-                        textAlign: TextAlign.center)
-                    .marginOn(top: 16))
+              child: Text(
+                content,
+                style: TextStyle(fontSize: 18, color: BaseColor.textGray),
+                textAlign: TextAlign.center,
+              ).marginOn(top: 16),
+            )
           ],
         ),
       ),

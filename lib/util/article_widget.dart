@@ -214,12 +214,8 @@ class ArticleWidget {
                     ],
                   ),
                 ),
-                Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(4),
-                  ),
-                  clipBehavior: Clip.antiAlias,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
                   child: Image.network(
                     HttpConfig.fullUrl(entity.files[0]),
                     width: 96,
@@ -483,12 +479,8 @@ class ArticleWidget {
                     ),
                   ),
                 ),
-                Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(4),
-                  ),
-                  clipBehavior: Clip.antiAlias,
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
                   child: Image.network(
                     HttpConfig.fullUrl(entity.files[0]),
                     width: 96,
@@ -785,12 +777,8 @@ class ArticleWidget {
                     ],
                   ),
                 ),
-                Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(4),
-                  ),
-                  clipBehavior: Clip.antiAlias,
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
                   child: Image.network(
                     HttpConfig.fullUrl(entity.files[0]),
                     width: 96,

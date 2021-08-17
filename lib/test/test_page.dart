@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:get/get.dart';
 
 class TestPage extends StatefulWidget {
@@ -64,29 +66,35 @@ class _TestPageState extends State<TestPage> {
                 ],
               ),
             ),
-            Expanded(
-              child: webWidget(),
-            ),
+            testWidget(),
           ],
         ),
       ),
     );
   }
 
-  Widget webWidget() {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      removeBottom: true,
-      child: ListView.builder(
+  Widget testWidget() {
+    return Container(
+      height: 160,
+      margin: EdgeInsets.only(left: 16, right: 16),
+      child: Swiper(
+        itemCount: 5,
         itemBuilder: (context, index) {
-          return Container(
-            height: 48,
-            alignment: Alignment.center,
-            child: Text(data[index]),
-          );
+          return Image.asset(R.assetsImgTestPhoto, fit: BoxFit.cover);
         },
-        itemCount: data.length,
+        pagination:SwiperPagination(
+          alignment: Alignment.bottomCenter,
+          margin: EdgeInsets.only(bottom: 2),
+          builder: DotSwiperPaginationBuilder(
+            activeColor: Colors.white,
+            color: Colors.grey,
+            size: 8,
+            activeSize: 8
+          ),
+        ),
+        autoplay: true,
+        autoplayDelay: 4000,
+        autoplayDisableOnInteraction: true,
       ),
     );
   }
