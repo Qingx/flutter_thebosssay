@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
@@ -307,29 +308,32 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
                                 overflow: TextOverflow.ellipsis,
                               ).marginOn(left: 8),
                               Expanded(
-                                child: MediaQuery.removePadding(
-                                  context: context,
-                                  removeBottom: true,
-                                  removeTop: true,
-                                  removeLeft: true,
-                                  removeRight: true,
-                                  child: ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, index) {
-                                      return Image.network(
-                                        HttpConfig.fullUrl(
-                                            entity.photoUrl[index]),
-                                        width: 56,
-                                        height: 16,
-                                      ).marginOn(left: index == 0 ? 8 : 1);
-                                    },
-                                    itemCount: entity?.photoUrl?.isNullOrEmpty()
-                                        ? 0
-                                        : entity?.photoUrl?.length >= 3
-                                            ? 2
-                                            : entity?.photoUrl?.length,
+                                child: Container(
+                                  height: 16,
+                                  child: MediaQuery.removePadding(
+                                    context: context,
+                                    removeBottom: true,
+                                    removeTop: true,
+                                    removeLeft: true,
+                                    removeRight: true,
+                                    child: ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        return Image.network(
+                                          HttpConfig.fullUrl(
+                                            entity.photoUrl[index],
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ).marginOn(left: index == 0 ? 8 : 1);
+                                      },
+                                      itemCount:
+                                          entity?.photoUrl?.isNullOrEmpty()
+                                              ? 0
+                                              : entity?.photoUrl?.length >= 3
+                                                  ? 2
+                                                  : entity?.photoUrl?.length,
+                                    ),
                                   ),
                                 ),
                               ),
