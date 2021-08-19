@@ -111,6 +111,7 @@ flutter:
     - assets/img/emptyLine.png
     - assets/img/shareDark.png
     - assets/img/weChatLogo.png
+    - assets/img/bossLabelNew.png
     - assets/img/favoriteDark.png
     - assets/img/shareLink.png
     - assets/img/bossSelect.png
@@ -131,6 +132,7 @@ flutter:
     - assets/img/errorIcon.png
     - assets/img/bossTopBg.png
     - assets/img/testHead.png
+    - assets/img/bossLabelHot.png
     - assets/img/guideCard.png
     - assets/img/search.png
     - assets/img/changeInfo.png

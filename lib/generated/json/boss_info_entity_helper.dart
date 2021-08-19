@@ -60,6 +60,9 @@ bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {
 	if (json['photoUrl'] != null) {
 		data.photoUrl = (json['photoUrl'] as List).map((v) => v.toString()).toList().cast<String>();
 	}
+	if (json['bossType'] != null) {
+		data.bossType = json['bossType'].toString();
+	}
 	return data;
 }
 
@@ -81,5 +84,6 @@ Map<String, dynamic> bossInfoEntityToJson(BossInfoEntity entity) {
 	data['updateTime'] = entity.updateTime;
 	data['labels'] = entity.labels;
 	data['photoUrl'] = entity.photoUrl;
+	data['bossType'] = entity.bossType;
 	return data;
 }

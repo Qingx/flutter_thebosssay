@@ -9,6 +9,8 @@ import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/generated/json/user_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
 import 'package:flutter_boss_says/generated/json/token_entity_helper.dart';
+import 'package:flutter_boss_says/data/entity/banner_entity.dart';
+import 'package:flutter_boss_says/generated/json/banner_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/generated/json/boss_info_entity_helper.dart';
 import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
@@ -39,6 +41,8 @@ class JsonConvert<T> {
 				return userEntityFromJson(data as UserEntity, json) as T;
 			case TokenEntity:
 				return tokenEntityFromJson(data as TokenEntity, json) as T;
+			case BannerEntity:
+				return bannerEntityFromJson(data as BannerEntity, json) as T;
 			case BossInfoEntity:
 				return bossInfoEntityFromJson(data as BossInfoEntity, json) as T;
 			case FavoriteEntity:
@@ -62,6 +66,8 @@ class JsonConvert<T> {
 				return userEntityToJson(data as UserEntity);
 			case TokenEntity:
 				return tokenEntityToJson(data as TokenEntity);
+			case BannerEntity:
+				return bannerEntityToJson(data as BannerEntity);
 			case BossInfoEntity:
 				return bossInfoEntityToJson(data as BossInfoEntity);
 			case FavoriteEntity:
@@ -86,6 +92,8 @@ class JsonConvert<T> {
 			return UserEntity().fromJson(json);
 		}	else if(type == (TokenEntity).toString()){
 			return TokenEntity().fromJson(json);
+		}	else if(type == (BannerEntity).toString()){
+			return BannerEntity().fromJson(json);
 		}	else if(type == (BossInfoEntity).toString()){
 			return BossInfoEntity().fromJson(json);
 		}	else if(type == (FavoriteEntity).toString()){
@@ -110,6 +118,8 @@ class JsonConvert<T> {
 			return data.map<UserEntity>((e) => UserEntity().fromJson(e)).toList() as M;
 		}	else if(<TokenEntity>[] is M){
 			return data.map<TokenEntity>((e) => TokenEntity().fromJson(e)).toList() as M;
+		}	else if(<BannerEntity>[] is M){
+			return data.map<BannerEntity>((e) => BannerEntity().fromJson(e)).toList() as M;
 		}	else if(<BossInfoEntity>[] is M){
 			return data.map<BossInfoEntity>((e) => BossInfoEntity().fromJson(e)).toList() as M;
 		}	else if(<FavoriteEntity>[] is M){

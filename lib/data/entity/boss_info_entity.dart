@@ -18,6 +18,8 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   int updateTime; //上次更新时间
   List<String> labels = []; //标签
   List<String> photoUrl = []; //标签图片
+  String bossType =
+      "without"; //boss类型:新boss:newBoss,热门boss:hotBoss,没有标签:without
 
   int getSort() {
     return updateTime + (top ? BaseTool.TwentyYears : 0);
@@ -25,7 +27,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
 
   @override
   String toString() {
-    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels, photoUrl: $photoUrl}';
+    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels, photoUrl: $photoUrl, bossType: $bossType}';
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter_boss_says/config/base_api.dart';
 import 'package:flutter_boss_says/config/page_data.dart';
 import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/banner_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
@@ -54,7 +55,8 @@ class BossApi extends BaseApi {
   }
 
   ///获取追踪 最近更新文章
-  Observable<Page<ArticleEntity>> obtainFollowArticle(PageParam pageParam,String label) {
+  Observable<Page<ArticleEntity>> obtainFollowArticle(
+      PageParam pageParam, String label) {
     final param = pageParam.toParam(doCreate: (map) {
       var data = {
         "labels": label == "-1" ? null : [label]
@@ -155,5 +157,11 @@ class BossApi extends BaseApi {
   Observable<List<BossInfoEntity>> obtainAllBoss(int time) {
     return autoToken(
         () => get<List<BossInfoEntity>>("/api/boss/all-list/$time").rebase());
+  }
+
+  ///banner
+  Observable<List<BannerEntity>> obtainBanner() {
+    return autoToken(() =>
+        get<List<BannerEntity>>("/api/operationPicture/get/banner").rebase());
   }
 }

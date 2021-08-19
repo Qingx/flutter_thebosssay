@@ -5,6 +5,8 @@ class R {
   static final String assetsImgShareDark = 'assets/img/shareDark.png';
   /// ![](http://127.0.0.1:11111111/assets/img/weChatLogo.png)
   static final String assetsImgWeChatLogo = 'assets/img/weChatLogo.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossLabelNew.png)
+  static final String assetsImgBossLabelNew = 'assets/img/bossLabelNew.png';
   /// ![](http://127.0.0.1:11111111/assets/img/favoriteDark.png)
   static final String assetsImgFavoriteDark = 'assets/img/favoriteDark.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareLink.png)
@@ -45,6 +47,8 @@ class R {
   static final String assetsImgBossTopBg = 'assets/img/bossTopBg.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testHead.png)
   static final String assetsImgTestHead = 'assets/img/testHead.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/bossLabelHot.png)
+  static final String assetsImgBossLabelHot = 'assets/img/bossLabelHot.png';
   /// ![](http://127.0.0.1:11111111/assets/img/guideCard.png)
   static final String assetsImgGuideCard = 'assets/img/guideCard.png';
   /// ![](http://127.0.0.1:11111111/assets/img/search.png)

@@ -514,66 +514,83 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
         : R.assetsImgBossOrderNormal;
 
     return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          ClipOval(
-            child: Image.network(
-              HttpConfig.fullUrl(entity.head),
-              width: 56,
-              height: 56,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  R.assetsImgDefaultHead,
+          Container(
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipOval(
+                  child: Image.network(
+                    HttpConfig.fullUrl(entity.head),
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        R.assetsImgDefaultHead,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ),
+                Text(
+                  entity.name,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: BaseColor.textDark,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(top: 8),
+                Container(
+                  width: 64,
+                  alignment: Alignment.center,
+                  child: Text(
+                    entity.role,
+                    style: TextStyle(fontSize: 10, color: BaseColor.textGray),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
                   width: 56,
-                  height: 56,
+                  height: 24,
+                  margin: EdgeInsets.only(top: 4),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: labelColor,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Image.asset(
+                    label,
+                    width: 15,
+                    height: 15,
+                  ),
+                ).onClick(() {
+                  onFollowChanged(entity);
+                }),
+              ],
+            ),
+          ).positionOn(top: 0, bottom: 0, right: 0, left: 0),
+          entity.bossType == "without"
+              ? SizedBox()
+              : Image.asset(
+                  entity.bossType == "newBoss"
+                      ? R.assetsImgBossLabelNew
+                      : R.assetsImgBossLabelHot,
+                  width: 28,
+                  height: 16,
                   fit: BoxFit.cover,
-                );
-              },
-            ),
-          ),
-          Text(
-            entity.name,
-            style: TextStyle(
-                fontSize: 14,
-                color: BaseColor.textDark,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-          ).marginOn(top: 8),
-          Container(
-            width: 64,
-            alignment: Alignment.center,
-            child: Text(
-              entity.role,
-              style: TextStyle(fontSize: 10, color: BaseColor.textGray),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              softWrap: true,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Container(
-            width: 56,
-            height: 24,
-            margin: EdgeInsets.only(top: 4),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: labelColor,
-              borderRadius: BorderRadius.all(Radius.circular(12)),
-            ),
-            child: Image.asset(
-              label,
-              width: 15,
-              height: 15,
-            ),
-          ).onClick(() {
-            onFollowChanged(entity);
-          }),
+                ).positionOn(top: 16, left: 16),
         ],
       ),
     );
@@ -583,79 +600,99 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     bool isSelect = mSelectList.contains(entity.id);
 
     return Container(
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 64,
-          height: 56,
-          child: Stack(
-            children: [
-              ClipOval(
-                child: Image.network(
-                  HttpConfig.fullUrl(entity.head),
-                  width: 56,
+      child: Stack(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 64,
                   height: 56,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.asset(
-                      R.assetsImgDefaultHead,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                    );
-                  },
+                  child: Stack(
+                    children: [
+                      ClipOval(
+                        child: Image.network(
+                          HttpConfig.fullUrl(entity.head),
+                          width: 56,
+                          height: 56,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              R.assetsImgDefaultHead,
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
+                      ).positionOn(top: 0, bottom: 0, right: 4, left: 4),
+                      Icon(
+                        isSelect
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: BaseColor.accent,
+                        size: 20,
+                      ).positionOn(top: 0, right: 0),
+                    ],
+                  ),
                 ),
-              ).positionOn(top: 0, bottom: 0, right: 4, left: 4),
-              Icon(
-                isSelect ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: BaseColor.accent,
-                size: 20,
-              ).positionOn(top: 0, right: 0),
-            ],
-          ),
-        ),
-        Text(
-          entity.name,
-          style: TextStyle(
-              fontSize: 14,
-              color: BaseColor.textDark,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          softWrap: true,
-          overflow: TextOverflow.ellipsis,
-        ).marginOn(top: 8),
-        Container(
-          width: 64,
-          alignment: Alignment.center,
-          child: Text(
-            entity.role,
-            style: TextStyle(fontSize: 10, color: BaseColor.textGray),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        Container(
-          width: 56,
-          height: 24,
-          margin: EdgeInsets.only(top: 4),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: BaseColor.accent,
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          ),
-          child: Image.asset(
-            R.assetsImgBossOrderNormal,
-            width: 15,
-            height: 15,
-          ),
-        ),
-      ],
-    ));
+                Text(
+                  entity.name,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: BaseColor.textDark,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(top: 8),
+                Container(
+                  width: 64,
+                  alignment: Alignment.center,
+                  child: Text(
+                    entity.role,
+                    style: TextStyle(fontSize: 10, color: BaseColor.textGray),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Container(
+                  width: 56,
+                  height: 24,
+                  margin: EdgeInsets.only(top: 4),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: BaseColor.accent,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Image.asset(
+                    R.assetsImgBossOrderNormal,
+                    width: 15,
+                    height: 15,
+                  ),
+                ),
+              ],
+            ),
+          ).positionOn(top: 0, bottom: 0, right: 0, left: 0),
+          entity.bossType == "without"
+              ? SizedBox()
+              : Image.asset(
+                  entity.bossType == "newBoss"
+                      ? R.assetsImgBossLabelNew
+                      : R.assetsImgBossLabelHot,
+                  width: 28,
+                  height: 16,
+                  fit: BoxFit.cover,
+                ).positionOn(top: 16, left: 16),
+        ],
+      ),
+    );
   }
 
   Widget emptyBossWidget() {

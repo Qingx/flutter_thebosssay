@@ -3,18 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
+import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/entity/banner_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:get/get.dart';
 
 class SpeechSquareContentPage extends StatefulWidget {
   String label;
@@ -35,6 +38,8 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
 
   bool hasData = false;
 
+  List<BannerEntity> mBanners;
+
   var eventDispose;
 
   @override
@@ -53,6 +58,7 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
   @override
   void initState() {
     super.initState();
+    mBanners = [];
 
     builderFuture = loadInitData();
 
@@ -76,9 +82,11 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
 
   ///初始化获取数据
   Future<WlPage.Page<ArticleEntity>> loadInitData() {
-    return BossApi.ins()
-        .obtainAllArticle(pageParam, widget.label)
-        .doOnData((event) {
+    return BossApi.ins().obtainBanner().onErrorReturn([]).flatMap((value) {
+      mBanners = value;
+
+      return BossApi.ins().obtainAllArticle(pageParam, widget.label);
+    }).doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
     }).doOnError((e) {
@@ -90,25 +98,31 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
   void loadData(bool loadMore) {
     if (!loadMore) {
       pageParam.reset();
-    }
 
-    BossApi.ins().obtainAllArticle(pageParam, widget.label).listen((event) {
-      hasData = event.hasData;
-      concat(event.records, loadMore);
-      setState(() {});
+      BossApi.ins().obtainBanner().onErrorReturn([]).flatMap((value) {
+        mBanners = value;
 
-      if (loadMore) {
-        controller.finishLoad(success: true);
-      } else {
+        return BossApi.ins().obtainAllArticle(pageParam, widget.label);
+      }).listen((event) {
+        hasData = event.hasData;
+        concat(event.records, false);
+        setState(() {});
+
         controller.finishRefresh(success: true);
-      }
-    }, onError: (res) {
-      if (loadMore) {
-        controller.finishLoad(success: false);
-      } else {
+      }, onError: (res) {
         controller.finishRefresh(success: false);
-      }
-    });
+      });
+    } else {
+      BossApi.ins().obtainAllArticle(pageParam, widget.label).listen((event) {
+        hasData = event.hasData;
+        concat(event.records, true);
+        setState(() {});
+
+        controller.finishLoad(success: true);
+      }, onError: (res) {
+        controller.finishLoad(success: false);
+      });
+    }
   }
 
   @override
@@ -151,35 +165,40 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          return Container(
-            height: 144,
-            margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Swiper(
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return Image.asset(
-                    R.assetsImgTestPhoto,
-                    fit: BoxFit.cover,
-                  );
-                },
-                pagination: SwiperPagination(
-                  alignment: Alignment.bottomCenter,
-                  margin: EdgeInsets.only(bottom: 2),
-                  builder: DotSwiperPaginationBuilder(
-                    activeColor: BaseColor.accent,
-                    color: BaseColor.pageBg,
-                    size: 6,
-                    activeSize: 6,
+          return mBanners.isNullOrEmpty()
+              ? SizedBox()
+              : Container(
+                  height: 144,
+                  margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Swiper(
+                      itemCount: mBanners.length,
+                      itemBuilder: (context, index) {
+                        return Image.network(
+                          HttpConfig.fullUrl(mBanners[index].pictureLocation),
+                          fit: BoxFit.cover,
+                        ).onClick(() {
+                          Get.to(() => WebArticlePage(fromBoss: false),
+                              arguments: mBanners[index].resourceId);
+                        });
+                      },
+                      pagination: SwiperPagination(
+                        alignment: Alignment.bottomCenter,
+                        margin: EdgeInsets.only(bottom: 2),
+                        builder: DotSwiperPaginationBuilder(
+                          activeColor: BaseColor.accent,
+                          color: BaseColor.pageBg,
+                          size: 6,
+                          activeSize: 6,
+                        ),
+                      ),
+                      autoplay: true,
+                      autoplayDelay: 4000,
+                      autoplayDisableOnInteraction: true,
+                    ),
                   ),
-                ),
-                autoplay: true,
-                autoplayDelay: 4000,
-                autoplayDisableOnInteraction: true,
-              ),
-            ),
-          );
+                );
         },
         childCount: 1,
       ),
