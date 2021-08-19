@@ -30,7 +30,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
 
 class BossHomePage extends StatelessWidget {
-  BossInfoEntity entity = Get.arguments as BossInfoEntity;
+  String bossId = Get.arguments as String;
 
   BossHomePage({Key key}) : super(key: key);
 
@@ -42,7 +42,7 @@ class BossHomePage extends StatelessWidget {
       body: Container(
         child: Stack(
           children: [
-            BodyWidget(entity),
+            BodyWidget(bossId),
             topBar(context),
           ],
         ),
@@ -52,7 +52,7 @@ class BossHomePage extends StatelessWidget {
 
   void onBack() {
     Get.back();
-    DataConfig.getIns().setBossTime(entity.id);
+    DataConfig.getIns().setBossTime(bossId);
   }
 
   void onShare(context) {
@@ -111,9 +111,10 @@ class BossHomePage extends StatelessWidget {
 }
 
 class BodyWidget extends StatefulWidget {
+  String bossId;
   BossInfoEntity entity;
 
-  BodyWidget(this.entity, {Key key}) : super(key: key);
+  BodyWidget(this.bossId, {Key key}) : super(key: key);
 
   @override
   _BodyWidgetState createState() => _BodyWidgetState();
@@ -126,6 +127,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   ScrollController scrollController;
   EasyRefreshController controller;
 
+  String bossId;
   BossInfoEntity entity;
 
   var eventDispose;
@@ -148,7 +150,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   @override
   void initState() {
     super.initState();
-    entity = widget.entity;
+    bossId = widget.bossId;
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -171,9 +173,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   ///初始化获取数据
   Future<WlPage.Page<ArticleEntity>> loadInitData() {
-    return BossApi.ins()
-        .obtainBossArticleList(pageParam, entity.id)
-        .doOnData((event) {
+    return BossApi.ins().obtainBossDetail(bossId).flatMap((value) {
+      entity = value;
+      return BossApi.ins().obtainBossArticleList(pageParam, bossId);
+    }).doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
     }).doOnError((res) {
@@ -285,17 +288,9 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: [
-          topWidget(),
-          numberWidget(),
-          Expanded(
-            child: FutureBuilder<WlPage.Page<ArticleEntity>>(
-              builder: builderWidget,
-              future: builderFuture,
-            ),
-          ),
-        ],
+      child: FutureBuilder<WlPage.Page<ArticleEntity>>(
+        builder: builderWidget,
+        future: builderFuture,
       ),
     );
   }
@@ -505,14 +500,21 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   Widget contentWidget() {
     return Container(
-      child: BaseWidget.refreshWidgetPage(
-        slivers: [bodyWidget()],
-        controller: controller,
-        scrollController: scrollController,
-        hasData: hasData,
-        loadData: loadData,
-      ),
-    );
+        child: Column(
+      children: [
+        topWidget(),
+        numberWidget(),
+        Expanded(
+          child: BaseWidget.refreshWidgetPage(
+            slivers: [bodyWidget()],
+            controller: controller,
+            scrollController: scrollController,
+            hasData: hasData,
+            loadData: loadData,
+          ),
+        ),
+      ],
+    ));
   }
 
   Widget bodyWidget() {
@@ -546,7 +548,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
                           setState(() {});
 
-                          if(!entity.isRead){
+                          if (!entity.isRead) {
                             BaseTool.doAddRead();
                           }
 
@@ -569,7 +571,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
                           setState(() {});
 
-                          if(!entity.isRead){
+                          if (!entity.isRead) {
                             BaseTool.doAddRead();
                           }
 

@@ -17,9 +17,6 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	if (json['isCollect'] != null) {
 		data.isCollect = json['isCollect'];
 	}
-	if (json['isPoint'] != null) {
-		data.isPoint = json['isPoint'];
-	}
 	if (json['isRead'] != null) {
 		data.isRead = json['isRead'];
 	}
@@ -59,7 +56,6 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['title'] = entity.title;
 	data['descContent'] = entity.descContent;
 	data['isCollect'] = entity.isCollect;
-	data['isPoint'] = entity.isPoint;
 	data['isRead'] = entity.isRead;
 	data['readCount'] = entity.readCount;
 	data['collect'] = entity.collect;

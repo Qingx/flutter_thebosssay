@@ -6,6 +6,7 @@ import 'package:flutter_boss_says/data/entity/banner_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
+import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BossApi extends BaseApi {
@@ -43,14 +44,14 @@ class BossApi extends BaseApi {
   }
 
   ///已追踪的boss列表 已追踪且有更新的boss列表
-  Observable<List<BossInfoEntity>> obtainFollowBossList(
+  Observable<List<BossSimpleEntity>> obtainFollowBossList(
       String label, bool mustUpdate) {
     var data = {
       "labels": label == "-1" ? null : [label],
       "mustUpdate": mustUpdate
     };
     return autoToken(() =>
-        post<List<BossInfoEntity>>("/api/boss/collected", requestBody: data)
+        post<List<BossSimpleEntity>>("/api/boss/collected", requestBody: data)
             .rebase());
   }
 

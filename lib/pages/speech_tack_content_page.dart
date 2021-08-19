@@ -6,6 +6,7 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
@@ -37,7 +38,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
   bool hasData;
   int totalArticleNumber;
-  List<BossInfoEntity> mBossList;
+  List<BossSimpleEntity> mBossList;
 
   ScrollController scrollController;
   EasyRefreshController controller;
@@ -233,7 +234,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
           );
   }
 
-  Widget bossItemWidget(BossInfoEntity entity, int index) {
+  Widget bossItemWidget(BossSimpleEntity entity, int index) {
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
 
@@ -303,7 +304,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(), arguments: entity.id);
     });
   }
 

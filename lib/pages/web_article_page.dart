@@ -312,7 +312,7 @@ class _TopBarWidgetState extends State<TopBarWidget> {
                     if (widget.fromBoss) {
                       Get.back();
                     } else {
-                      Get.to(() => BossHomePage(), arguments: bossEntity);
+                      Get.to(() => BossHomePage(), arguments: bossEntity.id);
                     }
                   }),
           ),

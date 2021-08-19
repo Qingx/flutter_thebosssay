@@ -4,6 +4,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
@@ -182,7 +183,7 @@ class _HomeMinePageState extends State<HomeMinePage>
         break;
       case 6:
         // showStore();
-        Get.to(() => TestPage());
+        dbTest();
         break;
       case 7:
         onClickClear();
@@ -191,6 +192,10 @@ class _HomeMinePageState extends State<HomeMinePage>
         BaseTool.toast(msg: itemNames[index]);
         break;
     }
+  }
+
+  void dbTest() {
+    BossDbProvider.ins().getAll().then((value) => print("BossDb=>$value"));
   }
 
   @override

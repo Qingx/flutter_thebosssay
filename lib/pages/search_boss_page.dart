@@ -356,7 +356,7 @@ class _SearchBossPageState extends State<SearchBossPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(), arguments: entity.id);
     });
   }
 

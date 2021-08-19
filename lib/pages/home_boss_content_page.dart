@@ -4,8 +4,10 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
@@ -43,7 +45,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   ScrollController scrollController;
   EasyRefreshController controller;
 
-  List<BossInfoEntity> mData = [];
+  List<BossSimpleEntity> mData = [];
 
   @override
   bool get wantKeepAlive => true;
@@ -107,7 +109,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   }
 
   ///初始化获取数据
-  Future<List<BossInfoEntity>> loadInitData() {
+  Future<List<BossSimpleEntity>> loadInitData() {
     return BossApi.ins()
         .obtainFollowBossList(widget.label, false)
         .doOnData((event) {
@@ -202,14 +204,14 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<BossInfoEntity>>(
+    return FutureBuilder<List<BossSimpleEntity>>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
   Widget builderWidget(
-      BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
+      BuildContext context, AsyncSnapshot<List<BossSimpleEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
@@ -255,7 +257,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           );
   }
 
-  Widget bodyItemWidget(BossInfoEntity entity, int index) {
+  Widget bodyItemWidget(BossSimpleEntity entity, int index) {
     Color bgColor = entity.top ? BaseColor.accentLight : BaseColor.pageBg;
 
     return Slidable(
@@ -366,7 +368,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           ],
         ),
       ).onClick(() {
-        Get.to(() => BossHomePage(), arguments: entity);
+        Get.to(() => BossHomePage(), arguments: entity.id);
       }),
       actionPane: SlidableScrollActionPane(),
       key: Key(entity.id),

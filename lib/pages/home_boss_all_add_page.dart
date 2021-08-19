@@ -122,7 +122,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
       }
       setState(() {});
     } else {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(), arguments: entity.id);
     }
   }
 
@@ -457,7 +457,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
               );
             },
           ).marginOn(bottom: 16, left: 16, right: 16).onClick(() {
-            Get.to(() => BossHomePage(), arguments: operationEntity.entity);
+            Get.to(() => BossHomePage(), arguments: operationEntity.entity.id);
           });
         },
         childCount: 1,

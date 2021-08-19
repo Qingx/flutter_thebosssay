@@ -312,7 +312,7 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => BossHomePage(), arguments: entity);
+      Get.to(() => BossHomePage(), arguments: entity.id);
     });
   }
 
