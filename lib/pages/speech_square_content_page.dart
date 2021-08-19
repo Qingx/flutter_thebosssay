@@ -175,9 +175,28 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
                     child: Swiper(
                       itemCount: mBanners.length,
                       itemBuilder: (context, index) {
-                        return Image.network(
-                          HttpConfig.fullUrl(mBanners[index].pictureLocation),
-                          fit: BoxFit.cover,
+                        return Container(
+                          child: Stack(
+                            children: [
+                              Image.network(
+                                HttpConfig.fullUrl(
+                                    mBanners[index].pictureLocation),
+                                fit: BoxFit.cover,
+                              ).positionOn(
+                                  top: 0, bottom: 0, left: 0, right: 0),
+                              Text(
+                                mBanners[index].content ?? "",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                softWrap: true,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ).positionOn(bottom: 10, left: 10, right: 10),
+                            ],
+                          ),
                         ).onClick(() {
                           Get.to(() => WebArticlePage(fromBoss: false),
                               arguments: mBanners[index].resourceId);
@@ -185,12 +204,12 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
                       },
                       pagination: SwiperPagination(
                         alignment: Alignment.bottomCenter,
-                        margin: EdgeInsets.only(bottom: 2),
+                        margin: EdgeInsets.only(bottom: 0),
                         builder: DotSwiperPaginationBuilder(
                           activeColor: BaseColor.accent,
-                          color: BaseColor.pageBg,
-                          size: 6,
-                          activeSize: 6,
+                          color: Colors.white,
+                          size: 4,
+                          activeSize: 4,
                         ),
                       ),
                       autoplay: true,

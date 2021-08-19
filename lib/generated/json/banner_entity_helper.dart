@@ -7,6 +7,9 @@ bannerEntityFromJson(BannerEntity data, Map<String, dynamic> json) {
 	if (json['pictureLocation'] != null) {
 		data.pictureLocation = json['pictureLocation'].toString();
 	}
+	if (json['content'] != null) {
+		data.content = json['content'].toString();
+	}
 	if (json['pictureType'] != null) {
 		data.pictureType = json['pictureType'].toString();
 	}
@@ -20,6 +23,7 @@ Map<String, dynamic> bannerEntityToJson(BannerEntity entity) {
 	final Map<String, dynamic> data = new Map<String, dynamic>();
 	data['id'] = entity.id;
 	data['pictureLocation'] = entity.pictureLocation;
+	data['content'] = entity.content;
 	data['pictureType'] = entity.pictureType;
 	data['resourceId'] = entity.resourceId;
 	return data;
