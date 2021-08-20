@@ -1,6 +1,6 @@
 import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
-import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'dart:convert' as convert;
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 articleSimpleEntityFromJson(ArticleSimpleEntity data, Map<String, dynamic> json) {
 	if (json['id'] != null) {
@@ -41,8 +41,17 @@ articleSimpleEntityFromJson(ArticleSimpleEntity data, Map<String, dynamic> json)
 	if (json['files'] != null) {
 		data.files = (json['files'] as List).map((v) => v.toString()).toList().cast<String>();
 	}
-	if (json['bossVO'] != null) {
-		data.bossVO = BossSimpleEntity().fromJson(json['bossVO']);
+	if (json['bossId'] != null) {
+		data.bossId = json['bossId'].toString();
+	}
+	if (json['bossName'] != null) {
+		data.bossName = json['bossName'].toString();
+	}
+	if (json['bossHead'] != null) {
+		data.bossHead = json['bossHead'].toString();
+	}
+	if (json['bossRole'] != null) {
+		data.bossRole = json['bossRole'].toString();
 	}
 	return data;
 }
@@ -59,6 +68,9 @@ Map<String, dynamic> articleSimpleEntityToJson(ArticleSimpleEntity entity) {
 	data['releaseTime'] = entity.releaseTime;
 	data['articleTime'] = entity.articleTime;
 	data['files'] = entity.files;
-	data['bossVO'] = entity.bossVO?.toJson();
+	data['bossId'] = entity.bossId;
+	data['bossName'] = entity.bossName;
+	data['bossHead'] = entity.bossHead;
+	data['bossRole'] = entity.bossRole;
 	return data;
 }

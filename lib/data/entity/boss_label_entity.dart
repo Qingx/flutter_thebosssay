@@ -8,4 +8,14 @@ class BossLabelEntity with JsonConvert<BossLabelEntity> {
   String toString() {
     return 'BossLabelEntity{id: $id, name: $name}';
   }
+
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'name': name};
+  }
+
+  static BossLabelEntity toBean(Map<String, dynamic> json) {
+    return BossLabelEntity()
+      ..id = json["id"]
+      ..name = json["name"];
+  }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter_boss_says/data/db/base_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'dart:convert' as convert;
 
 class LabelDbProvider extends BaseDbProvider {
   final String name = 'Label';
@@ -16,12 +18,12 @@ class LabelDbProvider extends BaseDbProvider {
   factory LabelDbProvider.ins() => _mIns ??= LabelDbProvider._();
 
   @override
-  tableName() {
+  String tableName() {
     return name;
   }
 
   @override
-  createTableString() {
+  String createTableString() {
     return '''
     create table $name (
     $columnId text primary key,
@@ -31,13 +33,33 @@ class LabelDbProvider extends BaseDbProvider {
   }
 
   ///插入到数据库
-  Future insert(BossLabelEntity model) async {
+  Future<int> _insert(BossLabelEntity model) async {
     Database db = await getDataBase();
     return await db.insert(
       name,
       model.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<List<dynamic>> _batchInsert(List<BossLabelEntity> list) async {
+    Database db = await getDataBase();
+    Batch batch = db.batch();
+
+    list.forEach((element) {
+      batch.insert(
+        name,
+        element.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
+
+    return await batch.commit(continueOnError: true);
+  }
+
+  ///批量插入
+  Observable<List<dynamic>> insertList(List<BossLabelEntity> list) {
+    return Observable.fromFuture(_batchInsert(list));
   }
 
   ///获取全部

@@ -55,6 +55,19 @@ class BaseTool {
     }
   }
 
+  ///是否符合最近更新条件 30天
+  static bool isLatest(int startTime) {
+    int endTime = DateTime.now().millisecondsSinceEpoch;
+    if (endTime >= startTime) {
+      int diff = endTime - startTime;
+      int days = diff ~/ (1000 * 60 * 60 * 24);
+
+      return days <= 30;
+    } else {
+      return false;
+    }
+  }
+
   ///获取boss最近更新文章时间
   static String getBossItemTime(int startTime) {
     int endTime = DateTime.now().millisecondsSinceEpoch;

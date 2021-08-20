@@ -12,6 +12,16 @@ class BossSimpleEntity with JsonConvert<BossSimpleEntity> {
   List<String> labels = []; //标签
   List<String> photoUrl = []; //标签图片
 
+  BossSimpleEntity(
+      {this.id,
+      this.name,
+      this.head,
+      this.role,
+      this.top,
+      this.updateTime,
+      this.labels,
+      this.photoUrl});
+
   int getSort() {
     return updateTime + (top ? BaseTool.TwentyYears : 0);
   }

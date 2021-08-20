@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/config/page_param.dart';
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
@@ -108,19 +111,30 @@ class _StartGuidePageState extends State<StartGuidePage> {
 
     UserEntity entity = Global.user.user.value;
 
-    BossApi.ins().obtainGuideFollowList(listSelect).listen((event) {
+    BossApi.ins().obtainGuideFollowList(listSelect).flatMap((value) {
       entity.traceNum = listSelect.length;
       Global.user.setUser(entity);
 
       JpushApi.ins().addTags(listSelect);
 
-      BaseTool.toast(msg: "追踪成功");
-      Get.offAll(() => HomePage(), transition: Transition.fadeIn);
-    }, onError: (res) {
-      Get.back();
-      print(res);
-      BaseTool.toast(msg: res.msg);
-    });
+      return BossApi.ins().obtainFollowBossList("-1", false);
+    }).onErrorReturn([]).flatMap((value) {
+      return BossDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).flatMap((value) {
+      return BossApi.ins().obtainTackArticle(PageParam(), "-1");
+    }).flatMap((value) {
+      return ArticleDbProvider.ins().insertList(value.records);
+    }).listen(
+      (event) {
+        BaseTool.toast(msg: "追踪成功");
+        Get.offAll(() => HomePage());
+      },
+      onError: (res) {
+        print("ArticleDbError=>$res");
+        Get.back();
+        BaseTool.toast(msg: "追踪成功");
+      },
+    );
   }
 
   @override

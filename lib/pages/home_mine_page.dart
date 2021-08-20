@@ -4,7 +4,10 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
+import 'package:flutter_boss_says/data/db/label_db_provider.dart';
+import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
@@ -180,10 +183,11 @@ class _HomeMinePageState extends State<HomeMinePage>
         break;
       case 5:
         Get.to(() => ContactAuthorPage());
+        // dbInsert();
         break;
       case 6:
         // showStore();
-        dbTest();
+        dbGet();
         break;
       case 7:
         onClickClear();
@@ -194,8 +198,24 @@ class _HomeMinePageState extends State<HomeMinePage>
     }
   }
 
-  void dbTest() {
-    BossDbProvider.ins().getAll().then((value) => print("BossDb=>$value"));
+  void dbInsert() {
+  }
+
+  void dbGet() {
+    BossDbProvider.ins().getAll().then((value) {
+      print("BossDb=>$value");
+      print("BossDb=>${value.length}");
+    });
+
+    LabelDbProvider.ins().getAll().then((value) {
+      print("LabelDb=>$value");
+      print("LabelDb=>${value.length}");
+    });
+
+    ArticleDbProvider.ins().getAll().then((value) {
+      print("ArticleDb=>$value");
+      print("ArticleDb=>${value.length}");
+    });
   }
 
   @override

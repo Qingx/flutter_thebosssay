@@ -6,6 +6,7 @@ import 'package:flutter_boss_says/data/entity/banner_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/guide_boss_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -67,6 +68,25 @@ class BossApi extends BaseApi {
 
     return autoToken(() =>
         postPage<ArticleEntity>("/api/article/recommend", requestBody: param)
+            .rebase(pageParam: pageParam)
+            .map((value) {
+          return value;
+        }));
+  }
+
+  ///获取追踪 最近更新文章
+  Observable<Page<ArticleSimpleEntity>> obtainTackArticle(
+      PageParam pageParam, String label) {
+    final param = pageParam.toParam(doCreate: (map) {
+      var data = {
+        "labels": label == "-1" ? null : [label]
+      };
+      map.addAll(data);
+    });
+
+    return autoToken(() => postPage<ArticleSimpleEntity>(
+                "/api/article/recommendArticle",
+                requestBody: param)
             .rebase(pageParam: pageParam)
             .map((value) {
           return value;

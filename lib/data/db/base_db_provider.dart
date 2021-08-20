@@ -9,11 +9,6 @@ abstract class BaseDbProvider {
 
   tableName();
 
-  ///创建表sql语句
-  tableBaseString(String sql) {
-    return sql;
-  }
-
   Future<Database> getDataBase() async {
     return await open();
   }

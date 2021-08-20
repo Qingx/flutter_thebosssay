@@ -1,5 +1,6 @@
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
+import 'dart:convert' as convert;
 
 bossSimpleEntityFromJson(BossSimpleEntity data, Map<String, dynamic> json) {
 	if (json['id'] != null) {

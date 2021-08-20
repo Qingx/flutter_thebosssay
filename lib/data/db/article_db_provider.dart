@@ -1,7 +1,9 @@
 import 'package:flutter_boss_says/data/db/base_db_provider.dart';
 import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'dart:convert' as convert;
 
 class ArticleDbProvider extends BaseDbProvider {
   final String name = 'TackArticle';
@@ -16,7 +18,10 @@ class ArticleDbProvider extends BaseDbProvider {
   final String columnReleaseTime = "releaseTime";
   final String columnArticleTime = "articleTime";
   final String columnFiles = "files";
-  final String columnBossVO = "bossVO";
+  final String columnBossId = "bossId";
+  final String columnBossName = "bossName";
+  final String columnBossHead = "bossHead";
+  final String columnBossRole = "bossRole";
 
   ArticleDbProvider._();
 
@@ -25,15 +30,16 @@ class ArticleDbProvider extends BaseDbProvider {
   factory ArticleDbProvider.ins() => _mIns ??= ArticleDbProvider._();
 
   @override
-  tableName() {
+  String tableName() {
     return name;
   }
 
   @override
-  createTableString() {
+  String createTableString() {
     return '''
     create table $name (
     $columnId text primary key,
+    $columnTitle text,
     $columnDescContent text,
     $columnIsCollect text,
     $columnIsRead text,
@@ -42,19 +48,55 @@ class ArticleDbProvider extends BaseDbProvider {
     $columnReleaseTime integer,
     $columnArticleTime integer,
     $columnFiles text,
-    $columnBossVO text
+    $columnBossId text,
+    $columnBossName text,
+    $columnBossHead text,
+    $columnBossRole text
     )
     ''';
   }
 
+  ///查询数据库
+  Future _getArticleProvider(Database db, String id) async {
+    List<Map<String, dynamic>> maps =
+        await db.rawQuery("select * from $name where $columnId = $id");
+    return maps;
+  }
+
   ///插入到数据库
-  Future insert(ArticleSimpleEntity model) async {
+  Future<int> _insert(ArticleSimpleEntity model) async {
     Database db = await getDataBase();
+
+    var article = await _getArticleProvider(db, model.id);
+    if (article != null) {
+      ///删除数据
+      await db.delete(name, where: "$columnId = ?", whereArgs: [model.id]);
+    }
     return await db.insert(
       name,
       model.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<List<dynamic>> _batchInsert(List<ArticleSimpleEntity> list) async {
+    Database db = await getDataBase();
+    Batch batch = db.batch();
+
+    list.forEach((element) {
+      batch.insert(
+        name,
+        element.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
+
+    return await batch.commit(continueOnError: true);
+  }
+
+  ///批量插入
+  Observable<List<dynamic>> insertList(List<ArticleSimpleEntity> list) {
+    return Observable.fromFuture(_batchInsert(list));
   }
 
   ///获取全部

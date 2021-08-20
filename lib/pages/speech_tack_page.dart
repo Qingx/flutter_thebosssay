@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
@@ -51,27 +52,14 @@ class _SpeechTackPageState extends State<SpeechTackPage>
     mPageController = PageController();
   }
 
-  Future<bool> loadInitData() {
-    bool canUse = !DataConfig.getIns().bossLabels.isLabelEmpty();
-
-    if (canUse) {
-      return Observable.just(true).doOnData((event) {
-        mLabels = DataConfig.getIns().bossLabels;
-        mPages = mLabels.map((e) => SpeechTackContentPage(e.id)).toList();
-      }).last;
-    } else {
-      return BossApi.ins()
-          .obtainBossLabels()
-          .onErrorReturn([]).flatMap((value) {
-        value = [BaseEmpty.emptyLabel, ...value];
-        mLabels = value;
-
-        DataConfig.getIns().setBossLabels = mLabels;
-        mPages = mLabels.map((e) => SpeechTackContentPage(e.id)).toList();
-
-        return Observable.just(!mLabels.isLabelEmpty());
-      }).last;
-    }
+  Future<bool> loadInitData() async {
+    return Observable.fromFuture(LabelDbProvider.ins().getAll())
+        .flatMap((value) {
+      mLabels = value;
+      return Observable.just(!value.isLabelEmpty());
+    }).doOnData((event) {
+      mPages = mLabels.map((e) => SpeechTackContentPage(e.id)).toList();
+    }).last;
   }
 
   @override

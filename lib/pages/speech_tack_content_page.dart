@@ -4,8 +4,11 @@ import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
@@ -22,6 +25,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SpeechTackContentPage extends StatefulWidget {
   String mLabel;
@@ -33,7 +37,9 @@ class SpeechTackContentPage extends StatefulWidget {
 }
 
 class _SpeechTackContentPageState extends State<SpeechTackContentPage>
-    with AutomaticKeepAliveClientMixin, BasePageController<ArticleEntity> {
+    with
+        AutomaticKeepAliveClientMixin,
+        BasePageController<ArticleSimpleEntity> {
   var builderFuture;
 
   bool hasData;
@@ -113,66 +119,64 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     });
   }
 
-  Future<WlPage.Page<ArticleEntity>> loadInitData() {
+  Future<List<ArticleSimpleEntity>> loadInitData() {
     pageParam?.reset();
 
-    return BossApi.ins()
-        .obtainFollowBossList(widget.mLabel, true)
-        .onErrorReturn([]).flatMap((value) {
+    return Observable.fromFuture(BossDbProvider.ins().getAll())
+        .flatMap((value) {
       mBossList = value;
-      return BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel);
+      return Observable.fromFuture(ArticleDbProvider.ins().getAll());
     }).doOnData((event) {
-      hasData = event.hasData;
-      totalArticleNumber = event.total;
-      concat(event.records, false);
+      hasData = true;
+      totalArticleNumber = 250;
+      concat(event, false);
     }).last;
   }
 
   @override
   void loadData(bool loadMore) {
-    if (!loadMore) {
-      pageParam?.reset();
-
-      BossApi.ins()
-          .obtainFollowBossList(widget.mLabel, true)
-          .onErrorReturn([]).flatMap((value) {
-        mBossList = value;
-
-        return BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel);
-      }).listen((event) {
-        hasData = event.hasData;
-        totalArticleNumber = event.total;
-        concat(event.records, false);
-        setState(() {});
-
-        controller.finishRefresh(success: true);
-      }, onError: (res) {
-        controller.finishRefresh(success: false);
-      });
-    } else {
-      BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel).listen(
-          (event) {
-        hasData = event.hasData;
-        concat(event.records, true);
-        setState(() {});
-
-        controller.finishLoad(success: true);
-      }, onError: (res) {
-        controller.finishLoad(success: false);
-      });
-    }
+    // if (!loadMore) {
+    //   pageParam?.reset();
+    //
+    //   BossApi.ins()
+    //       .obtainFollowBossList(widget.mLabel, true)
+    //       .onErrorReturn([]).flatMap((value) {
+    //     mBossList = value;
+    //
+    //     return BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel);
+    //   }).listen((event) {
+    //     hasData = event.hasData;
+    //     totalArticleNumber = event.total;
+    //     concat(event.records, false);
+    //     setState(() {});
+    //
+    //     controller.finishRefresh(success: true);
+    //   }, onError: (res) {
+    //     controller.finishRefresh(success: false);
+    //   });
+    // } else {
+    //   BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel).listen(
+    //       (event) {
+    //     hasData = event.hasData;
+    //     concat(event.records, true);
+    //     setState(() {});
+    //
+    //     controller.finishLoad(success: true);
+    //   }, onError: (res) {
+    //     controller.finishLoad(success: false);
+    //   });
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<WlPage.Page<ArticleEntity>>(
+    return FutureBuilder(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context,
-      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
@@ -390,11 +394,11 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                ArticleEntity entity = mData[index];
+                ArticleSimpleEntity entity = mData[index];
 
                 return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextWithContent(entity, context)
-                    : ArticleWidget.singleImgWithContent(entity, context);
+                    ? ArticleWidget.onlyTextWithContentS(entity, context)
+                    : ArticleWidget.singleImgWithContentS(entity, context);
               },
               childCount: mData.length,
             ),

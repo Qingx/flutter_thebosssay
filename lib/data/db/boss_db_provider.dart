@@ -1,8 +1,10 @@
 import 'package:flutter_boss_says/data/db/base_db_provider.dart';
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'dart:convert' as convert;
 
 class BossDbProvider extends BaseDbProvider {
   final String name = 'TackBoss';
@@ -44,13 +46,33 @@ class BossDbProvider extends BaseDbProvider {
   }
 
   ///插入到数据库
-  Future insert(BossSimpleEntity model) async {
+  Future<int> _insert(BossSimpleEntity model) async {
     Database db = await getDataBase();
     return await db.insert(
       name,
       model.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+  }
+
+  Future<List<dynamic>> _batchInsert(List<BossSimpleEntity> list) async {
+    Database db = await getDataBase();
+    Batch batch = db.batch();
+
+    list.forEach((element) {
+      batch.insert(
+        name,
+        element.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
+
+    return await batch.commit(continueOnError: true);
+  }
+
+  ///批量插入
+  Observable<List<dynamic>> insertList(List<BossSimpleEntity> list) {
+    return Observable.fromFuture(_batchInsert(list));
   }
 
   ///获取全部

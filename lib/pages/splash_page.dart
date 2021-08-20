@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/hint_controller.dart';
+import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
+import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/service_privacy_dialog.dart';
@@ -64,8 +68,9 @@ class _SplashPageState extends State<SplashPage> {
 
     BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
       value = [BaseEmpty.emptyLabel, ...value];
-      DataConfig.getIns().setBossLabels = value;
 
+      return LabelDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).flatMap((value) {
       return BossApi.ins().obtainGuideBoss();
     }).listen(
       (event) {
@@ -81,15 +86,30 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void doSecondUse() {
-    BossApi.ins().obtainBossLabels().onErrorReturn([]).listen((event) {
-      event = [BaseEmpty.emptyLabel, ...event];
-      DataConfig.getIns().setBossLabels = event;
-      Get.offAll(() => HomePage());
-    }, onError: (res) {
-      Get.offAll(() => HomePage());
-    }, onDone: () {
-      Global.user.setUser(UserConfig.getIns().user);
-    });
+    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+
+      return LabelDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).flatMap((value) {
+      return BossApi.ins().obtainFollowBossList("-1", false);
+    }).onErrorReturn([]).flatMap((value) {
+      return BossDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).flatMap((value) {
+      return BossApi.ins().obtainTackArticle(PageParam(), "-1");
+    }).flatMap((value) {
+      return ArticleDbProvider.ins().insertList(value.records);
+    }).onErrorReturn([]).listen(
+      (event) {
+        Get.offAll(() => HomePage());
+      },
+      onError: (res) {
+        print("ArticleDbError=>$res");
+        Get.offAll(() => HomePage());
+      },
+      onDone: () {
+        Global.user.setUser(UserConfig.getIns().user);
+      },
+    );
   }
 
   @override

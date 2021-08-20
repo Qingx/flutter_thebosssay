@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -9,6 +10,270 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
 
 class ArticleWidget {
+
+  ///含正文 纯文字
+  static Widget onlyTextWithContentS(
+      ArticleSimpleEntity entity, BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            entity.title,
+            style: TextStyle(
+                fontSize: 18,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipOval(
+                  child: Image.network(
+                    HttpConfig.fullUrl(entity.bossHead),
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        R.assetsImgDefaultHead,
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ),
+                Text(
+                  entity.bossName,
+                  style:
+                  TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 8),
+                Expanded(
+                  child: Text(
+                    entity.bossRole,
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(left: 8),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            entity.descContent,
+            style: TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
+            textAlign: TextAlign.start,
+            maxLines: 2,
+            softWrap: true,
+            overflow: TextOverflow.ellipsis,
+          ).marginOn(top: 8),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "${entity.collect.formatCountNumber()}收藏·${entity.readCount.formatCountNumber()}人围观",
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  BaseTool.getArticleItemTime(entity.getShowTime()),
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ).onClick(() {
+      if (!entity.isRead) {
+        BaseTool.doAddRead();
+      }
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
+    });
+  }
+
+  ///含正文 单个图片文字
+  static Widget singleImgWithContentS(
+      ArticleSimpleEntity entity, BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            entity.title,
+            style: TextStyle(
+                fontSize: 18,
+                color: BaseColor.textDark,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+            softWrap: true,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Container(
+            height: 72,
+            margin: EdgeInsets.only(top: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 24,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ClipOval(
+                              child: Image.network(
+                                HttpConfig.fullUrl(entity.bossHead),
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    R.assetsImgDefaultHead,
+                                    width: 24,
+                                    height: 24,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                            ),
+                            Text(
+                              entity.bossName,
+                              style: TextStyle(
+                                  fontSize: 14, color: BaseColor.textDarkLight),
+                              textAlign: TextAlign.start,
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ).marginOn(left: 8),
+                            Expanded(
+                              child: Text(
+                                entity.bossRole,
+                                style: TextStyle(
+                                    fontSize: 14, color: BaseColor.textGray),
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ).marginOn(left: 8),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            entity.descContent,
+                            style: TextStyle(
+                                fontSize: 14, color: BaseColor.textDarkLight),
+                            textAlign: TextAlign.start,
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.network(
+                    HttpConfig.fullUrl(entity.files[0]),
+                    width: 96,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        R.assetsImgDefaultCover,
+                        width: 96,
+                        height: 64,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ).marginOn(left: 16),
+              ],
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 8),
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    "${entity.collect.formatCountNumber()}收藏·${entity.readCount.formatCountNumber()}人围观",
+                    style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  BaseTool.getArticleItemTime(entity.getShowTime()),
+                  style: TextStyle(fontSize: 13, color: BaseColor.textGray),
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    ).onClick(() {
+      if (!entity.isRead) {
+        BaseTool.doAddRead();
+      }
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
+    });
+  }
+
   ///含正文 纯文字
   static Widget onlyTextWithContent(
       ArticleEntity entity, BuildContext context) {
