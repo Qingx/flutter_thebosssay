@@ -1,6 +1,8 @@
 import 'package:flutter_boss_says/data/db/base_db_provider.dart';
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class BossDbProvider extends BaseDbProvider {
   final String name = 'TackBoss';
@@ -34,9 +36,9 @@ class BossDbProvider extends BaseDbProvider {
     $columnHead text,
     $columnRole text,
     $columnTop text,
-    $columnUpdateTime text,
+    $columnUpdateTime integer,
     $columnLabels text,
-    $columnPhotoUrl text,
+    $columnPhotoUrl text
     )
     ''';
   }
@@ -44,8 +46,7 @@ class BossDbProvider extends BaseDbProvider {
   ///插入到数据库
   Future insert(BossSimpleEntity model) async {
     Database db = await getDataBase();
-
-    await db.insert(
+    return await db.insert(
       name,
       model.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -53,14 +54,38 @@ class BossDbProvider extends BaseDbProvider {
   }
 
   ///获取全部
-  Future<List<Map<String, dynamic>>> getAll() async {
+  Future<List<BossSimpleEntity>> getAll() async {
     Database db = await getDataBase();
-
     List<Map<String, dynamic>> maps = await db.query(name);
-    // List<BossSimpleEntity> list = [];
-    //
-    // list = maps.map((e) => BossSimpleEntity.toBean(e)).toList();
+    List<BossSimpleEntity> list = [];
 
-    return maps;
+    if (!maps.isNullOrEmpty()) {
+      list = maps.map((e) => BossSimpleEntity.toBean(e)).toList();
+    }
+    return list;
+  }
+
+  ///通过标签获取列表
+  Future<List<BossSimpleEntity>> getByLabel(String label) async {
+    List<BossSimpleEntity> list = [];
+    list = await getAll();
+
+    if (!list.isNullOrEmpty()) {
+      list = list.where((element) => element.labels.contains(label)).toList();
+    }
+    return list;
+  }
+
+  ///通过标签获取最近更新列表
+  Future<List<BossSimpleEntity>> getByLabelWithLatest(String label) async {
+    List<BossSimpleEntity> list = [];
+    list = await getByLabel(label);
+
+    if (!list.isNullOrEmpty()) {
+      list = list
+          .where((element) => BaseTool.isLatest(element.updateTime))
+          .toList();
+    }
+    return list;
   }
 }
