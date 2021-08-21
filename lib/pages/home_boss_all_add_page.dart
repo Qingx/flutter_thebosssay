@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
+import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/operation_entity.dart';
@@ -13,7 +14,8 @@ import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/boss_batch_tack_event.dart';
+import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -23,6 +25,7 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class HomeBossAllAddPage extends StatefulWidget {
   const HomeBossAllAddPage({Key key}) : super(key: key);
@@ -42,7 +45,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
   bool isBatch; //是否开启批量追踪
   List<String> mSelectList; //选中的boss
 
-  var eventDispose;
+  var tackDispose;
 
   ScrollController scrollController;
   EasyRefreshController controller;
@@ -56,7 +59,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
 
     scrollController?.dispose();
     controller?.dispose();
-    eventDispose?.cancel();
+    tackDispose?.cancel();
   }
 
   @override
@@ -64,12 +67,12 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     super.initState();
 
     mCurrentTab = BaseEmpty.emptyLabel.id;
-    mLabels = DataConfig.getIns().bossLabels;
+    mLabels = [];
     mData = [];
     isBatch = false;
     mSelectList = [];
 
-    builderFuture = loadInitData();
+    builderFuture = initData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -78,7 +81,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
   }
 
   void eventBus() {
-    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+    tackDispose = Global.eventBus.on<BossTackEvent>().listen((event) {
       var index = mData.indexWhere((element) => element.id == event.id);
       if (index != -1) {
         mData[index].isCollect = event.isFollow;
@@ -87,22 +90,43 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     });
   }
 
-  Future<List<BossInfoEntity>> loadInitData() {
-    return UserApi.ins().obtainOperationPhoto().flatMap((value) {
+  Future<bool> initData() {
+    return LabelDbProvider.ins().getAll().onErrorReturn([]).flatMap((value) {
+      mLabels = value;
+
+      return UserApi.ins().obtainOperationPhoto();
+    }).flatMap((value) {
       operationEntity = value;
 
       return BossApi.ins().obtainAllBossList();
-    }).doOnData((event) {
-      mData = event;
+    }).onErrorReturn([]).flatMap((value) {
+      mData = value;
+
+      return Observable.just(!mLabels.isLabelEmpty());
+    }).last;
+  }
+
+  Future<bool> errorLoadData() {
+    return BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      mLabels = value;
+
+      return LabelDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).flatMap((value) {
+      return UserApi.ins().obtainOperationPhoto();
+    }).flatMap((value) {
+      operationEntity = value;
+
+      return BossApi.ins().obtainAllBossList();
+    }).onErrorReturn([]).flatMap((value) {
+      mData = value;
+
+      return Observable.just(!mLabels.isLabelEmpty());
     }).last;
   }
 
   void loadData() {
-    UserApi.ins().obtainOperationPhoto().flatMap((value) {
-      operationEntity = value;
-
-      return BossApi.ins().obtainAllBossList();
-    }).listen((event) {
+    BossApi.ins().obtainAllBossList().listen((event) {
       mData = event;
 
       setState(() {});
@@ -142,21 +166,29 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     }, onConfirm: () {
       BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+      BossApi.ins().obtainNoFollowBoss(entity.id).flatMap((value) {
+        entity.isCollect = false;
+
+        return BossDbProvider.ins().delete(entity.id);
+      }).listen((event) {
         Get.back();
         Get.back();
 
         BaseWidget.showDoFollowChangeDialog(context, false);
 
-        entity.isCollect = false;
         setState(() {});
 
         UserEntity userEntity = Global.user.user.value;
         userEntity.traceNum--;
         Global.user.setUser(userEntity);
 
-        Global.eventBus.fire(RefreshFollowEvent(
-            id: entity.id, labels: entity.labels, isFollow: false));
+        Global.eventBus.fire(
+          BossTackEvent(
+            id: entity.id,
+            labels: entity.labels,
+            isFollow: false,
+          ),
+        );
 
         JpushApi.ins().deleteTags([entity.id]);
       }, onError: (res) {
@@ -168,18 +200,26 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
 
   void doFollow(BossInfoEntity entity) {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
-    BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
+    BossApi.ins().obtainFollowBoss(entity.id).flatMap((value) {
+      entity.isCollect = true;
+
+      return BossDbProvider.ins().insert(entity.toSimple());
+    }).listen((event) {
       Get.back();
 
-      entity.isCollect = true;
       setState(() {});
 
       UserEntity userEntity = Global.user.user.value;
       userEntity.traceNum++;
       Global.user.setUser(userEntity);
 
-      Global.eventBus.fire(RefreshFollowEvent(
-          id: entity.id, labels: entity.labels, isFollow: true));
+      Global.eventBus.fire(
+        BossTackEvent(
+          id: entity.id,
+          labels: entity.labels,
+          isFollow: true,
+        ),
+      );
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();
@@ -202,19 +242,24 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
     if (!mSelectList.isNullOrEmpty()) {
       BaseWidget.showLoadingAlert("尝试批量追踪...", context);
 
-      BossApi.ins().obtainGuideFollowList(mSelectList).listen((event) {
-        Get.back();
-
+      BossApi.ins().obtainGuideFollowList(mSelectList).flatMap((value) {
         List<BossInfoEntity> select =
             mData.where((element) => mSelectList.contains(element.id)).toList();
         List.generate(select.length, (index) => select[index].isCollect = true);
+
+        var list = select.map((e) => e.toSimple()).toList();
+
+        return BossDbProvider.ins().insertList(list);
+      }).listen((event) {
+        Get.back();
+
         setState(() {});
 
         UserEntity userEntity = Global.user.user.value;
-        userEntity.traceNum += select.length;
+        userEntity.traceNum += mSelectList.length;
         Global.user.setUser(userEntity);
 
-        Global.eventBus.fire(RefreshFollowEvent(needLoading: true));
+        Global.eventBus.fire(BossBatchTackEvent());
 
         showAskPushDialog(context, isBatch: true, onConfirm: () {
           Get.back();
@@ -241,15 +286,9 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          typeWidget(),
-          Expanded(
-            child: bodyWidget(),
-          ),
-        ],
-      ),
+    return FutureBuilder<bool>(
+      builder: builderWidget,
+      future: builderFuture,
     );
   }
 
@@ -411,34 +450,36 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
           });
   }
 
-  Widget bodyWidget() {
-    return FutureBuilder<List<BossInfoEntity>>(
-      builder: builderWidget,
-      future: builderFuture,
-    );
-  }
-
-  Widget builderWidget(
-      BuildContext context, AsyncSnapshot<List<BossInfoEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasData) {
+      if (snapshot.hasData && snapshot.data) {
         return contentWidget();
-      } else
+      } else {
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture = errorLoadData();
           setState(() {});
         });
+      }
     } else {
       return BaseWidget.loadingWidget();
     }
   }
 
   Widget contentWidget() {
-    return BaseWidget.refreshWidget(
-      slivers: [operationWidget(), bossWidget()],
-      controller: controller,
-      scrollController: scrollController,
-      loadData: loadData,
+    return Container(
+      child: Row(
+        children: [
+          typeWidget(),
+          Expanded(
+            child: BaseWidget.refreshWidget(
+              slivers: [operationWidget(), bossWidget()],
+              controller: controller,
+              scrollController: scrollController,
+              loadData: loadData,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

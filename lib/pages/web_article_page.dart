@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
@@ -13,8 +14,8 @@ import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/new_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
+import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -168,11 +169,14 @@ class _TopBarWidgetState extends State<TopBarWidget> {
     }, onConfirm: () {
       BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      BossApi.ins().obtainNoFollowBoss(bossId).listen((event) {
+      BossApi.ins().obtainNoFollowBoss(bossId).flatMap((value) {
+        hasTack = false;
+
+        return BossDbProvider.ins().delete(bossId);
+      }).listen((event) {
         Get.back();
         Get.back();
 
-        hasTack = false;
         setState(() {});
 
         BaseWidget.showDoFollowChangeDialog(context, false);
@@ -181,7 +185,13 @@ class _TopBarWidgetState extends State<TopBarWidget> {
         userEntity.traceNum--;
         Global.user.setUser(userEntity);
 
-        Global.eventBus.fire(RefreshFollowEvent(id: bossId, isFollow: false));
+        Global.eventBus.fire(
+          BossTackEvent(
+            id: bossId,
+            labels: bossEntity.labels,
+            isFollow: false,
+          ),
+        );
 
         JpushApi.ins().deleteTags([bossId]);
       }, onError: (res) {
@@ -194,17 +204,26 @@ class _TopBarWidgetState extends State<TopBarWidget> {
   void doFollow() {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
 
-    BossApi.ins().obtainFollowBoss(bossId).listen((event) {
+    BossApi.ins().obtainFollowBoss(bossId).flatMap((value) {
+      hasTack = true;
+
+      return BossDbProvider.ins().insert(bossEntity.toSimple());
+    }).listen((event) {
       Get.back();
 
-      hasTack = true;
       setState(() {});
 
       UserEntity userEntity = Global.user.user.value;
       userEntity.traceNum++;
       Global.user.setUser(userEntity);
 
-      Global.eventBus.fire(RefreshFollowEvent(id: bossId, isFollow: true));
+      Global.eventBus.fire(
+        BossTackEvent(
+          id: bossId,
+          labels: bossEntity.labels,
+          isFollow: true,
+        ),
+      );
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();

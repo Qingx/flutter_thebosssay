@@ -1,4 +1,5 @@
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 
 bossInfoEntityFromJson(BossInfoEntity data, Map<String, dynamic> json) {

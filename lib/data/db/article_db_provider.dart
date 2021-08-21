@@ -3,7 +3,6 @@ import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
-import 'dart:convert' as convert;
 
 class ArticleDbProvider extends BaseDbProvider {
   final String name = 'TackArticle';
@@ -111,8 +110,18 @@ class ArticleDbProvider extends BaseDbProvider {
     return list;
   }
 
+  Future<int> _deleteAll() async {
+    Database db = await getDataBase();
+    return db.delete(name);
+  }
+
   ///获取全部
   Observable<List<ArticleSimpleEntity>> getAll() {
     return Observable.fromFuture(_queryAll());
+  }
+
+  ///删除全部
+  Observable<int> deleteAll() {
+    return Observable.fromFuture(_deleteAll());
   }
 }

@@ -73,6 +73,11 @@ class BossDbProvider extends BaseDbProvider {
     );
   }
 
+  Future<int> _deleteAll() async {
+    Database db = await getDataBase();
+    return db.delete(name);
+  }
+
   ///插入到数据库
   Observable<int> insert(BossSimpleEntity model) {
     return Observable.fromFuture(_insert(model));
@@ -154,5 +159,10 @@ class BossDbProvider extends BaseDbProvider {
   ///通过标签获取最近更新列表
   Observable<List<BossSimpleEntity>> getLastWithLabel(String label) {
     return Observable.fromFuture(_getLastWithLabel(label));
+  }
+
+  ///删除全部
+  Observable<int> deleteAll() {
+    return Observable.fromFuture(_deleteAll());
   }
 }

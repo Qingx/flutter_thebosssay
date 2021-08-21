@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
@@ -43,13 +46,17 @@ class _MineChangeUserPageState extends State<MineChangeUserPage> {
   ///尝试退出登录
   void tryLogout(context) {
     BaseWidget.showLoadingAlert("正在清理数据...", context);
-    UserConfig.getIns().clear();
-    Global.user.setUser(BaseEmpty.emptyUser);
+    BossDbProvider.ins().deleteAll().flatMap((value) {
+      return ArticleDbProvider.ins().deleteAll();
+    }).listen((event) {
+      UserConfig.getIns().clear();
+      Global.user.setUser(BaseEmpty.emptyUser);
 
-    JpushApi.ins().clearTags();
+      JpushApi.ins().clearTags();
 
-    BaseTool.toast(msg: "退出成功");
-    Get.offAll(() => HomePage());
+      BaseTool.toast(msg: "退出成功");
+      Get.offAll(() => HomePage());
+    });
   }
 
   ///微信登录回调

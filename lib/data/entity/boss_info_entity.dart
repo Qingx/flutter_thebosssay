@@ -1,3 +1,4 @@
+import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 
@@ -23,6 +24,18 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
 
   int getSort() {
     return updateTime + (top ? BaseTool.TwentyYears : 0);
+  }
+
+  BossSimpleEntity toSimple() {
+    return BossSimpleEntity()
+      ..id = id
+      ..name = name
+      ..head = head
+      ..role = role
+      ..top = top
+      ..updateTime = updateTime
+      ..labels = labels
+      ..photoUrl = photoUrl;
   }
 
   @override

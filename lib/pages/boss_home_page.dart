@@ -6,6 +6,7 @@ import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
@@ -16,7 +17,7 @@ import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
@@ -130,7 +131,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   String bossId;
   BossInfoEntity entity;
 
-  var eventDispose;
+  var tackDispose;
 
   @override
   void dispose() {
@@ -139,7 +140,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     scrollController?.dispose();
     controller?.dispose();
 
-    eventDispose?.cancel();
+    tackDispose?.cancel();
 
     DataConfig.getIns().setBossTime(entity.id);
     Global.eventBus.fire(SetBossTimeEvent(entity.id));
@@ -163,7 +164,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   void eventBus() {
-    eventDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+    tackDispose = Global.eventBus.on<BossTackEvent>().listen((event) {
       if (entity.id == event.id) {
         entity.isCollect = event.isFollow;
         setState(() {});
@@ -225,11 +226,14 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     }, onConfirm: () {
       BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+      BossApi.ins().obtainNoFollowBoss(entity.id).flatMap((value) {
+        entity.isCollect = false;
+
+        return BossDbProvider.ins().delete(entity.id);
+      }).listen((event) {
         Get.back();
         Get.back();
 
-        entity.isCollect = false;
         setState(() {});
 
         BaseWidget.showDoFollowChangeDialog(context, false);
@@ -238,8 +242,13 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         userEntity.traceNum--;
         Global.user.setUser(userEntity);
 
-        Global.eventBus.fire(RefreshFollowEvent(
-            id: entity.id, labels: entity.labels, isFollow: false));
+        Global.eventBus.fire(
+          BossTackEvent(
+            id: entity.id,
+            labels: entity.labels,
+            isFollow: false,
+          ),
+        );
 
         JpushApi.ins().deleteTags([entity.id]);
       }, onError: (res) {
@@ -252,18 +261,26 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   void doFollow() {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
 
-    BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
+    BossApi.ins().obtainFollowBoss(entity.id).flatMap((value) {
+      entity.isCollect = true;
+
+      return BossDbProvider.ins().insert(entity.toSimple());
+    }).listen((event) {
       Get.back();
 
-      entity.isCollect = true;
       setState(() {});
 
       UserEntity userEntity = Global.user.user.value;
       userEntity.traceNum++;
       Global.user.setUser(userEntity);
 
-      Global.eventBus.fire(RefreshFollowEvent(
-          id: entity.id, labels: entity.labels, isFollow: true));
+      Global.eventBus.fire(
+        BossTackEvent(
+          id: entity.id,
+          labels: entity.labels,
+          isFollow: true,
+        ),
+      );
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();

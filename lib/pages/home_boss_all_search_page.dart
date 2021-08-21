@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
+import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/refresh_search_boss_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -95,21 +96,29 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
     }, onConfirm: () {
       BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      BossApi.ins().obtainNoFollowBoss(entity.id).listen((event) {
+      BossApi.ins().obtainNoFollowBoss(entity.id).flatMap((value) {
+        entity.isCollect = false;
+
+        return BossDbProvider.ins().delete(entity.id);
+      }).listen((event) {
         Get.back();
         Get.back();
 
         BaseWidget.showDoFollowChangeDialog(context, false);
 
-        entity.isCollect = false;
         setState(() {});
 
         UserEntity userEntity = Global.user.user.value;
         userEntity.traceNum--;
         Global.user.setUser(userEntity);
 
-        Global.eventBus.fire(RefreshFollowEvent(
-            id: entity.id, labels: entity.labels, isFollow: false));
+        Global.eventBus.fire(
+          BossTackEvent(
+            id: entity.id,
+            labels: entity.labels,
+            isFollow: false,
+          ),
+        );
 
         JpushApi.ins().deleteTags([entity.id]);
       }, onError: (res) {
@@ -121,18 +130,26 @@ class _HomeBossAllSearchPageState extends State<HomeBossAllSearchPage>
 
   void doFollow(BossInfoEntity entity) {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
-    BossApi.ins().obtainFollowBoss(entity.id).listen((event) {
+    BossApi.ins().obtainFollowBoss(entity.id).flatMap((value) {
+      entity.isCollect = true;
+
+      return BossDbProvider.ins().insert(entity.toSimple());
+    }).listen((event) {
       Get.back();
 
-      entity.isCollect = true;
       setState(() {});
 
       UserEntity userEntity = Global.user.user.value;
       userEntity.traceNum++;
       Global.user.setUser(userEntity);
 
-      Global.eventBus.fire(RefreshFollowEvent(
-          id: entity.id, labels: entity.labels, isFollow: true));
+      Global.eventBus.fire(
+        BossTackEvent(
+          id: entity.id,
+          labels: entity.labels,
+          isFollow: true,
+        ),
+      );
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();

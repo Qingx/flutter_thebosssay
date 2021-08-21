@@ -14,8 +14,9 @@ import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
+import 'package:flutter_boss_says/event/boss_batch_tack_event.dart';
+import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/on_top_event.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
@@ -40,13 +41,14 @@ class HomeBossContentPage extends StatefulWidget {
 
 class _HomeBossContentPageState extends State<HomeBossContentPage>
     with AutomaticKeepAliveClientMixin {
-  var eventFollowDispose;
+  var tackDispose;
+  var tackBatchDispose;
   var eventTopDispose;
   var eventScrollDispose;
 
   var builderFuture;
   List<BossLabelEntity> mLabels;
-  int mCurrentIndex;
+  String mCurrentLabel;
 
   ScrollController scrollController;
   EasyRefreshController controller;
@@ -63,7 +65,8 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     controller?.dispose();
     scrollController?.dispose();
 
-    eventFollowDispose?.cancel();
+    tackDispose?.cancel();
+    tackBatchDispose?.cancel();
     eventTopDispose?.cancel();
     eventScrollDispose?.cancel();
   }
@@ -72,7 +75,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   void initState() {
     super.initState();
     mLabels = [];
-    mCurrentIndex = 0;
+    mCurrentLabel = "-1";
 
     builderFuture = initData();
 
@@ -84,17 +87,37 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
 
   ///eventBus
   void eventBus() {
-    eventFollowDispose =
-        Global.eventBus.on<RefreshFollowEvent>().listen((event) {
-      if (event.needLoading) {
-        controller.callRefresh();
-      } else {
-        var index = mData.indexWhere((element) => element.id == event.id);
-        if (index != -1) {
-          mData.removeAt(index);
-          setState(() {});
+    tackDispose = Global.eventBus.on<BossTackEvent>().listen((event) {
+      if (event.labels.contains(mCurrentLabel) || mCurrentLabel == "-1") {
+        if (event.isFollow) {
+          BossDbProvider.ins()
+              .getByLabel(mCurrentLabel)
+              .onErrorReturn([]).listen((event) {
+            mData = event;
+            mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+            setState(() {});
+          });
+        } else {
+          var index = mData.indexWhere((element) => element.id == event.id);
+          if (index != -1) {
+            mData.removeAt(index);
+
+            setState(() {});
+          }
         }
       }
+    });
+
+    tackBatchDispose = Global.eventBus.on<BossBatchTackEvent>().listen((event) {
+      BossDbProvider.ins()
+          .getByLabel(mCurrentLabel)
+          .onErrorReturn([]).listen((event) {
+        mData = event;
+        mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+        setState(() {});
+      });
     });
 
     eventTopDispose = Global.eventBus.on<TopOrCancelEvent>().listen((event) {
@@ -106,8 +129,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     });
 
     eventScrollDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
-      if (event.pageName == "boss" &&
-          event.labelId == mLabels[mCurrentIndex].id) {
+      if (event.pageName == "boss" && event.labelId == mCurrentLabel) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
           duration: Duration(milliseconds: 480),
@@ -122,7 +144,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     return LabelDbProvider.ins().getAll().onErrorReturn([]).flatMap((value) {
       mLabels = value;
 
-      return BossDbProvider.ins().getByLabel(mLabels[mCurrentIndex].id);
+      return BossDbProvider.ins().getByLabel(mCurrentLabel);
     }).onErrorReturn([]).flatMap((value) {
       mData = value;
 
@@ -144,10 +166,10 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     }).onErrorReturn([]).flatMap((value) {
       mData = value;
 
-      if (mLabels[mCurrentIndex].id != "-1") {
+      if (mCurrentLabel != "-1") {
         mData = value
             .where(
-              (element) => element.labels.contains(mLabels[mCurrentIndex].id),
+              (element) => element.labels.contains(mCurrentLabel),
             )
             .toList();
       }
@@ -162,15 +184,13 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
 
   ///刷新数据
   void loadData() {
-    BossApi.ins()
-        .obtainFollowBossList("-1", false)
-        .onErrorReturn([]).flatMap((value) {
+    BossApi.ins().obtainFollowBossList("-1", false).flatMap((value) {
       mData = value;
 
-      if (mLabels[mCurrentIndex].id != "-1") {
+      if (mCurrentLabel != "-1") {
         mData = value
             .where(
-              (element) => element.labels.contains(mLabels[mCurrentIndex].id),
+              (element) => element.labels.contains(mCurrentLabel),
             )
             .toList();
       }
@@ -185,6 +205,23 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     }, onError: (res) {
       controller.finishRefresh(success: false);
     });
+  }
+
+  void onClickTab(BossLabelEntity entity) {
+    if (entity.id != mCurrentLabel) {
+      mCurrentLabel = entity.id;
+
+      BossDbProvider.ins()
+          .getByLabel(mCurrentLabel)
+          .onErrorReturn([]).listen((event) {
+        mData = event;
+        setState(() {});
+      });
+    } else {
+      Global.eventBus.fire(
+        ScrollToTopEvent(pageName: "boss", labelId: entity.id),
+      );
+    }
   }
 
   void onSearchClick() {
@@ -236,15 +273,17 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   }
 
   ///取消追踪
-  void doCancelFollow(String id) {
-    var index = mData.indexWhere((element) => element.id == id);
+  void doCancelFollow(BossSimpleEntity entity) {
+    var index = mData.indexWhere((element) => element.id == entity.id);
     if (index != -1) {
       showFollowAskCancelDialog(context, onDismiss: () {
         Get.back();
       }, onConfirm: () {
         BaseWidget.showLoadingAlert("尝试取消...", context);
 
-        BossApi.ins().obtainNoFollowBoss(id).listen((event) {
+        BossApi.ins().obtainNoFollowBoss(entity.id).flatMap((value) {
+          return BossDbProvider.ins().delete(entity.id);
+        }).listen((event) {
           Get.back();
           Get.back();
 
@@ -255,9 +294,14 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           Global.user.setUser(userEntity);
 
           Global.eventBus.fire(
-              RefreshFollowEvent(id: id, isFollow: false, needLoading: false));
+            BossTackEvent(
+              id: entity.id,
+              isFollow: false,
+              labels: entity.labels,
+            ),
+          );
 
-          JpushApi.ins().deleteTags([id]);
+          JpushApi.ins().deleteTags([entity.id]);
         }, onError: (res) {
           Get.back();
           BaseTool.toast(msg: "取消失败,${res.msg}");
@@ -370,7 +414,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     double left = index == 0 ? 16 : 8;
     double right = index == 15 ? 16 : 8;
 
-    bool hasSelect = mLabels[mCurrentIndex].id == entity.id;
+    bool hasSelect = mCurrentLabel == entity.id;
 
     Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
     Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
@@ -387,18 +431,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
         ),
       ),
     ).onClick(() {
-      if (index != mCurrentIndex) {
-        mCurrentIndex = index;
-        BossDbProvider.ins()
-            .getByLabel(mLabels[mCurrentIndex].id)
-            .onErrorReturn([]).listen((event) {
-          mData = event;
-          setState(() {});
-        });
-      } else {
-        Global.eventBus
-            .fire(ScrollToTopEvent(pageName: "boss", labelId: entity.id));
-      }
+      onClickTab(entity);
     });
   }
 
@@ -580,7 +613,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           icon: entity.top
               ? Icons.vertical_align_bottom
               : Icons.vertical_align_top,
-          closeOnTap: false,
+          closeOnTap: true,
           onTap: () {
             var index = mData.indexWhere((element) => element.id == entity.id);
             if (index != -1) {
@@ -593,9 +626,9 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           caption: '取消追踪',
           color: Colors.red,
           icon: Icons.delete,
-          closeOnTap: false,
+          closeOnTap: true,
           onTap: () {
-            doCancelFollow(entity.id);
+            doCancelFollow(entity);
           },
         ),
       ],

@@ -86,7 +86,6 @@ class _SpeechTackPageState extends State<SpeechTackPage>
   Widget builderWidget(BuildContext context, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData && snapshot.data) {
-        Global.hint.setCanUse(true);
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {

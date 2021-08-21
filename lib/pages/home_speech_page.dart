@@ -87,11 +87,9 @@ class _HomeSpeechPageState extends State<HomeSpeechPage>
           fontSize: fontSize, color: fontColor, fontWeight: FontWeight.bold),
       textAlign: TextAlign.start,
     ).onClick(() {
-      if (Global.hint.canUse.value) {
-        mCurrentIndex = index;
-        mPageController.jumpToPage(index);
-        setState(() {});
-      }
+      mCurrentIndex = index;
+      mPageController.jumpToPage(index);
+      setState(() {});
     });
   }
 
@@ -111,8 +109,6 @@ class _HomeSpeechPageState extends State<HomeSpeechPage>
   }
 
   void onSearchClick() {
-    if (Global.hint.canUse.value) {
-      Get.to(() => SearchArticlePage());
-    }
+    Get.to(() => SearchArticlePage());
   }
 }

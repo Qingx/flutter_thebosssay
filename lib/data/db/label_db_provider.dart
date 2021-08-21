@@ -1,5 +1,6 @@
 import 'package:flutter_boss_says/data/db/base_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
@@ -57,11 +58,6 @@ class LabelDbProvider extends BaseDbProvider {
     return await batch.commit(continueOnError: true);
   }
 
-  ///批量插入
-  Observable<List<dynamic>> insertList(List<BossLabelEntity> list) {
-    return Observable.fromFuture(_batchInsert(list));
-  }
-
   Future<List<BossLabelEntity>> _queryAll() async {
     Database db = await getDataBase();
     List<Map<String, dynamic>> maps = await db.query(name);
@@ -69,12 +65,29 @@ class LabelDbProvider extends BaseDbProvider {
 
     if (!maps.isNullOrEmpty()) {
       list = maps.map((e) => BossLabelEntity.toBean(e)).toList();
+      list.removeWhere((element) => element.id == "-1");
+      list = [BaseEmpty.emptyLabel, ...list];
     }
     return list;
+  }
+
+  Future<int> _deleteAll() async {
+    Database db = await getDataBase();
+    return db.delete(name);
+  }
+
+  ///批量插入
+  Observable<List<dynamic>> insertList(List<BossLabelEntity> list) {
+    return Observable.fromFuture(_batchInsert(list));
   }
 
   ///获取全部
   Observable<List<BossLabelEntity>> getAll() {
     return Observable.fromFuture(_queryAll());
+  }
+
+  ///删除全部
+  Observable<int> deleteAll() {
+    return Observable.fromFuture(_deleteAll());
   }
 }

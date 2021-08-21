@@ -3,16 +3,14 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
-import 'package:flutter_boss_says/data/entity/article_entity.dart';
-import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/boss_batch_tack_event.dart';
+import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
-import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
@@ -49,7 +47,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
   ScrollController scrollController;
   EasyRefreshController controller;
 
-  var followDispose;
+  var tackDispose;
+  var tackBatchDispose;
   var onTopDispose;
   var articleDispose;
   var bossTimeDispose;
@@ -64,7 +63,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     controller?.dispose();
     scrollController?.dispose();
 
-    followDispose?.cancel();
+    tackDispose?.cancel();
+    tackBatchDispose?.cancel();
     onTopDispose?.cancel();
     articleDispose?.cancel();
     bossTimeDispose?.cancel();
@@ -87,10 +87,50 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
   }
 
   void eventBus() {
-    followDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
+    tackDispose = Global.eventBus.on<BossTackEvent>().listen((event) {
       if (widget.mLabel == "-1" || event.labels.contains(widget.mLabel)) {
-        controller.callRefresh();
+        BossDbProvider.ins()
+            .getLastWithLabel(widget.mLabel)
+            .onErrorReturn([]).flatMap((value) {
+          mBossList = value;
+          pageParam.reset();
+
+          return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
+        }).flatMap((value) {
+          hasData = value.hasData;
+          totalArticleNumber = value.total;
+          concat(value.records, false);
+
+          DataConfig.getIns().tackHasData = hasData;
+          DataConfig.getIns().tackTotalNum = totalArticleNumber;
+
+          return ArticleDbProvider.ins().insertList(value.records);
+        }).onErrorReturn([]).listen((event) {
+          setState(() {});
+        });
       }
+    });
+
+    tackBatchDispose = Global.eventBus.on<BossBatchTackEvent>().listen((event) {
+      BossDbProvider.ins()
+          .getLastWithLabel(widget.mLabel)
+          .onErrorReturn([]).flatMap((value) {
+        mBossList = value;
+        pageParam.reset();
+
+        return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
+      }).flatMap((value) {
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+
+        DataConfig.getIns().tackHasData = hasData;
+        DataConfig.getIns().tackTotalNum = totalArticleNumber;
+
+        return ArticleDbProvider.ins().insertList(value.records);
+      }).onErrorReturn([]).listen((event) {
+        setState(() {});
+      });
     });
 
     onTopDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
@@ -161,9 +201,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     if (!loadMore) {
       pageParam?.reset();
 
-      BossApi.ins()
-          .obtainFollowBossList("-1", false)
-          .onErrorReturn([]).flatMap((value) {
+      BossApi.ins().obtainFollowBossList("-1", false).flatMap((value) {
         if (widget.mLabel == "-1") {
           mBossList = value
               .where(

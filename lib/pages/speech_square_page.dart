@@ -82,7 +82,6 @@ class _SpeechSquarePageState extends State<SpeechSquarePage>
   Widget builderWidget(BuildContext context, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData && snapshot.data) {
-        Global.hint.setCanUse(true);
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {

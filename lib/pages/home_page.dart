@@ -211,13 +211,9 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     ).onClick(() {
-      if (Global.hint.canUse.value) {
-        mCurrentIndex = index;
-        mPageController.jumpToPage(mCurrentIndex);
-        setState(() {});
-      } else {
-        BaseTool.toast(msg: "网络异常");
-      }
+      mCurrentIndex = index;
+      mPageController.jumpToPage(mCurrentIndex);
+      setState(() {});
     });
   }
 

@@ -133,9 +133,8 @@ class _StartGuidePageState extends State<StartGuidePage> {
         Get.offAll(() => HomePage());
       },
       onError: (res) {
-        print("ArticleDbError=>$res");
         Get.back();
-        BaseTool.toast(msg: "追踪成功");
+        BaseTool.toast(msg: "追踪失败");
       },
     );
   }
