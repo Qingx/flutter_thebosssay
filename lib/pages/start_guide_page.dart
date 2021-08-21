@@ -123,6 +123,9 @@ class _StartGuidePageState extends State<StartGuidePage> {
     }).onErrorReturn([]).flatMap((value) {
       return BossApi.ins().obtainTackArticle(PageParam(), "-1");
     }).flatMap((value) {
+      DataConfig.getIns().tackTotalNum = value.total;
+      DataConfig.getIns().tackHasData = value.hasData;
+
       return ArticleDbProvider.ins().insertList(value.records);
     }).listen(
       (event) {

@@ -183,11 +183,10 @@ class _HomeMinePageState extends State<HomeMinePage>
         break;
       case 5:
         Get.to(() => ContactAuthorPage());
-        // dbInsert();
         break;
       case 6:
         // showStore();
-        dbGet();
+        doTest();
         break;
       case 7:
         onClickClear();
@@ -198,23 +197,9 @@ class _HomeMinePageState extends State<HomeMinePage>
     }
   }
 
-  void dbInsert() {
-  }
-
-  void dbGet() {
-    BossDbProvider.ins().getAll().then((value) {
-      print("BossDb=>$value");
-      print("BossDb=>${value.length}");
-    });
-
-    LabelDbProvider.ins().getAll().then((value) {
-      print("LabelDb=>$value");
-      print("LabelDb=>${value.length}");
-    });
-
-    ArticleDbProvider.ins().getAll().then((value) {
-      print("ArticleDb=>$value");
-      print("ArticleDb=>${value.length}");
+  void doTest() {
+    BossDbProvider.ins().getAll().listen((event) {
+      print(event);
     });
   }
 

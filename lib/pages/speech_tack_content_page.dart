@@ -78,7 +78,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     totalArticleNumber = 0;
     mBossList = [];
 
-    builderFuture = loadInitData();
+    builderFuture = widget.mLabel == "-1" ? initAllData() : initLabelData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -88,7 +88,9 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
   void eventBus() {
     followDispose = Global.eventBus.on<RefreshFollowEvent>().listen((event) {
-      controller.callRefresh();
+      if (widget.mLabel == "-1" || event.labels.contains(widget.mLabel)) {
+        controller.callRefresh();
+      }
     });
 
     onTopDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
@@ -119,53 +121,93 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     });
   }
 
-  Future<List<ArticleSimpleEntity>> loadInitData() {
+  ///当前页为全部时
+  Future<dynamic> initAllData() {
     pageParam?.reset();
 
-    return Observable.fromFuture(BossDbProvider.ins().getAll())
-        .flatMap((value) {
+    return BossDbProvider.ins()
+        .getLastWithLabel(widget.mLabel)
+        .onErrorReturn([]).flatMap((value) {
       mBossList = value;
-      return Observable.fromFuture(ArticleDbProvider.ins().getAll());
+
+      return ArticleDbProvider.ins().getAll();
+    }).onErrorReturn([]).doOnData((event) {
+      pageParam.next(1);
+      totalArticleNumber = DataConfig.getIns().tackTotalNum;
+      hasData = DataConfig.getIns().tackHasData;
+      concat(event, false);
+    }).last;
+  }
+
+  ///当前页为其他时
+  Future<dynamic> initLabelData() {
+    pageParam?.reset();
+
+    return BossDbProvider.ins()
+        .getLastWithLabel(widget.mLabel)
+        .onErrorReturn([]).flatMap((value) {
+      mBossList = value;
+
+      return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
     }).doOnData((event) {
       hasData = true;
-      totalArticleNumber = 250;
-      concat(event, false);
+      totalArticleNumber = event.total;
+      concat(event.records, false);
     }).last;
   }
 
   @override
   void loadData(bool loadMore) {
-    // if (!loadMore) {
-    //   pageParam?.reset();
-    //
-    //   BossApi.ins()
-    //       .obtainFollowBossList(widget.mLabel, true)
-    //       .onErrorReturn([]).flatMap((value) {
-    //     mBossList = value;
-    //
-    //     return BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel);
-    //   }).listen((event) {
-    //     hasData = event.hasData;
-    //     totalArticleNumber = event.total;
-    //     concat(event.records, false);
-    //     setState(() {});
-    //
-    //     controller.finishRefresh(success: true);
-    //   }, onError: (res) {
-    //     controller.finishRefresh(success: false);
-    //   });
-    // } else {
-    //   BossApi.ins().obtainFollowArticle(pageParam, widget.mLabel).listen(
-    //       (event) {
-    //     hasData = event.hasData;
-    //     concat(event.records, true);
-    //     setState(() {});
-    //
-    //     controller.finishLoad(success: true);
-    //   }, onError: (res) {
-    //     controller.finishLoad(success: false);
-    //   });
-    // }
+    if (!loadMore) {
+      pageParam?.reset();
+
+      BossApi.ins()
+          .obtainFollowBossList("-1", false)
+          .onErrorReturn([]).flatMap((value) {
+        if (widget.mLabel == "-1") {
+          mBossList = value
+              .where(
+                (element) => BaseTool.isLatest(element.updateTime),
+              )
+              .toList();
+        } else {
+          mBossList = value
+              .where((element) =>
+                  element.labels.contains(widget.mLabel) &&
+                  BaseTool.isLatest(element.updateTime))
+              .toList();
+        }
+        return BossDbProvider.ins().insertList(value);
+      }).onErrorReturn([]).flatMap((value) {
+        return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
+      }).flatMap((value) {
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+
+        DataConfig.getIns().tackTotalNum = totalArticleNumber;
+        DataConfig.getIns().tackHasData = hasData;
+
+        return widget.mLabel == "-1"
+            ? ArticleDbProvider.ins().insertList(value.records)
+            : Observable.just(1);
+      }).listen((event) {
+        setState(() {});
+        controller.finishRefresh(success: true);
+      }, onError: (res) {
+        controller.finishRefresh(success: false);
+      });
+    } else {
+      BossApi.ins().obtainTackArticle(pageParam, widget.mLabel).listen((event) {
+        hasData = event.hasData;
+        concat(event.records, true);
+        setState(() {});
+
+        controller.finishLoad(success: true);
+      }, onError: (res) {
+        controller.finishLoad(success: false);
+      });
+    }
   }
 
   @override
@@ -182,7 +224,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture =
+              widget.mLabel == "-1" ? initAllData() : initLabelData();
           setState(() {});
         });
       }

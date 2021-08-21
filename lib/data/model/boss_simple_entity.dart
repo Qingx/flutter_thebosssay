@@ -32,7 +32,7 @@ class BossSimpleEntity with JsonConvert<BossSimpleEntity> {
       'name': name,
       'head': head,
       'role': role,
-      'top': top ? 1 : 0,
+      'top': top ? "1" : "0",
       'updateTime': updateTime,
       'labels': convert.json.encode(labels),
       'photoUrl': convert.json.encode(photoUrl)
@@ -45,7 +45,7 @@ class BossSimpleEntity with JsonConvert<BossSimpleEntity> {
       ..name = json["name"]
       ..head = json["head"]
       ..role = json["role"]
-      ..top = json["top"] == 1
+      ..top = json["top"] == "1"
       ..updateTime = json["updateTime"]
       ..labels = (convert.json.decode(json["labels"]) as List<dynamic>)
           .map((e) => e.toString())

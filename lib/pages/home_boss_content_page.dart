@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
+import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
+import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
@@ -16,19 +18,21 @@ import 'package:flutter_boss_says/event/on_top_event.dart';
 import 'package:flutter_boss_says/event/refresh_follow_event.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
+import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
+import 'package:flutter_boss_says/pages/search_boss_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class HomeBossContentPage extends StatefulWidget {
-  String label;
-
-  HomeBossContentPage(this.label, {Key key}) : super(key: key);
+  HomeBossContentPage({Key key}) : super(key: key);
 
   @override
   _HomeBossContentPageState createState() => _HomeBossContentPageState();
@@ -41,6 +45,8 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   var eventScrollDispose;
 
   var builderFuture;
+  List<BossLabelEntity> mLabels;
+  int mCurrentIndex;
 
   ScrollController scrollController;
   EasyRefreshController controller;
@@ -65,8 +71,10 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   @override
   void initState() {
     super.initState();
+    mLabels = [];
+    mCurrentIndex = 0;
 
-    builderFuture = loadInitData();
+    builderFuture = initData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -98,7 +106,8 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     });
 
     eventScrollDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
-      if (event.pageName == "boss" && event.labelId == widget.label) {
+      if (event.pageName == "boss" &&
+          event.labelId == mLabels[mCurrentIndex].id) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
           duration: Duration(milliseconds: 480),
@@ -109,20 +118,67 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   }
 
   ///初始化获取数据
-  Future<List<BossSimpleEntity>> loadInitData() {
-    return BossApi.ins()
-        .obtainFollowBossList(widget.label, false)
-        .doOnData((event) {
-      mData = event;
-    }).doOnError((res) {
-      print(res.msg);
+  Future<bool> initData() {
+    return LabelDbProvider.ins().getAll().onErrorReturn([]).flatMap((value) {
+      mLabels = value;
+
+      return BossDbProvider.ins().getByLabel(mLabels[mCurrentIndex].id);
+    }).onErrorReturn([]).flatMap((value) {
+      mData = value;
+
+      mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+      return Observable.just(!mLabels.isLabelEmpty());
+    }).last;
+  }
+
+  ///初始化获取数据
+  Future<bool> errorLoadData() {
+    return BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      mLabels = value;
+
+      return LabelDbProvider.ins().insertList(mLabels);
+    }).onErrorReturn([]).flatMap((value) {
+      return BossApi.ins().obtainFollowBossList("-1", false);
+    }).onErrorReturn([]).flatMap((value) {
+      mData = value;
+
+      if (mLabels[mCurrentIndex].id != "-1") {
+        mData = value
+            .where(
+              (element) => element.labels.contains(mLabels[mCurrentIndex].id),
+            )
+            .toList();
+      }
+
+      mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+      return BossDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).flatMap((value) {
+      return Observable.just(!mLabels.isLabelEmpty());
     }).last;
   }
 
   ///刷新数据
   void loadData() {
-    BossApi.ins().obtainFollowBossList(widget.label, false).listen((event) {
-      mData = event;
+    BossApi.ins()
+        .obtainFollowBossList("-1", false)
+        .onErrorReturn([]).flatMap((value) {
+      mData = value;
+
+      if (mLabels[mCurrentIndex].id != "-1") {
+        mData = value
+            .where(
+              (element) => element.labels.contains(mLabels[mCurrentIndex].id),
+            )
+            .toList();
+      }
+
+      mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+      return BossDbProvider.ins().insertList(value);
+    }).onErrorReturn([]).listen((event) {
       setState(() {});
 
       controller.finishRefresh(success: true);
@@ -131,14 +187,20 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     });
   }
 
+  void onSearchClick() {
+    Get.to(() => SearchBossPage());
+  }
+
   ///置顶
   void doAddTop(String id) {
     var index = mData.indexWhere((element) => element.id == id);
     if (index != -1) {
-      UserApi.ins().obtainBossTopOrMove(id, true).listen((event) {
+      UserApi.ins().obtainBossTopOrMove(id, true).flatMap((value) {
         var entity = mData[index];
         entity.top = true;
 
+        return BossDbProvider.ins().update(entity);
+      }).listen((event) {
         mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
         setState(() {});
@@ -149,7 +211,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           curve: Curves.ease,
         );
       }, onError: (res) {
-        BaseTool.toast(msg: "操作失败，${res.msg}");
+        BaseTool.toast(msg: "操作失败");
       });
     }
   }
@@ -158,15 +220,17 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   void doCancelTop(String id) {
     var index = mData.indexWhere((element) => element.id == id);
     if (index != -1) {
-      UserApi.ins().obtainBossTopOrMove(id, false).listen((event) {
+      UserApi.ins().obtainBossTopOrMove(id, false).flatMap((value) {
         var entity = mData[index];
         entity.top = false;
 
+        return BossDbProvider.ins().update(entity);
+      }).listen((event) {
         mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
         setState(() {});
       }, onError: (res) {
-        BaseTool.toast(msg: "操作失败，${res.msg}");
+        BaseTool.toast(msg: "操作失败");
       });
     }
   }
@@ -204,20 +268,19 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<BossSimpleEntity>>(
+    return FutureBuilder<bool>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(
-      BuildContext context, AsyncSnapshot<List<BossSimpleEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot<bool> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
-      if (snapshot.hasData) {
+      if (snapshot.hasData && snapshot.data) {
         return contentWidget();
       } else
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture = errorLoadData();
           setState(() {});
         });
     } else {
@@ -228,12 +291,150 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   Widget contentWidget() {
     return Container(
       color: BaseColor.pageBg,
-      child: BaseWidget.refreshWidget(
-        slivers: [bodyWidget()],
-        controller: controller,
-        scrollController: scrollController,
-        loadData: loadData,
+      child: Column(
+        children: [
+          BaseWidget.statusBar(context, true),
+          titleTabBar(),
+          tabWidget(),
+          Expanded(
+            child: Stack(
+              children: [
+                refreshWidget().positionOn(
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                ),
+                floatWidget().positionOn(right: 16, bottom: 16),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget titleTabBar() {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      color: BaseColor.pageBg,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          titleWidget().marginOn(left: 16),
+          Expanded(child: SizedBox()),
+          Image.asset(
+            R.assetsImgSearch,
+            width: 20,
+            height: 20,
+          ).onClick(onSearchClick).marginOn(right: 16, bottom: 8)
+        ],
+      ),
+    );
+  }
+
+  Widget titleWidget() {
+    return Text(
+      "我的追踪",
+      style: TextStyle(
+        fontSize: 28,
+        color: BaseColor.textDark,
+        fontWeight: FontWeight.bold,
+      ),
+      textAlign: TextAlign.start,
+    );
+  }
+
+  Widget tabWidget() {
+    return Container(
+      height: 52,
+      padding: EdgeInsets.only(top: 12, bottom: 12),
+      child: MediaQuery.removePadding(
+        removeTop: true,
+        removeBottom: true,
+        context: context,
+        child: ListView.builder(
+          physics: BouncingScrollPhysics(),
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return tabItemWidget(mLabels[index], index);
+          },
+          itemCount: mLabels.length,
+        ),
+      ),
+    );
+  }
+
+  Widget tabItemWidget(BossLabelEntity entity, int index) {
+    double left = index == 0 ? 16 : 8;
+    double right = index == 15 ? 16 : 8;
+
+    bool hasSelect = mLabels[mCurrentIndex].id == entity.id;
+
+    Color bgColor = hasSelect ? BaseColor.accent : BaseColor.accentLight;
+    Color fontColor = hasSelect ? Colors.white : BaseColor.accent;
+
+    return Container(
+      margin: EdgeInsets.only(left: left, right: right),
+      padding: EdgeInsets.only(left: 12, right: 12),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(14)), color: bgColor),
+      child: Center(
+        child: Text(
+          entity.name,
+          style: TextStyle(color: fontColor, fontSize: 14),
+        ),
+      ),
+    ).onClick(() {
+      if (index != mCurrentIndex) {
+        mCurrentIndex = index;
+        BossDbProvider.ins()
+            .getByLabel(mLabels[mCurrentIndex].id)
+            .onErrorReturn([]).listen((event) {
+          mData = event;
+          setState(() {});
+        });
+      } else {
+        Global.eventBus
+            .fire(ScrollToTopEvent(pageName: "boss", labelId: entity.id));
+      }
+    });
+  }
+
+  Widget floatWidget() {
+    return Container(
+      alignment: Alignment.center,
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: BaseColor.accent,
+        boxShadow: [
+          BoxShadow(
+              color: BaseColor.accentShadow,
+              offset: Offset(0.0, 4.0), //阴影x,y轴偏移量
+              blurRadius: 4, //阴影模糊程度
+              spreadRadius: 0 //阴影扩散程度
+              )
+        ],
+      ),
+      child: Icon(
+        Icons.add,
+        color: Colors.white,
+        size: 24,
+      ),
+    ).onClick(() {
+      Get.to(() => HomeBossAllPage());
+    });
+  }
+
+  Widget refreshWidget() {
+    return BaseWidget.refreshWidget(
+      slivers: [bodyWidget()],
+      controller: controller,
+      scrollController: scrollController,
+      loadData: loadData,
     );
   }
 

@@ -62,8 +62,7 @@ class LabelDbProvider extends BaseDbProvider {
     return Observable.fromFuture(_batchInsert(list));
   }
 
-  ///获取全部
-  Future<List<BossLabelEntity>> getAll() async {
+  Future<List<BossLabelEntity>> _queryAll() async {
     Database db = await getDataBase();
     List<Map<String, dynamic>> maps = await db.query(name);
     List<BossLabelEntity> list = [];
@@ -72,5 +71,10 @@ class LabelDbProvider extends BaseDbProvider {
       list = maps.map((e) => BossLabelEntity.toBean(e)).toList();
     }
     return list;
+  }
+
+  ///获取全部
+  Observable<List<BossLabelEntity>> getAll() {
+    return Observable.fromFuture(_queryAll());
   }
 }

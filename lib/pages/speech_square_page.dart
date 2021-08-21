@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/scroll_top_event.dart';
@@ -45,28 +46,29 @@ class _SpeechSquarePageState extends State<SpeechSquarePage>
     mCurrentIndex = 0;
     mPageController = PageController();
 
-    builderFuture = loadInitData();
+    builderFuture = initData();
   }
 
-  Future<bool> loadInitData() {
-    bool canUse = !DataConfig.getIns().bossLabels.isLabelEmpty();
+  Future<bool> initData() {
+    return LabelDbProvider.ins().getAll().flatMap((value) {
+      mLabels = value;
+      mPages = mLabels.map((e) => SpeechSquareContentPage(e.id)).toList();
 
-    if (canUse) {
-      return Observable.just(true).doOnData((event) {
-        mLabels = DataConfig.getIns().bossLabels;
-        mPages = mLabels.map((e) => SpeechSquareContentPage(e.id)).toList();
-      }).last;
-    } else {
-      return BossApi.ins().obtainBossLabels().flatMap((value) {
-        value = [BaseEmpty.emptyLabel, ...value];
-        mLabels = value;
+      return Observable.just(!mLabels.isLabelEmpty());
+    }).last;
+  }
 
-        DataConfig.getIns().setBossLabels = mLabels;
-        mPages = mLabels.map((e) => SpeechSquareContentPage(e.id)).toList();
+  Future<bool> loadData() {
+    return BossApi.ins().obtainBossLabels().flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      mLabels = value;
 
-        return Observable.just(!mLabels.isLabelEmpty());
-      }).last;
-    }
+      return LabelDbProvider.ins().insertList(mLabels);
+    }).onErrorReturn([]).flatMap((value) {
+      return Observable.just(!mLabels.isLabelEmpty());
+    }).doOnData((event) {
+      mPages = mLabels.map((e) => SpeechSquareContentPage(e.id)).toList();
+    }).last;
   }
 
   @override
@@ -84,7 +86,7 @@ class _SpeechSquarePageState extends State<SpeechSquarePage>
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture = loadData();
           setState(() {});
         });
       }

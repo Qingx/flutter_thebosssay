@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
@@ -47,16 +46,30 @@ class _SpeechTackPageState extends State<SpeechTackPage>
     mLabels = [];
     mPages = [];
 
-    builderFuture = loadInitData();
+    builderFuture = initData();
 
     mPageController = PageController();
   }
 
-  Future<bool> loadInitData() async {
-    return Observable.fromFuture(LabelDbProvider.ins().getAll())
-        .flatMap((value) {
+  Future<bool> initData() async {
+    return LabelDbProvider.ins().getAll().onErrorReturn([]).flatMap((value) {
       mLabels = value;
-      return Observable.just(!value.isLabelEmpty());
+
+      return Observable.just(!mLabels.isLabelEmpty());
+    }).doOnData((event) {
+      mPages = mLabels.map((e) => SpeechTackContentPage(e.id)).toList();
+    }).last;
+  }
+
+  ///label为空时 即初始化错误时加载数据
+  Future<bool> loadData() async {
+    return BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+      value = [BaseEmpty.emptyLabel, ...value];
+      mLabels = value;
+
+      return LabelDbProvider.ins().insertList(mLabels);
+    }).onErrorReturn([]).flatMap((value) {
+      return Observable.just(!mLabels.isLabelEmpty());
     }).doOnData((event) {
       mPages = mLabels.map((e) => SpeechTackContentPage(e.id)).toList();
     }).last;
@@ -77,7 +90,7 @@ class _SpeechTackPageState extends State<SpeechTackPage>
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture = loadData();
           setState(() {});
         });
       }
@@ -113,6 +126,7 @@ class _SpeechTackPageState extends State<SpeechTackPage>
 
   Widget tabWidget() {
     return Container(
+      alignment: Alignment.centerLeft,
       height: 52,
       padding: EdgeInsets.only(top: 12, bottom: 12),
       child: MediaQuery.removePadding(

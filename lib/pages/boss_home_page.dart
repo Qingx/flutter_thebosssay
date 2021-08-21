@@ -238,8 +238,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         userEntity.traceNum--;
         Global.user.setUser(userEntity);
 
-        Global.eventBus
-            .fire(RefreshFollowEvent(id: entity.id, isFollow: false));
+        Global.eventBus.fire(RefreshFollowEvent(
+            id: entity.id, labels: entity.labels, isFollow: false));
 
         JpushApi.ins().deleteTags([entity.id]);
       }, onError: (res) {
@@ -262,7 +262,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       userEntity.traceNum++;
       Global.user.setUser(userEntity);
 
-      Global.eventBus.fire(RefreshFollowEvent(id: entity.id, isFollow: true));
+      Global.eventBus.fire(RefreshFollowEvent(
+          id: entity.id, labels: entity.labels, isFollow: true));
 
       showAskPushDialog(context, onConfirm: () {
         Get.back();

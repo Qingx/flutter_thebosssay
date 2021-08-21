@@ -4,7 +4,6 @@ import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
-import 'dart:convert' as convert;
 
 class BossDbProvider extends BaseDbProvider {
   final String name = 'TackBoss';
@@ -55,6 +54,40 @@ class BossDbProvider extends BaseDbProvider {
     );
   }
 
+  Future<int> _update(BossSimpleEntity model) async {
+    Database db = await getDataBase();
+    return await db.update(
+      name,
+      model.toMap(),
+      where: '$columnId = ?',
+      whereArgs: [model.id],
+    );
+  }
+
+  Future<int> _delete(String id) async {
+    Database db = await getDataBase();
+    return await db.delete(
+      name,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
+  ///插入到数据库
+  Observable<int> insert(BossSimpleEntity model) {
+    return Observable.fromFuture(_insert(model));
+  }
+
+  ///更新到数据库
+  Observable<int> update(BossSimpleEntity model) {
+    return Observable.fromFuture(_update(model));
+  }
+
+  ///删除一条数据
+  Observable<int> delete(String id) {
+    return Observable.fromFuture(_delete(id));
+  }
+
   Future<List<dynamic>> _batchInsert(List<BossSimpleEntity> list) async {
     Database db = await getDataBase();
     Batch batch = db.batch();
@@ -75,8 +108,7 @@ class BossDbProvider extends BaseDbProvider {
     return Observable.fromFuture(_batchInsert(list));
   }
 
-  ///获取全部
-  Future<List<BossSimpleEntity>> getAll() async {
+  Future<List<BossSimpleEntity>> _queryAll() async {
     Database db = await getDataBase();
     List<Map<String, dynamic>> maps = await db.query(name);
     List<BossSimpleEntity> list = [];
@@ -87,21 +119,29 @@ class BossDbProvider extends BaseDbProvider {
     return list;
   }
 
-  ///通过标签获取列表
-  Future<List<BossSimpleEntity>> getByLabel(String label) async {
-    List<BossSimpleEntity> list = [];
-    list = await getAll();
+  ///获取全部
+  Observable<List<BossSimpleEntity>> getAll() {
+    return Observable.fromFuture(_queryAll());
+  }
 
-    if (!list.isNullOrEmpty()) {
+  Future<List<BossSimpleEntity>> _getByLabel(String label) async {
+    List<BossSimpleEntity> list = [];
+    list = await _queryAll();
+
+    if (!list.isNullOrEmpty() && label != "-1") {
       list = list.where((element) => element.labels.contains(label)).toList();
     }
     return list;
   }
 
-  ///通过标签获取最近更新列表
-  Future<List<BossSimpleEntity>> getByLabelWithLatest(String label) async {
+  ///通过标签获取列表
+  Observable<List<BossSimpleEntity>> getByLabel(String label) {
+    return Observable.fromFuture(_getByLabel(label));
+  }
+
+  Future<List<BossSimpleEntity>> _getLastWithLabel(String label) async {
     List<BossSimpleEntity> list = [];
-    list = await getByLabel(label);
+    list = await _getByLabel(label);
 
     if (!list.isNullOrEmpty()) {
       list = list
@@ -109,5 +149,10 @@ class BossDbProvider extends BaseDbProvider {
           .toList();
     }
     return list;
+  }
+
+  ///通过标签获取最近更新列表
+  Observable<List<BossSimpleEntity>> getLastWithLabel(String label) {
+    return Observable.fromFuture(_getLastWithLabel(label));
   }
 }

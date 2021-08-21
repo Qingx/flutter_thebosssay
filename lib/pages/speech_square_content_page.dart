@@ -60,7 +60,7 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
     super.initState();
     mBanners = [];
 
-    builderFuture = loadInitData();
+    builderFuture = initData();
 
     scrollController = ScrollController();
     controller = EasyRefreshController();
@@ -81,7 +81,7 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
   }
 
   ///初始化获取数据
-  Future<WlPage.Page<ArticleEntity>> loadInitData() {
+  Future<WlPage.Page<ArticleEntity>> initData() {
     return BossApi.ins().obtainBanner().onErrorReturn([]).flatMap((value) {
       mBanners = value;
 
@@ -140,7 +140,7 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
         return contentWidget();
       } else
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture = initData();
           setState(() {});
         });
     } else {

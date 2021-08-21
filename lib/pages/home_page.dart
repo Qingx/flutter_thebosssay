@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
-import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/scheme_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/version_update_dialog.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
-import 'package:flutter_boss_says/pages/home_boss_page.dart';
+import 'package:flutter_boss_says/pages/home_boss_content_page.dart';
 import 'package:flutter_boss_says/pages/home_mine_page.dart';
 import 'package:flutter_boss_says/pages/home_speech_page.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
@@ -22,7 +22,6 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -59,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       [R.assetsImgBossNormal, R.assetsImgBossSelect],
       [R.assetsImgMineNormal, R.assetsImgMineSelect]
     ];
-    mPages = [HomeSpeechPage(), HomeBossPage(), HomeMinePage()];
+    mPages = [HomeSpeechPage(), HomeBossContentPage(), HomeMinePage()];
 
     mPageController = PageController();
 

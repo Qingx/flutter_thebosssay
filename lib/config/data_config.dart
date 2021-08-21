@@ -89,6 +89,22 @@ class DataConfig extends BaseConfig {
 
   List<BossLabelEntity> get bossLabels => spInstance
       .getObject<List<BossLabelEntity>>(DataKeys.K_BOSS_LABELS, defaultVal: []);
+
+  ///设置追踪页文章总数
+  set tackTotalNum(int number) =>
+      spInstance.putInt(DataKeys.K_TACK_TOTAL_NUM, number);
+
+  ///获取追踪页文章总数
+  int get tackTotalNum =>
+      spInstance.getInt(DataKeys.K_TACK_TOTAL_NUM, defaultVal: 0);
+
+  ///设置追踪页文章是否还有数据
+  set tackHasData(bool hasData) =>
+      spInstance.putBool(DataKeys.K_TACK_HAS_DATA, hasData);
+
+  ///获取追踪页文章是否还有数据
+  bool get tackHasData =>
+      spInstance.getBool(DataKeys.K_TACK_HAS_DATA, defaultVal: false);
 }
 
 class DataKeys {
@@ -96,6 +112,8 @@ class DataKeys {
   static const K_BOSS_LABELS = "K_BOSS_LABELS";
   static const K_IS_SHANGJIA = "K_IS_SHANGJIA";
   static const K_BOSS_TIME = "K_BOSS_TIME";
+  static const K_TACK_TOTAL_NUM = "K_TACK_TOTAL_NUM";
+  static const K_TACK_HAS_DATA = "K_TACK_HAS_DATA";
 }
 
 class BaseConfig {

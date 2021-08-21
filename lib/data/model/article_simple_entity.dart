@@ -23,7 +23,6 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
     return articleTime ?? releaseTime;
   }
 
-
   @override
   String toString() {
     return 'ArticleSimpleEntity{id: $id, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, readCount: $readCount, collect: $collect, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossId: $bossId, bossName: $bossName, bossHead: $bossHead, bossRole: $bossRole}';
@@ -34,8 +33,8 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
       'id': id ?? "",
       'title': title ?? "",
       'descContent': descContent ?? "",
-      'isCollect': isCollect ? 1 : 0,
-      'isRead': isRead ? 1 : 0,
+      'isCollect': isCollect ? "1" : "0",
+      'isRead': isRead ? "1" : "0",
       'readCount': readCount ?? 0,
       'collect': collect ?? 0,
       'releaseTime': releaseTime ?? 0,
@@ -53,6 +52,8 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
       ..id = json["id"]
       ..title = json["title"]
       ..descContent = json["descContent"]
+      ..isCollect = json["isCollect"] == "1"
+      ..isRead = json["isRead"] == "1"
       ..readCount = json["readCount"]
       ..collect = json["collect"]
       ..releaseTime = json["releaseTime"]

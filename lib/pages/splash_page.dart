@@ -97,6 +97,9 @@ class _SplashPageState extends State<SplashPage> {
     }).onErrorReturn([]).flatMap((value) {
       return BossApi.ins().obtainTackArticle(PageParam(), "-1");
     }).flatMap((value) {
+      DataConfig.getIns().tackTotalNum = value.total;
+      DataConfig.getIns().tackHasData = value.hasData;
+
       return ArticleDbProvider.ins().insertList(value.records);
     }).onErrorReturn([]).listen(
       (event) {

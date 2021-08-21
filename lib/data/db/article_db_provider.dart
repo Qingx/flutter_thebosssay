@@ -100,7 +100,7 @@ class ArticleDbProvider extends BaseDbProvider {
   }
 
   ///获取全部
-  Future<List<ArticleSimpleEntity>> getAll() async {
+  Future<List<ArticleSimpleEntity>> _queryAll() async {
     Database db = await getDataBase();
     List<Map<String, dynamic>> maps = await db.query(name);
     List<ArticleSimpleEntity> list = [];
@@ -109,5 +109,10 @@ class ArticleDbProvider extends BaseDbProvider {
       list = maps.map((e) => ArticleSimpleEntity.toBean(e)).toList();
     }
     return list;
+  }
+
+  ///获取全部
+  Observable<List<ArticleSimpleEntity>> getAll() {
+    return Observable.fromFuture(_queryAll());
   }
 }
