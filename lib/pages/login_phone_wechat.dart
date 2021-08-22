@@ -70,6 +70,8 @@ class _LoginPhoneWechatPageState extends State<LoginPhoneWechatPage> {
       BaseWidget.showLoadingAlert("正在尝试登录...", context);
 
       UserApi.ins().obtainWechatLogin(code).listen((event) {
+        DataConfig.getIns().fromSplash = false;
+
         UserConfig.getIns().token = event.token;
         Global.user.setUser(event.userInfo);
 

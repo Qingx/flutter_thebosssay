@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
@@ -78,8 +79,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     totalArticleNumber = 0;
     mBossList = [];
 
-    builderFuture = widget.mLabel == "-1" ? initAllData() : initLabelData();
-
+    builderFuture = futureData();
     scrollController = ScrollController();
     controller = EasyRefreshController();
 
@@ -161,6 +161,14 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     });
   }
 
+  Future<dynamic> futureData() {
+    return DataConfig.getIns().fromSplash
+        ? widget.mLabel == "-1"
+            ? initAllData()
+            : initLabelData()
+        : initLoginData();
+  }
+
   ///当前页为全部时
   Future<dynamic> initAllData() {
     pageParam?.reset();
@@ -196,25 +204,49 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     }).last;
   }
 
+  Future<dynamic> initLoginData() {
+    pageParam?.reset();
+
+    return BossApi.ins()
+        .obtainFollowBossList("-1", false)
+        .onErrorReturn([]).flatMap((value) {
+      mBossList = value.where((element) {
+        return widget.mLabel == "-1"
+            ? BaseTool.isLatest(element.updateTime)
+            : element.labels.contains(widget.mLabel) &&
+                BaseTool.isLatest(element.updateTime);
+      }).toList();
+
+      return BossDbProvider.ins().insertList(value);
+    }).flatMap((value) {
+      return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
+    }).flatMap((value) {
+      hasData = value.hasData;
+      totalArticleNumber = value.total;
+      concat(value.records, false);
+
+      DataConfig.getIns().tackHasData = hasData;
+      DataConfig.getIns().tackTotalNum = totalArticleNumber;
+
+      return widget.mLabel == "-1"
+          ? ArticleDbProvider.ins().insertList(value.records)
+          : Observable.just(1);
+    }).last;
+  }
+
   @override
   void loadData(bool loadMore) {
     if (!loadMore) {
       pageParam?.reset();
 
       BossApi.ins().obtainFollowBossList("-1", false).flatMap((value) {
-        if (widget.mLabel == "-1") {
-          mBossList = value
-              .where(
-                (element) => BaseTool.isLatest(element.updateTime),
-              )
-              .toList();
-        } else {
-          mBossList = value
-              .where((element) =>
-                  element.labels.contains(widget.mLabel) &&
-                  BaseTool.isLatest(element.updateTime))
-              .toList();
-        }
+        mBossList = value.where((element) {
+          return widget.mLabel == "-1"
+              ? BaseTool.isLatest(element.updateTime)
+              : element.labels.contains(widget.mLabel) &&
+                  BaseTool.isLatest(element.updateTime);
+        }).toList();
+
         return BossDbProvider.ins().insertList(value);
       }).onErrorReturn([]).flatMap((value) {
         return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
@@ -262,8 +294,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {
-          builderFuture =
-              widget.mLabel == "-1" ? initAllData() : initLabelData();
+          builderFuture = futureData();
           setState(() {});
         });
       }

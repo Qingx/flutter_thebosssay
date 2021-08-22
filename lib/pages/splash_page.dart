@@ -77,6 +77,7 @@ class _SplashPageState extends State<SplashPage> {
         Get.offAll(() => StartGuidePage(), arguments: event);
       },
       onError: (res) {
+        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage());
       },
       onDone: () {
@@ -103,10 +104,11 @@ class _SplashPageState extends State<SplashPage> {
       return ArticleDbProvider.ins().insertList(value.records);
     }).onErrorReturn([]).listen(
       (event) {
+        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage());
       },
       onError: (res) {
-        print("ArticleDbError=>$res");
+        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage());
       },
       onDone: () {

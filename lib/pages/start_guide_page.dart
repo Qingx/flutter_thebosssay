@@ -129,7 +129,7 @@ class _StartGuidePageState extends State<StartGuidePage> {
       return ArticleDbProvider.ins().insertList(value.records);
     }).listen(
       (event) {
-        BaseTool.toast(msg: "追踪成功");
+        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage());
       },
       onError: (res) {

@@ -105,6 +105,14 @@ class DataConfig extends BaseConfig {
   ///获取追踪页文章是否还有数据
   bool get tackHasData =>
       spInstance.getBool(DataKeys.K_TACK_HAS_DATA, defaultVal: false);
+
+  ///进入首页来源 splash/登录
+  set fromSplash(bool fromSplash) =>
+      spInstance.putBool(DataKeys.K_FROM_SPLASH, fromSplash);
+
+  ///进入首页来源 splash/登录
+  bool get fromSplash =>
+      spInstance.getBool(DataKeys.K_FROM_SPLASH, defaultVal: true);
 }
 
 class DataKeys {
@@ -114,6 +122,7 @@ class DataKeys {
   static const K_BOSS_TIME = "K_BOSS_TIME";
   static const K_TACK_TOTAL_NUM = "K_TACK_TOTAL_NUM";
   static const K_TACK_HAS_DATA = "K_TACK_HAS_DATA";
+  static const K_FROM_SPLASH = "K_FROM_SPLASH";
 }
 
 class BaseConfig {

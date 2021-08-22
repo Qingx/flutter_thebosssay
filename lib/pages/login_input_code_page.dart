@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
@@ -43,6 +44,8 @@ class _LoginInputCodePageState extends State<LoginInputCodePage> {
 
       UserApi.ins().obtainSignPhone(phoneNumber, codeNumber, rnd).listen(
           (event) {
+        DataConfig.getIns().fromSplash = false;
+
         UserConfig.getIns().token = event.token;
         Global.user.setUser(event.userInfo);
 
