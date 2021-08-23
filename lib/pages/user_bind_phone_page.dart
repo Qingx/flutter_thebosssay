@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/dialog/ask_bind_dialog.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
@@ -141,19 +142,24 @@ class _UserBindPhonePageState extends State<UserBindPhonePage> {
 
   ///提交code
   void onSubmitted(content) {
-    UserEntity entity = Global.user.user.value;
+    showAskBindDialog(context, onDismiss: () {
+      Get.back();
+    }, onConfirm: () {
+      Get.back();
 
-    BaseWidget.showLoadingAlert("正在绑定...", context);
-    UserApi.ins().obtainBindPhone(phoneNumber, content, rnd).listen((event) {
-      entity.phone = phoneNumber;
-      Global.user.setUser(entity);
+      BaseWidget.showLoadingAlert("正在绑定...", context);
+      UserApi.ins().obtainBindPhone(phoneNumber, content, rnd).listen((event) {
+        UserConfig.getIns().token = event.token;
+        Global.user.setUser(event.userInfo);
 
-      Get.back();
-      Get.back();
-      BaseTool.toast(msg: "绑定成功");
-    }, onError: (res) {
-      Get.back();
-      BaseTool.toast(msg: "绑定失败，${res.msg}");
+        Get.back();
+        Get.back();
+
+        BaseTool.toast(msg: "绑定成功");
+      }, onError: (res) {
+        Get.back();
+        BaseTool.toast(msg: "绑定失败");
+      });
     });
   }
 

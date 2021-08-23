@@ -121,6 +121,9 @@ class BossDbProvider extends BaseDbProvider {
     if (!maps.isNullOrEmpty()) {
       list = maps.map((e) => BossSimpleEntity.toBean(e)).toList();
     }
+
+    list.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
     return list;
   }
 
@@ -136,6 +139,7 @@ class BossDbProvider extends BaseDbProvider {
     if (!list.isNullOrEmpty() && label != "-1") {
       list = list.where((element) => element.labels.contains(label)).toList();
     }
+
     return list;
   }
 

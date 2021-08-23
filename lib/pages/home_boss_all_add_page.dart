@@ -472,7 +472,10 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
           typeWidget(),
           Expanded(
             child: BaseWidget.refreshWidget(
-              slivers: [operationWidget(), bossWidget()],
+              slivers: [
+                operationWidget(),
+                bossWidget(),
+              ],
               controller: controller,
               scrollController: scrollController,
               loadData: loadData,
@@ -622,7 +625,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
                 }),
               ],
             ),
-          ).positionOn(top: 0, bottom: 0, right: 0, left: 0),
+          ).positionOn(top: 8, bottom: 8, right: 8, left: 8),
           entity.bossType == "without"
               ? SizedBox()
               : Image.asset(
@@ -645,6 +648,10 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
       child: Stack(
         children: [
           Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              border: Border.all(color: BaseColor.line),
+            ),
             alignment: Alignment.center,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -671,13 +678,6 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
                           },
                         ),
                       ).positionOn(top: 0, bottom: 0, right: 4, left: 4),
-                      Icon(
-                        isSelect
-                            ? Icons.check_circle
-                            : Icons.radio_button_unchecked,
-                        color: BaseColor.accent,
-                        size: 20,
-                      ).positionOn(top: 0, right: 0),
                     ],
                   ),
                 ),
@@ -721,7 +721,7 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
                 ),
               ],
             ),
-          ).positionOn(top: 0, bottom: 0, right: 0, left: 0),
+          ).positionOn(top: 8, bottom: 8, right: 8, left: 8),
           entity.bossType == "without"
               ? SizedBox()
               : Image.asset(
@@ -731,7 +731,12 @@ class _HomeBossAllAddPageState extends State<HomeBossAllAddPage>
                   width: 28,
                   height: 16,
                   fit: BoxFit.cover,
-                ).positionOn(top: 16, left: 16),
+                ).positionOn(top: 12, left: 8),
+          Icon(
+            isSelect ? Icons.check_circle : Icons.radio_button_unchecked,
+            color: BaseColor.accent,
+            size: 18,
+          ).positionOn(top: 12, right: 12),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
 class BaseSP {
   String name;
@@ -47,8 +48,12 @@ class BaseSP {
 
   /// 添加object缓存
   void putObject<T>(String key, T value) {
-    final valueStr = json.encode(value);
-    putString(key, valueStr);
+    if(value!= null) {
+      final valueStr = json.encode(value);
+      putString(key, valueStr);
+    }  else{
+      putString(key, "");
+    }
   }
 
   /// 清空当前实例对应的缓存
@@ -88,10 +93,11 @@ class BaseSP {
   @deprecated
   T getObject<T>(String key, {T defaultVal}) {
     String valueStr = getString(key);
+    if (!valueStr.isNullOrEmpty() && valueStr != "null") {
+      print('valueStradadada=>${valueStr.runtimeType}');
 
-    if (valueStr != null)
       return JsonConvert.fromJsonAsT<T>(json.decode(valueStr));
-
+    }
     return defaultVal;
   }
 

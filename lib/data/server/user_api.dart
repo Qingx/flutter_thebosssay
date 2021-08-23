@@ -96,14 +96,16 @@ class UserApi extends BaseApi {
   }
 
   ///绑定手机号
-  Observable<bool> obtainBindPhone(String phone, String code, String rnd) {
+  Observable<TokenEntity> obtainBindPhone(
+      String phone, String code, String rnd) {
     var data = {
       "call": phone,
       "code": code,
       "rnd": rnd,
     };
     return autoToken(() =>
-        post<bool>("/api/account/check-bound", requestBody: data).success());
+        post<TokenEntity>("/api/account/check-bound", requestBody: data)
+            .rebase());
   }
 
   ///刷新用户信息

@@ -210,12 +210,16 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     return BossApi.ins()
         .obtainFollowBossList("-1", false)
         .onErrorReturn([]).flatMap((value) {
-      mBossList = value.where((element) {
+      value = value.where((element) {
         return widget.mLabel == "-1"
             ? BaseTool.isLatest(element.updateTime)
             : element.labels.contains(widget.mLabel) &&
                 BaseTool.isLatest(element.updateTime);
       }).toList();
+
+      value.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+      mBossList = value;
 
       return BossDbProvider.ins().insertList(value);
     }).flatMap((value) {
@@ -240,12 +244,16 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
       pageParam?.reset();
 
       BossApi.ins().obtainFollowBossList("-1", false).flatMap((value) {
-        mBossList = value.where((element) {
+        value = value.where((element) {
           return widget.mLabel == "-1"
               ? BaseTool.isLatest(element.updateTime)
               : element.labels.contains(widget.mLabel) &&
                   BaseTool.isLatest(element.updateTime);
         }).toList();
+
+        value.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+        mBossList = value;
 
         return BossDbProvider.ins().insertList(value);
       }).onErrorReturn([]).flatMap((value) {

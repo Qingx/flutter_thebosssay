@@ -93,7 +93,7 @@ class _SplashPageState extends State<SplashPage> {
       return LabelDbProvider.ins().insertList(value);
     }).onErrorReturn([]).flatMap((value) {
       return BossApi.ins().obtainFollowBossList("-1", false);
-    }).onErrorReturn([]).flatMap((value) {
+    }).flatMap((value) {
       return BossDbProvider.ins().insertList(value);
     }).onErrorReturn([]).flatMap((value) {
       return BossApi.ins().obtainTackArticle(PageParam(), "-1");
@@ -102,12 +102,13 @@ class _SplashPageState extends State<SplashPage> {
       DataConfig.getIns().tackHasData = value.hasData;
 
       return ArticleDbProvider.ins().insertList(value.records);
-    }).onErrorReturn([]).listen(
+    }).listen(
       (event) {
         DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage());
       },
       onError: (res) {
+        print(res);
         DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage());
       },

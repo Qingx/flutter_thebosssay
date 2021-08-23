@@ -82,15 +82,14 @@ class _TestPageState extends State<TestPage> {
         itemBuilder: (context, index) {
           return Image.asset(R.assetsImgTestPhoto, fit: BoxFit.cover);
         },
-        pagination:SwiperPagination(
+        pagination: SwiperPagination(
           alignment: Alignment.bottomCenter,
           margin: EdgeInsets.only(bottom: 2),
           builder: DotSwiperPaginationBuilder(
-            activeColor: Colors.white,
-            color: Colors.grey,
-            size: 8,
-            activeSize: 8
-          ),
+              activeColor: Colors.white,
+              color: Colors.grey,
+              size: 8,
+              activeSize: 8),
         ),
         autoplay: true,
         autoplayDelay: 4000,

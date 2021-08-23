@@ -1,4 +1,5 @@
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 
 import 'data_config.dart';
@@ -18,7 +19,8 @@ class UserConfig extends BaseConfig {
       spInstance.putObject(UserKeys.K_USER_DATA, entity);
 
   /// 获取用户信息
-  UserEntity get user => spInstance.getObject<UserEntity>(UserKeys.K_USER_DATA);
+  UserEntity get user => spInstance.getObject<UserEntity>(UserKeys.K_USER_DATA,
+      defaultVal: BaseEmpty.emptyUser);
 
   /// 获取登录状态
   bool get loginStatus => (user ?? UserEntity()).type == "1";

@@ -1,7 +1,7 @@
 import 'package:flutter_boss_says/generated/json/base/json_convert_content.dart';
 
 class UserEntity with JsonConvert<UserEntity> {
-  String avatar = ""; //头像
+  String avatar; //头像
   String deviceId; //设备号
   String id; //id
   String nickName; //账号

@@ -94,7 +94,6 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
               .getByLabel(mCurrentLabel)
               .onErrorReturn([]).listen((event) {
             mData = event;
-            mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
             setState(() {});
           });
@@ -102,6 +101,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           var index = mData.indexWhere((element) => element.id == event.id);
           if (index != -1) {
             mData.removeAt(index);
+            mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
             setState(() {});
           }
@@ -114,7 +114,6 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           .getByLabel(mCurrentLabel)
           .onErrorReturn([]).listen((event) {
         mData = event;
-        mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
         setState(() {});
       });
@@ -148,8 +147,6 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     }).onErrorReturn([]).flatMap((value) {
       mData = value;
 
-      mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
-
       return Observable.just(!mLabels.isLabelEmpty());
     }).last;
   }
@@ -164,17 +161,17 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
     }).onErrorReturn([]).flatMap((value) {
       return BossApi.ins().obtainFollowBossList("-1", false);
     }).onErrorReturn([]).flatMap((value) {
-      mData = value;
-
       if (mCurrentLabel != "-1") {
-        mData = value
+        value = value
             .where(
               (element) => element.labels.contains(mCurrentLabel),
             )
             .toList();
       }
 
-      mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+      value.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+      mData = value;
 
       return BossDbProvider.ins().insertList(value);
     }).onErrorReturn([]).flatMap((value) {
@@ -185,18 +182,17 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   ///刷新数据
   void loadData() {
     BossApi.ins().obtainFollowBossList("-1", false).flatMap((value) {
-      mData = value;
-
       if (mCurrentLabel != "-1") {
-        mData = value
+        value = value
             .where(
               (element) => element.labels.contains(mCurrentLabel),
             )
             .toList();
       }
 
-      mData.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+      value.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
 
+      mData = value;
       return BossDbProvider.ins().insertList(value);
     }).onErrorReturn([]).listen((event) {
       setState(() {});
@@ -215,6 +211,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
           .getByLabel(mCurrentLabel)
           .onErrorReturn([]).listen((event) {
         mData = event;
+
         setState(() {});
       });
     } else {

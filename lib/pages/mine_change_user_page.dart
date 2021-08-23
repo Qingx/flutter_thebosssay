@@ -4,22 +4,22 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
-import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/dialog/ask_bind_dialog.dart';
 import 'package:flutter_boss_says/dialog/change_name_dialog.dart';
 import 'package:flutter_boss_says/dialog/change_phone_dialog.dart';
+import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/pages/user_bind_phone_page.dart';
 import 'package:flutter_boss_says/pages/user_change_phone_page.dart';
-import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:get/get.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
+import 'package:get/get.dart';
 
 class MineChangeUserPage extends StatefulWidget {
   const MineChangeUserPage({Key key}) : super(key: key);
@@ -94,11 +94,13 @@ class _MineChangeUserPageState extends State<MineChangeUserPage> {
     BaseWidget.showLoadingAlert("正在尝试绑定...", context);
 
     UserApi.ins().obtainWechatBind(code).listen((event) {
+      UserConfig.getIns().token = event.token;
       Global.user.setUser(event.userInfo);
+
       Get.back();
     }, onError: (res) {
       Get.back();
-      BaseTool.toast(msg: "绑定失败,${res.msg}");
+      BaseTool.toast(msg: "绑定失败");
     });
   }
 
@@ -157,7 +159,7 @@ class _MineChangeUserPageState extends State<MineChangeUserPage> {
         break;
       case 2:
         if (Global.user.user.value.type != BaseEmpty.emptyUser.type &&
-            Global.user.user.value.phone != null) {
+            !Global.user.user.value.phone.isNullOrEmpty()) {
           tryChangePhone(context);
         } else {
           tryBindPhone();
@@ -165,8 +167,13 @@ class _MineChangeUserPageState extends State<MineChangeUserPage> {
         break;
       case 3:
         if (Global.user.user.value.type != BaseEmpty.emptyUser.type &&
-            Global.user.user.value.wxName == null) {
-          tryJumpWechat();
+            Global.user.user.value.wxName.isNullOrEmpty()) {
+          showAskBindDialog(context, onDismiss: () {
+            Get.back();
+          }, onConfirm: () {
+            Get.back();
+            tryJumpWechat();
+          });
         } else {
           BaseTool.toast(msg: "暂不支持换绑微信");
         }

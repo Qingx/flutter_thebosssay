@@ -4,10 +4,8 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
-import 'package:flutter_boss_says/data/db/label_db_provider.dart';
-import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
+import 'package:flutter_boss_says/dialog/ask_bind_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
@@ -18,7 +16,6 @@ import 'package:flutter_boss_says/pages/mine_contact_author_page.dart';
 import 'package:flutter_boss_says/pages/mine_history_all_page.dart';
 import 'package:flutter_boss_says/pages/mine_history_today_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -185,8 +182,7 @@ class _HomeMinePageState extends State<HomeMinePage>
         Get.to(() => ContactAuthorPage());
         break;
       case 6:
-        // showStore();
-        doTest();
+        showStore();
         break;
       case 7:
         onClickClear();
@@ -198,9 +194,7 @@ class _HomeMinePageState extends State<HomeMinePage>
   }
 
   void doTest() {
-    BossDbProvider.ins().getAll().listen((event) {
-      print(event);
-    });
+    showAskBindDialog(context, onDismiss: () {}, onConfirm: () {});
   }
 
   @override
