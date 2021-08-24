@@ -16,6 +16,7 @@ import 'package:flutter_boss_says/pages/mine_contact_author_page.dart';
 import 'package:flutter_boss_says/pages/mine_history_all_page.dart';
 import 'package:flutter_boss_says/pages/mine_history_today_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -182,7 +183,8 @@ class _HomeMinePageState extends State<HomeMinePage>
         Get.to(() => ContactAuthorPage());
         break;
       case 6:
-        showStore();
+        // showStore();
+        doTest();
         break;
       case 7:
         onClickClear();
@@ -194,7 +196,7 @@ class _HomeMinePageState extends State<HomeMinePage>
   }
 
   void doTest() {
-    showAskBindDialog(context, onDismiss: () {}, onConfirm: () {});
+    Get.to(() => TestPage());
   }
 
   @override

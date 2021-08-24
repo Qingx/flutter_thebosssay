@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key key}) : super(key: key);
@@ -15,12 +16,16 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   List<String> data = [];
+  ScrollController scrollController;
+  EasyRefreshController controller;
 
   @override
   void initState() {
     super.initState();
 
     data = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"];
+    scrollController = ScrollController();
+    controller = EasyRefreshController();
   }
 
   @override
@@ -28,73 +33,294 @@ class _TestPageState extends State<TestPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              child: BaseWidget.statusBar(context, true),
-            ),
-            Container(
-              height: 44,
-              padding: EdgeInsets.only(left: 12, right: 16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.arrow_back,
-                    color: BaseColor.textDark,
-                    size: 28,
-                  ).onClick(() {
-                    Get.back();
-                  }),
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(right: 28),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "测试页面",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: BaseColor.textDark,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            toolbarHeight: 40,
+            backgroundColor: Colors.white,
+            leading: Container(
+              child: GestureDetector(
+                child: Icon(Icons.arrow_back, size: 26, color: Colors.white),
+                onTap: () => Get.back(),
               ),
             ),
-            testWidget(),
-          ],
-        ),
+            actions: [
+              Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
+                  .marginOn(right: 20)
+                  .onClick(() {
+                BaseTool.toast(msg: "onShare");
+              }),
+              Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
+                  .marginOn(right: 16)
+                  .onClick(() {
+                BaseTool.toast(msg: "onSetting");
+              }),
+            ],
+            floating: false,
+            pinned: true,
+            snap: false,
+            expandedHeight: MediaQuery.of(context).padding.top + 40 + 24+ 64 + 104,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(48),
+              child: Container(
+                height: 48,
+                color: Colors.white,
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: Text(
+                      "Tab0",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    )),
+                    Expanded(
+                        child: Text(
+                      "Tab1",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    )),
+                    Expanded(
+                        child: Text(
+                      "Tab2",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            flexibleSpace: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              removeBottom: true,
+              child: Container(
+                height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 40 + 24,
+                ),
+                decoration: ShapeDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(R.assetsImgBossTopBg),
+                    fit: BoxFit.cover,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.only(
+                      bottomStart: Radius.circular(24),
+                    ),
+                  ),
+                ),
+                child: ListView(
+                  children: [
+                    bossInfoWidget(),
+                    bossInfoBottomWidget(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          listWidget(),
+        ],
       ),
     );
   }
 
-  Widget testWidget() {
+  Widget bossInfoWidget() {
     return Container(
-      height: 160,
+      height: 64,
       margin: EdgeInsets.only(left: 16, right: 16),
-      child: Swiper(
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Image.asset(R.assetsImgTestPhoto, fit: BoxFit.cover);
-        },
-        pagination: SwiperPagination(
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(bottom: 2),
-          builder: DotSwiperPaginationBuilder(
-              activeColor: Colors.white,
-              color: Colors.grey,
-              size: 8,
-              activeSize: 8),
-        ),
-        autoplay: true,
-        autoplayDelay: 4000,
-        autoplayDisableOnInteraction: true,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipOval(
+            child: Image.asset(
+              R.assetsImgDefaultHead,
+              width: 64,
+              height: 64,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  "清和",
+                  style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                  softWrap: false,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                Text(
+                  "1.2k阅读·1.2k篇言论·1.2k关注",
+                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  softWrap: false,
+                  maxLines: 1,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ).marginOn(left: 16),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget bossInfoBottomWidget() {
+    Color followColor = Colors.red;
+
+    return Container(
+      height: 104,
+      padding: EdgeInsets.only(top: 24, bottom: 16),
+      margin: EdgeInsets.only(right: 16, left: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 64,
+            height: 24,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              color: followColor,
+            ),
+            child: Text(
+              "追踪",
+              style: TextStyle(color: Colors.white, fontSize: 13),
+              softWrap: false,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding:
+                          EdgeInsets.only(left: 8, right: 8, top: 1, bottom: 1),
+                      margin: EdgeInsets.only(left: 8, right: 16),
+                      decoration: BoxDecoration(
+                        color: Color(0x80000000),
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                      alignment: Alignment.center,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 240),
+                        child: Text(
+                          "灵魂莲华",
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: SizedBox()),
+                  ],
+                ),
+                Text(
+                  "个人简介：个人简介个人简介个人简介个人简介个人简介个人简介个人简介个人简介个人简介",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w300),
+                  softWrap: true,
+                  maxLines: 2,
+                  textAlign: TextAlign.start,
+                  overflow: TextOverflow.ellipsis,
+                ).marginOn(left: 16, top: 8),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget listWidget() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Container(
+            height: 40,
+            color: Colors.primaries[index % Colors.primaries.length],
+            padding: EdgeInsets.only(left: 16, right: 16),
+            alignment: Alignment.centerLeft,
+            child: Text(index.toString()),
+          );
+        },
+        childCount: 80,
+      ),
+    );
+  }
+
+  Widget pageWidget() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Container(
+            height: MediaQuery.of(context).size.height - 250,
+            child: BaseWidget.refreshWidgetPage(
+              slivers: [bodyWidget()],
+              controller: controller,
+              scrollController: scrollController,
+              hasData: true,
+              loadData: loadData,
+            ),
+          );
+        },
+        childCount: 1,
+      ),
+    );
+  }
+
+  Widget bodyWidget() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Container(
+            height: 40,
+            color: Colors.primaries[index % Colors.primaries.length],
+            padding: EdgeInsets.only(left: 16, right: 16),
+            alignment: Alignment.centerLeft,
+            child: Text(data[index]),
+          );
+        },
+        childCount: data.length,
+      ),
+    );
+  }
+
+  void loadData(bool loadMore) {
+    var list = ["a", "b", "c", "d", "e", "f", "g"];
+
+    Observable.just(list).delay(Duration(milliseconds: 500)).listen((event) {
+      if (loadMore) {
+        data.addAll(event);
+        controller.finishLoad();
+      } else {
+        data = event;
+        controller.finishRefresh();
+      }
+
+      setState(() {});
+    });
   }
 }
