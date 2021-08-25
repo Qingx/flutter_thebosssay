@@ -713,7 +713,7 @@ class _BossHomePageState extends State<BossHomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               loadingItemWidget(0.24, 0).marginOn(left: 16),
-                              loadingItemWidget(0.48, 0)
+                              loadingItemWidget(0.64, 0)
                                   .marginOn(left: 16, top: 8),
                               loadingItemWidget(0.56, 0)
                                   .marginOn(left: 16, top: 8),
@@ -832,7 +832,7 @@ class _BossHomePageState extends State<BossHomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               loadingItemWidget(0.24, 0).marginOn(left: 16),
-                              loadingItemWidget(0.48, 0)
+                              loadingItemWidget(0.64, 0)
                                   .marginOn(left: 16, top: 8),
                               loadingItemWidget(0.56, 0)
                                   .marginOn(left: 16, top: 8),
