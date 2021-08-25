@@ -90,7 +90,7 @@ class _BossHomePageState extends State<BossHomePage> {
       bossEntity = value;
 
       return BossApi.ins().obtainBossArticle(widget.bossId, mCurrentType);
-    }).onErrorReturn([]).doOnData((event) {
+    }).doOnData((event) {
       map["1"] = event;
     }).last;
   }
@@ -279,12 +279,12 @@ class _BossHomePageState extends State<BossHomePage> {
       if (snapshot.hasData) {
         return contentWidget();
       } else
-        return BaseWidget.errorWidget(() {
+        return errorWidget().onClick(() {
           builderFuture = initData();
           setState(() {});
         });
     } else {
-      return BaseWidget.loadingWidget();
+      return loadingWidget();
     }
   }
 
@@ -617,5 +617,283 @@ class _BossHomePageState extends State<BossHomePage> {
         ),
       ),
     ).onClick(errorLoad);
+  }
+
+  Widget loadingWidget() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+            decoration: ShapeDecoration(
+              image: DecorationImage(
+                image: AssetImage(R.assetsImgBossTopBg),
+                fit: BoxFit.cover,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.only(
+                  bottomStart: Radius.circular(24),
+                ),
+              ),
+            ),
+            child: MediaQuery.removePadding(
+              removeTop: true,
+              removeBottom: true,
+              context: context,
+              child: ListView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top),
+                    height: 40,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.arrow_back, size: 26, color: Colors.white)
+                            .marginOn(left: 16)
+                            .onClick(onBack),
+                        Expanded(child: SizedBox()),
+                        Image.asset(R.assetsImgShareWhite,
+                                width: 24, height: 24)
+                            .marginOn(right: 20),
+                        Image.asset(R.assetsImgSettingWhite,
+                                width: 24, height: 24)
+                            .marginOn(right: 16),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 64,
+                    margin: EdgeInsets.only(top: 24, left: 16, right: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Image.asset(
+                            R.assetsImgDefaultHead,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              loadingItemWidget(0.16, 0),
+                              loadingItemWidget(0.4, 0),
+                            ],
+                          ).marginOn(left: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 104,
+                    padding: EdgeInsets.only(top: 24, bottom: 16),
+                    margin: EdgeInsets.only(right: 16, left: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 24,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                            color: BaseColor.loadBg,
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              loadingItemWidget(0.24, 0).marginOn(left: 16),
+                              loadingItemWidget(0.48, 0)
+                                  .marginOn(left: 16, top: 8),
+                              loadingItemWidget(0.56, 0)
+                                  .marginOn(left: 16, top: 8),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          loadingItemWidget(0.8, 16),
+          loadingItemWidget(0.72, 8),
+          loadingItemWidget(0.2, 8),
+          loadingItemWidget(0.92, 8),
+          loadingItemWidget(0.4, 16),
+          loadingItemWidget(0.32, 16),
+          loadingItemWidget(0.16, 16),
+        ],
+      ),
+    );
+  }
+
+  Widget errorWidget() {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+            decoration: ShapeDecoration(
+              image: DecorationImage(
+                image: AssetImage(R.assetsImgBossTopBg),
+                fit: BoxFit.cover,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.only(
+                  bottomStart: Radius.circular(24),
+                ),
+              ),
+            ),
+            child: MediaQuery.removePadding(
+              removeTop: true,
+              removeBottom: true,
+              context: context,
+              child: ListView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                        top: MediaQuery.of(context).padding.top),
+                    height: 40,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.arrow_back, size: 26, color: Colors.white)
+                            .marginOn(left: 16)
+                            .onClick(onBack),
+                        Expanded(child: SizedBox()),
+                        Image.asset(R.assetsImgShareWhite,
+                                width: 24, height: 24)
+                            .marginOn(right: 20),
+                        Image.asset(R.assetsImgSettingWhite,
+                                width: 24, height: 24)
+                            .marginOn(right: 16),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 64,
+                    margin: EdgeInsets.only(top: 24, left: 16, right: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Image.asset(
+                            R.assetsImgDefaultHead,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              loadingItemWidget(0.16, 0),
+                              loadingItemWidget(0.4, 0),
+                            ],
+                          ).marginOn(left: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 104,
+                    padding: EdgeInsets.only(top: 24, bottom: 16),
+                    margin: EdgeInsets.only(right: 16, left: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 24,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                            color: BaseColor.loadBg,
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              loadingItemWidget(0.24, 0).marginOn(left: 16),
+                              loadingItemWidget(0.48, 0)
+                                  .marginOn(left: 16, top: 8),
+                              loadingItemWidget(0.56, 0)
+                                  .marginOn(left: 16, top: 8),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    R.assetsImgErrorIcon,
+                    width: 240,
+                    height: 184,
+                  ),
+                  Text(
+                    "网络异常",
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: BaseColor.textDark,
+                        fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    softWrap: false,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ).marginOn(top: 32),
+                  Text(
+                    "请点击屏幕重新加载或检查设备网络权限",
+                    style: TextStyle(fontSize: 16, color: BaseColor.textGray),
+                    maxLines: 1,
+                    softWrap: false,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget loadingItemWidget(double width, double margin) {
+    return Container(
+      width: (MediaQuery.of(context).size.width - 32) * width,
+      height: 16,
+      margin: EdgeInsets.only(left: 16, right: 16, top: margin),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        color: BaseColor.loadBg,
+      ),
+    );
   }
 }
