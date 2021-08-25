@@ -57,24 +57,6 @@ class BossApi extends BaseApi {
   }
 
   ///获取追踪 最近更新文章
-  Observable<Page<ArticleEntity>> obtainFollowArticle(
-      PageParam pageParam, String label) {
-    final param = pageParam.toParam(doCreate: (map) {
-      var data = {
-        "labels": label == "-1" ? null : [label]
-      };
-      map.addAll(data);
-    });
-
-    return autoToken(() =>
-        postPage<ArticleEntity>("/api/article/recommend", requestBody: param)
-            .rebase(pageParam: pageParam)
-            .map((value) {
-          return value;
-        }));
-  }
-
-  ///获取追踪 最近更新文章
   Observable<Page<ArticleSimpleEntity>> obtainTackArticle(
       PageParam pageParam, String label) {
     final param = pageParam.toParam(doCreate: (map) {
@@ -174,15 +156,19 @@ class BossApi extends BaseApi {
         () => get<BossInfoEntity>("/api/boss/details/$id").rebase());
   }
 
-  ///获取全部Boss详情
-  Observable<List<BossInfoEntity>> obtainAllBoss(int time) {
-    return autoToken(
-        () => get<List<BossInfoEntity>>("/api/boss/all-list/$time").rebase());
-  }
-
   ///banner
   Observable<List<BannerEntity>> obtainBanner() {
     return autoToken(() =>
         get<List<BannerEntity>>("/api/operationPicture/get/banner").rebase());
+  }
+
+  ///Boss文章
+  Observable<List<ArticleSimpleEntity>> obtainBossArticle(
+      String bossId, String type) {
+    var data = {"bossId": bossId, "filterType": type};
+    return autoToken(() => post<List<ArticleSimpleEntity>>(
+            "/api/article/list/type",
+            requestBody: data)
+        .rebase());
   }
 }

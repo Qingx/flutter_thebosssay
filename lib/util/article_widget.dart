@@ -776,7 +776,7 @@ class ArticleWidget {
 
   ///含正文 纯文字 BossPage
   static Widget onlyTextWithContentBossPage(
-      ArticleEntity entity, BuildContext context, Function doItemClick) {
+      ArticleSimpleEntity entity, BuildContext context, Function doItemClick) {
     bool isRead = entity.isRead;
     Color bgColor = isRead ? BaseColor.loadBg : Colors.white;
     bool isShowRed = BaseTool.showRedDots(entity.bossId, entity.getShowTime());
@@ -838,7 +838,7 @@ class ArticleWidget {
               children: [
                 ClipOval(
                   child: Image.network(
-                    HttpConfig.fullUrl(entity.bossVO?.head),
+                    HttpConfig.fullUrl(entity.bossHead),
                     width: 24,
                     height: 24,
                     fit: BoxFit.cover,
@@ -853,7 +853,7 @@ class ArticleWidget {
                   ),
                 ),
                 Text(
-                  entity.bossVO.name,
+                  entity.bossName,
                   style:
                       TextStyle(fontSize: 14, color: BaseColor.textDarkLight),
                   textAlign: TextAlign.start,
@@ -863,7 +863,7 @@ class ArticleWidget {
                 ).marginOn(left: 8),
                 Expanded(
                   child: Text(
-                    entity.bossVO.role,
+                    entity.bossRole,
                     style: TextStyle(fontSize: 14, color: BaseColor.textGray),
                     textAlign: TextAlign.start,
                     maxLines: 1,
@@ -917,7 +917,7 @@ class ArticleWidget {
 
   ///含正文 单个图片文字 BossPage
   static Widget singleImgWithContentBossPage(
-      ArticleEntity entity, BuildContext context, Function doItemClick) {
+      ArticleSimpleEntity entity, BuildContext context, Function doItemClick) {
     bool isRead = entity.isRead;
     Color bgColor = isRead ? BaseColor.loadBg : Colors.white;
     bool isShowRed = BaseTool.showRedDots(entity.bossId, entity.getShowTime());
@@ -988,7 +988,7 @@ class ArticleWidget {
                           children: [
                             ClipOval(
                               child: Image.network(
-                                HttpConfig.fullUrl(entity.bossVO?.head),
+                                HttpConfig.fullUrl(entity.bossHead),
                                 width: 24,
                                 height: 24,
                                 fit: BoxFit.cover,
@@ -1003,7 +1003,7 @@ class ArticleWidget {
                               ),
                             ),
                             Text(
-                              entity.bossVO.name,
+                              entity.bossName,
                               style: TextStyle(
                                   fontSize: 14, color: BaseColor.textDarkLight),
                               textAlign: TextAlign.start,
@@ -1013,7 +1013,7 @@ class ArticleWidget {
                             ).marginOn(left: 8),
                             Expanded(
                               child: Text(
-                                entity.bossVO.role,
+                                entity.bossRole,
                                 style: TextStyle(
                                     fontSize: 14, color: BaseColor.textGray),
                                 textAlign: TextAlign.start,

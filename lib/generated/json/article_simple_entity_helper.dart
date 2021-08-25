@@ -53,6 +53,9 @@ articleSimpleEntityFromJson(ArticleSimpleEntity data, Map<String, dynamic> json)
 	if (json['bossRole'] != null) {
 		data.bossRole = json['bossRole'].toString();
 	}
+	if (json['returnType'] != null) {
+		data.returnType = json['returnType'].toString();
+	}
 	return data;
 }
 
@@ -72,5 +75,6 @@ Map<String, dynamic> articleSimpleEntityToJson(ArticleSimpleEntity entity) {
 	data['bossName'] = entity.bossName;
 	data['bossHead'] = entity.bossHead;
 	data['bossRole'] = entity.bossRole;
+	data['returnType'] = entity.returnType;
 	return data;
 }

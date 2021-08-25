@@ -130,7 +130,7 @@ class _StartGuidePageState extends State<StartGuidePage> {
     }).listen(
       (event) {
         DataConfig.getIns().fromSplash = true;
-        Get.offAll(() => HomePage());
+        Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onError: (res) {
         Get.back();

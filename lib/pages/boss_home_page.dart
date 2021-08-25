@@ -1,15 +1,13 @@
-import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
-import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
@@ -21,42 +19,132 @@ import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
-import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
+import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
-class BossHomePage extends StatelessWidget {
+class BossHomePage extends StatefulWidget {
   String bossId = Get.arguments as String;
 
   BossHomePage({Key key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: BaseColor.pageBg,
-      body: Container(
-        child: Stack(
-          children: [
-            BodyWidget(bossId),
-            topBar(context),
-          ],
-        ),
-      ),
-    );
+  _BossHomePageState createState() => _BossHomePageState();
+}
+
+class _BossHomePageState extends State<BossHomePage> {
+  BossInfoEntity bossEntity;
+  String mCurrentType;
+  HashMap<String, List<ArticleSimpleEntity>> map;
+
+  List<String> typeList;
+
+  var builderFuture;
+
+  var tackDispose;
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    tackDispose?.cancel();
+
+    DataConfig.getIns().setBossTime(widget.bossId);
+    Global.eventBus.fire(SetBossTimeEvent(widget.bossId));
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.BossHome);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    bossEntity = BossInfoEntity();
+    mCurrentType = "1";
+    map = HashMap();
+
+    typeList = ["言论演说", "新闻资讯", "传记其他"];
+
+    builderFuture = initData();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.BossHome);
+
+    eventBus();
+  }
+
+  void eventBus() {
+    tackDispose = Global.eventBus.on<BossTackEvent>().listen((event) {
+      if (widget.bossId == event.id) {
+        bossEntity.isCollect = event.isFollow;
+        setState(() {});
+      }
+    });
+  }
+
+  Future<dynamic> initData() {
+    return BossApi.ins().obtainBossDetail(widget.bossId).flatMap((value) {
+      bossEntity = value;
+
+      return BossApi.ins().obtainBossArticle(widget.bossId, mCurrentType);
+    }).onErrorReturn([]).doOnData((event) {
+      map["1"] = event;
+    }).last;
+  }
+
+  void onTabClick(int index) {
+    if (mCurrentType != (index + 1).toString()) {
+      mCurrentType = (index + 1).toString();
+
+      if (map[mCurrentType].isNullOrEmpty()) {
+        BossApi.ins()
+            .obtainBossArticle(widget.bossId, mCurrentType)
+            .onErrorReturn([]).listen((event) {
+          map[mCurrentType] = event;
+          setState(() {});
+        });
+      } else {
+        setState(() {});
+      }
+    }
+  }
+
+  void onArticleClick(ArticleSimpleEntity entity) {
+    if (!entity.isRead) {
+      entity.isRead = true;
+    }
+
+    if (BaseTool.showRedDots(entity.bossId, entity.getShowTime())) {
+      DataConfig.getIns().setBossTime(entity.bossId);
+    }
+
+    setState(() {});
+
+    if (!entity.isRead) {
+      BaseTool.doAddRead();
+    }
+
+    Get.to(() => WebArticlePage(fromBoss: true), arguments: entity.id);
+  }
+
+  void errorLoad() {
+    BossApi.ins()
+        .obtainBossArticle(widget.bossId, mCurrentType)
+        .onErrorReturn([]).listen((event) {
+      map[mCurrentType] = event;
+      setState(() {});
+    });
   }
 
   void onBack() {
+    DataConfig.getIns().setBossTime(widget.bossId);
     Get.back();
-    DataConfig.getIns().setBossTime(bossId);
   }
 
-  void onShare(context) {
+  void onShare() {
     showShareDialog(context, onDismiss: () {
       Get.back();
     }, doClick: (index) {
@@ -74,7 +162,7 @@ class BossHomePage extends StatelessWidget {
     });
   }
 
-  void onSetting(BuildContext context) {
+  void onSetting() {
     showBossSettingDialog(context, onDismiss: () {
       Get.back();
     }, onConfirm: () {
@@ -83,137 +171,8 @@ class BossHomePage extends StatelessWidget {
     });
   }
 
-  Widget topBar(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      height: 40,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(Icons.arrow_back, size: 26, color: Colors.white)
-              .marginOn(left: 16)
-              .onClick(onBack),
-          Expanded(child: SizedBox()),
-          Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
-              .marginOn(right: 20)
-              .onClick(() {
-            onShare(context);
-          }),
-          Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
-              .marginOn(right: 16)
-              .onClick(() {
-            onSetting(context);
-          }),
-        ],
-      ),
-    );
-  }
-}
-
-class BodyWidget extends StatefulWidget {
-  String bossId;
-  BossInfoEntity entity;
-
-  BodyWidget(this.bossId, {Key key}) : super(key: key);
-
-  @override
-  _BodyWidgetState createState() => _BodyWidgetState();
-}
-
-class _BodyWidgetState extends State<BodyWidget> with BasePageController {
-  var builderFuture;
-  bool hasData = true;
-
-  ScrollController scrollController;
-  EasyRefreshController controller;
-
-  String bossId;
-  BossInfoEntity entity;
-
-  var tackDispose;
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    scrollController?.dispose();
-    controller?.dispose();
-
-    tackDispose?.cancel();
-
-    DataConfig.getIns().setBossTime(entity.id);
-    Global.eventBus.fire(SetBossTimeEvent(entity.id));
-
-    TalkingApi.ins().obtainPageEnd(TalkingApi.BossHome);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    bossId = widget.bossId;
-
-    scrollController = ScrollController();
-    controller = EasyRefreshController();
-
-    builderFuture = loadInitData();
-
-    eventBus();
-
-    TalkingApi.ins().obtainPageStart(TalkingApi.BossHome);
-  }
-
-  void eventBus() {
-    tackDispose = Global.eventBus.on<BossTackEvent>().listen((event) {
-      if (entity.id == event.id) {
-        entity.isCollect = event.isFollow;
-        setState(() {});
-      }
-    });
-  }
-
-  ///初始化获取数据
-  Future<WlPage.Page<ArticleEntity>> loadInitData() {
-    return BossApi.ins().obtainBossDetail(bossId).flatMap((value) {
-      entity = value;
-      return BossApi.ins().obtainBossArticleList(pageParam, bossId);
-    }).doOnData((event) {
-      hasData = event.hasData;
-      concat(event.records, false);
-    }).doOnError((res) {
-      print(res.msg);
-    }).last;
-  }
-
-  ///获取boss文章列表
-  @override
-  void loadData(bool loadMore) {
-    if (!loadMore) {
-      pageParam.reset();
-    }
-
-    BossApi.ins().obtainBossArticleList(pageParam, entity.id).listen((event) {
-      hasData = event.hasData;
-      concat(event.records, loadMore);
-
-      setState(() {});
-
-      if (loadMore) {
-        controller.finishLoad(success: true);
-      } else {
-        controller.finishRefresh(success: true);
-      }
-    }, onError: (res) {
-      if (loadMore) {
-        controller.finishLoad(success: false);
-      } else {
-        controller.finishRefresh(success: false);
-      }
-    });
-  }
-
   void onFollowChange() {
-    if (entity.isCollect) {
+    if (bossEntity.isCollect) {
       cancelFollow();
     } else {
       doFollow();
@@ -226,10 +185,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     }, onConfirm: () {
       BaseWidget.showLoadingAlert("尝试取消...", context);
 
-      BossApi.ins().obtainNoFollowBoss(entity.id).flatMap((value) {
-        entity.isCollect = false;
+      BossApi.ins().obtainNoFollowBoss(widget.bossId).flatMap((value) {
+        bossEntity.isCollect = false;
 
-        return BossDbProvider.ins().delete(entity.id);
+        return BossDbProvider.ins().delete(widget.bossId);
       }).listen((event) {
         Get.back();
         Get.back();
@@ -244,13 +203,13 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
         Global.eventBus.fire(
           BossTackEvent(
-            id: entity.id,
-            labels: entity.labels,
+            id: widget.bossId,
+            labels: bossEntity.labels,
             isFollow: false,
           ),
         );
 
-        JpushApi.ins().deleteTags([entity.id]);
+        JpushApi.ins().deleteTags([widget.bossId]);
       }, onError: (res) {
         Get.back();
         BaseTool.toast(msg: " 取消失败，${res.msg}");
@@ -261,10 +220,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   void doFollow() {
     BaseWidget.showLoadingAlert("尝试追踪...", context);
 
-    BossApi.ins().obtainFollowBoss(entity.id).flatMap((value) {
-      entity.isCollect = true;
+    BossApi.ins().obtainFollowBoss(widget.bossId).flatMap((value) {
+      bossEntity.isCollect = true;
 
-      return BossDbProvider.ins().insert(entity.toSimple());
+      return BossDbProvider.ins().insert(bossEntity.toSimple());
     }).listen((event) {
       Get.back();
 
@@ -276,8 +235,8 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
       Global.eventBus.fire(
         BossTackEvent(
-          id: entity.id,
-          labels: entity.labels,
+          id: widget.bossId,
+          labels: bossEntity.labels,
           isFollow: true,
         ),
       );
@@ -285,7 +244,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
       showAskPushDialog(context, onConfirm: () {
         Get.back();
 
-        JpushApi.ins().addTags([entity.id]);
+        JpushApi.ins().addTags([widget.bossId]);
         BaseWidget.showDoFollowChangeDialog(context, true);
       }, onDismiss: () {
         Get.back();
@@ -300,27 +259,28 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
 
   void onWatchMore() {
     Get.to(() => BossInfoPage(),
-        arguments: entity, transition: Transition.rightToLeftWithFade);
+        arguments: bossEntity, transition: Transition.rightToLeftWithFade);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: FutureBuilder<WlPage.Page<ArticleEntity>>(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: BaseColor.pageBg,
+      body: FutureBuilder<dynamic>(
         builder: builderWidget,
         future: builderFuture,
       ),
     );
   }
 
-  Widget builderWidget(BuildContext context,
-      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot<dynamic> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
       } else
         return BaseWidget.errorWidget(() {
-          builderFuture = loadInitData();
+          builderFuture = initData();
           setState(() {});
         });
     } else {
@@ -328,27 +288,111 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     }
   }
 
-  Widget topWidget() {
-    return Container(
-      height: MediaQuery.of(context).padding.top + 40 + 160,
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 40),
-      decoration: ShapeDecoration(
-        image: DecorationImage(
-          image: AssetImage(R.assetsImgBossTopBg),
-          fit: BoxFit.cover,
+  Widget contentWidget() {
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          toolbarHeight: 40,
+          backgroundColor: BaseColor.pageBg,
+          leading: Container(
+            child: GestureDetector(
+              child: Icon(Icons.arrow_back, size: 26, color: Colors.white),
+              onTap: onBack,
+            ),
+          ),
+          actions: [
+            Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
+                .marginOn(right: 20)
+                .onClick(onShare),
+            Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
+                .marginOn(right: 16)
+                .onClick(onSetting),
+          ],
+          floating: false,
+          pinned: true,
+          snap: false,
+          expandedHeight:
+              MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(48),
+            child: Container(
+              height: 48,
+              color: BaseColor.pageBg,
+              padding: EdgeInsets.only(left: 16, right: 16),
+              child: Row(
+                children: [
+                  Expanded(child: tabWidget(0)),
+                  Expanded(child: tabWidget(1)),
+                  Expanded(child: tabWidget(2)),
+                ],
+              ),
+            ),
+          ),
+          flexibleSpace: bossWidget(),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusDirectional.only(
-            bottomStart: Radius.circular(24),
+        listWidget(),
+      ],
+    );
+  }
+
+  Widget tabWidget(int index) {
+    return Container(
+      height: 48,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              color: Colors.red,
+            ),
+            height: 8,
+          ).positionOn(right: 22, left: 22, bottom: 12),
+          Container(
+            alignment: Alignment.center,
+            child: Text(
+              typeList[index],
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ).positionOn(right: 0, left: 0, top: 12),
+        ],
+      ),
+    ).onClick(() {
+      onTabClick(index);
+    });
+  }
+
+  Widget bossWidget() {
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: true,
+      removeBottom: true,
+      child: Container(
+        height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + 40 + 24,
+        ),
+        decoration: ShapeDecoration(
+          image: DecorationImage(
+            image: AssetImage(R.assetsImgBossTopBg),
+            fit: BoxFit.cover,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusDirectional.only(
+              bottomStart: Radius.circular(24),
+            ),
           ),
         ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          bossInfoWidget(),
-          bossInfoBottomWidget(),
-        ],
+        child: ListView(
+          physics: NeverScrollableScrollPhysics(),
+          children: [
+            bossInfoWidget(),
+            bossInfoBottomWidget(),
+          ],
+        ),
       ),
     );
   }
@@ -362,7 +406,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         children: [
           ClipOval(
             child: Image.network(
-              HttpConfig.fullUrl(entity.head),
+              HttpConfig.fullUrl(bossEntity.head),
               width: 64,
               height: 64,
               fit: BoxFit.cover,
@@ -382,7 +426,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  entity.name,
+                  bossEntity.name,
                   style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
@@ -393,7 +437,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                   maxLines: 1,
                 ),
                 Text(
-                  "${entity.readCount.formatCountNumber()}阅读·${entity.totalCount ?? 0}篇言论·${entity.collect.formatCountNumber()}关注",
+                  "${bossEntity.readCount.formatCountNumber()}阅读·${bossEntity.totalCount ?? 0}篇言论·${bossEntity.collect.formatCountNumber()}关注",
                   style: TextStyle(fontSize: 12, color: Colors.white),
                   softWrap: false,
                   maxLines: 1,
@@ -409,11 +453,13 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
   }
 
   Widget bossInfoBottomWidget() {
-    bool hasFollow = entity.isCollect;
+    bool hasFollow = bossEntity.isCollect;
     Color followColor = hasFollow ? Color(0x80efefef) : Colors.red;
 
     return Container(
-      margin: EdgeInsets.only(top: 20, left: 16, right: 16),
+      height: 104,
+      padding: EdgeInsets.only(top: 24, bottom: 16),
+      margin: EdgeInsets.only(right: 16, left: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -453,7 +499,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                       child: ConstrainedBox(
                         constraints: BoxConstraints(maxWidth: 240),
                         child: Text(
-                          entity.role,
+                          bossEntity.role,
                           style: TextStyle(fontSize: 12, color: Colors.white),
                           textAlign: TextAlign.center,
                           maxLines: 1,
@@ -466,7 +512,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                   ],
                 ),
                 Text(
-                  "个人简介：${entity.info}",
+                  "个人简介：${bossEntity.info}",
                   style: TextStyle(
                       fontSize: 12,
                       color: Colors.white,
@@ -475,9 +521,7 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
                   maxLines: 2,
                   textAlign: TextAlign.start,
                   overflow: TextOverflow.ellipsis,
-                ).marginOn(left: 16, top: 8).onClick(() {
-                  onWatchMore();
-                }),
+                ).marginOn(left: 16, top: 8).onClick(onWatchMore),
               ],
             ),
           ),
@@ -486,57 +530,10 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
     );
   }
 
-  Widget numberWidget() {
-    return Container(
-      padding: EdgeInsets.only(left: 16, top: 16, bottom: 16, right: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            "Ta的言论",
-            style: TextStyle(
-                fontSize: 24,
-                color: BaseColor.textDark,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.start,
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            "共${entity.totalCount ?? 0}篇",
-            style: TextStyle(fontSize: 14, color: BaseColor.textDark),
-            textAlign: TextAlign.start,
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-          ).marginOn(left: 12),
-        ],
-      ),
-    );
-  }
+  Widget listWidget() {
+    var data = map[mCurrentType];
 
-  Widget contentWidget() {
-    return Container(
-        child: Column(
-      children: [
-        topWidget(),
-        numberWidget(),
-        Expanded(
-          child: BaseWidget.refreshWidgetPage(
-            slivers: [bodyWidget()],
-            controller: controller,
-            scrollController: scrollController,
-            hasData: hasData,
-            loadData: loadData,
-          ),
-        ),
-      ],
-    ));
-  }
-
-  Widget bodyWidget() {
-    return mData.isNullOrEmpty()
+    return data.isNullOrEmpty()
         ? SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -548,59 +545,53 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                ArticleEntity entity = mData[index];
+                ArticleSimpleEntity entity =
+                    data[index == 0 ? index : index - 1];
 
-                return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextWithContentBossPage(
-                        entity,
-                        context,
-                        () {
-                          if (!entity.isRead) {
-                            entity.isRead = true;
-                          }
-
-                          if (BaseTool.showRedDots(
-                              entity.bossId, entity.getShowTime())) {
-                            DataConfig.getIns().setBossTime(entity.bossId);
-                          }
-
-                          setState(() {});
-
-                          if (!entity.isRead) {
-                            BaseTool.doAddRead();
-                          }
-
-                          Get.to(() => WebArticlePage(fromBoss: true),
-                              arguments: entity.id);
-                        },
-                      )
-                    : ArticleWidget.singleImgWithContentBossPage(
-                        entity,
-                        context,
-                        () {
-                          if (!entity.isRead) {
-                            entity.isRead = true;
-                          }
-
-                          if (BaseTool.showRedDots(
-                              entity.bossId, entity.getShowTime())) {
-                            DataConfig.getIns().setBossTime(entity.bossId);
-                          }
-
-                          setState(() {});
-
-                          if (!entity.isRead) {
-                            BaseTool.doAddRead();
-                          }
-
-                          Get.to(() => WebArticlePage(fromBoss: true),
-                              arguments: entity.id);
-                        },
-                      );
+                return index == 0 ? noticeWidget() : articleWidget(entity);
               },
-              childCount: mData.length,
+              childCount: data.length + 1,
             ),
           );
+  }
+
+  Widget noticeWidget() {
+    return Container(
+      margin: EdgeInsets.only(left: 16, right: 16, bottom: 12),
+      padding: EdgeInsets.only(left: 8, right: 8, top: 6, bottom: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+        color: BaseColor.loadBg,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              "收录Boss自己的言论、演说稿件、采访答录等",
+              style: TextStyle(color: BaseColor.textDark, fontSize: 12),
+              softWrap: false,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            "查看全部共${bossEntity.totalCount}篇",
+            style: TextStyle(color: BaseColor.textDark, fontSize: 12),
+          ).marginOn(left: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget articleWidget(ArticleSimpleEntity entity) {
+    return entity.files.isNullOrEmpty()
+        ? ArticleWidget.onlyTextWithContentBossPage(entity, context, () {
+            onArticleClick(entity);
+          })
+        : ArticleWidget.singleImgWithContentBossPage(entity, context, () {
+            onArticleClick(entity);
+          });
   }
 
   Widget emptyBodyWidget() {
@@ -617,15 +608,14 @@ class _BodyWidgetState extends State<BodyWidget> with BasePageController {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(path, width: 160, height: 160),
-            Text(content,
-                    style: TextStyle(fontSize: 18, color: BaseColor.textGray),
-                    textAlign: TextAlign.center)
-                .marginOn(top: 16),
+            Text(
+              content,
+              style: TextStyle(fontSize: 18, color: BaseColor.textGray),
+              textAlign: TextAlign.center,
+            ).marginOn(top: 16),
           ],
         ),
       ),
-    ).onClick(() {
-      controller.callRefresh();
-    });
+    ).onClick(errorLoad);
   }
 }

@@ -78,7 +78,7 @@ class _SplashPageState extends State<SplashPage> {
       },
       onError: (res) {
         DataConfig.getIns().fromSplash = true;
-        Get.offAll(() => HomePage());
+        Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onDone: () {
         DataConfig.getIns().firstUseApp = false;
@@ -105,12 +105,12 @@ class _SplashPageState extends State<SplashPage> {
     }).listen(
       (event) {
         DataConfig.getIns().fromSplash = true;
-        Get.offAll(() => HomePage());
+        Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onError: (res) {
         print(res);
         DataConfig.getIns().fromSplash = true;
-        Get.offAll(() => HomePage());
+        Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onDone: () {
         Global.user.setUser(UserConfig.getIns().user);

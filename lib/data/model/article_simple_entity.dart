@@ -18,6 +18,7 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
   String bossName; //boss名
   String bossHead = ""; //boss头像
   String bossRole; //boss角色, 职务
+  String returnType; //0:最近更新 1:为你推荐
 
   int getShowTime() {
     return articleTime ?? releaseTime;
@@ -25,7 +26,7 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
 
   @override
   String toString() {
-    return 'ArticleSimpleEntity{id: $id, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, readCount: $readCount, collect: $collect, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossId: $bossId, bossName: $bossName, bossHead: $bossHead, bossRole: $bossRole}';
+    return 'ArticleSimpleEntity{id: $id, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, readCount: $readCount, collect: $collect, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossId: $bossId, bossName: $bossName, bossHead: $bossHead, bossRole: $bossRole, returnType: $returnType}';
   }
 
   Map<String, dynamic> toMap() {
@@ -43,6 +44,7 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
       'bossName': bossName ?? "",
       'bossHead': bossHead ?? "",
       'bossRole': bossRole ?? "",
+      'returnType': returnType ?? "0",
       'files': files.isNullOrEmpty() ? "empty" : convert.json.encode(files)
     };
   }
@@ -62,6 +64,7 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
       ..bossName = json["bossName"]
       ..bossHead = json["bossHead"]
       ..bossRole = json["bossRole"]
+      ..returnType = json["returnType"]
       ..files = json["files"] == "empty"
           ? []
           : (convert.json.decode(json["files"]) as List<dynamic>)
