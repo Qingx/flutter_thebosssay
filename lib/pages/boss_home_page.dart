@@ -340,13 +340,22 @@ class _BossHomePageState extends State<BossHomePage> {
       height: 48,
       child: Stack(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              color: Colors.red,
-            ),
-            height: 8,
-          ).positionOn(right: 22, left: 22, bottom: 12),
+          mCurrentType == (index + 1).toString()
+              ? Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xfff28564),
+                        Color(0xffee3b20),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  height: 8,
+                ).positionOn(right: 22, left: 22, bottom: 12)
+              : SizedBox(),
           Container(
             alignment: Alignment.center,
             child: Text(
@@ -576,7 +585,7 @@ class _BossHomePageState extends State<BossHomePage> {
             ),
           ),
           Text(
-            "查看全部共${bossEntity.totalCount}篇",
+            "共${bossEntity.totalCount}篇",
             style: TextStyle(color: BaseColor.textDark, fontSize: 12),
           ).marginOn(left: 8),
         ],
