@@ -135,6 +135,7 @@ flutter:
     - assets/img/bossLabelHot.png
     - assets/img/guideCard.png
     - assets/img/search.png
+    - assets/img/scrollTop.png
     - assets/img/changeInfo.png
     - assets/img/favoriteAccent.png
     - assets/img/likeNormal.png

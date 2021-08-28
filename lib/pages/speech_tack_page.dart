@@ -5,7 +5,8 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
+import 'package:flutter_boss_says/event/page_scroll_event.dart';
 import 'package:flutter_boss_says/pages/speech_tack_content_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
@@ -169,9 +170,7 @@ class _SpeechTackPageState extends State<SpeechTackPage>
       if (index != mCurrentIndex) {
         mCurrentIndex = index;
         mPageController.jumpToPage(mCurrentIndex);
-      } else {
-        Global.eventBus
-            .fire(ScrollToTopEvent(pageName: "tack", labelId: entity.id));
+        GlobalScrollEvent.tackLabel = mLabels[index].id;
       }
     });
   }

@@ -8,7 +8,8 @@ import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/banner_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
+import 'package:flutter_boss_says/event/page_scroll_event.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
@@ -69,8 +70,10 @@ class _SpeechSquareContentPageState extends State<SpeechSquareContentPage>
   }
 
   void eventBus() {
-    eventDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
-      if (event.pageName == "square" && event.labelId == widget.label) {
+    eventDispose = Global.eventBus.on<PageScrollEvent>().listen((event) {
+      if (GlobalScrollEvent.homePage == "talk" &&
+          GlobalScrollEvent.talkPage == "square" &&
+          GlobalScrollEvent.squareLabel == widget.label) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
           duration: Duration(milliseconds: 480),

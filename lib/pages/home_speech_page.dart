@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
 import 'package:flutter_boss_says/pages/search_article_page.dart';
 import 'package:flutter_boss_says/pages/speech_square_page.dart';
 import 'package:flutter_boss_says/r.dart';
@@ -104,6 +105,12 @@ class _HomeSpeechPageState extends State<HomeSpeechPage>
       onPageChanged: (index) {
         mCurrentIndex = index;
         setState(() {});
+
+        if (index == 0) {
+          GlobalScrollEvent.talkPage = "tack";
+        } else {
+          GlobalScrollEvent.talkPage = "square";
+        }
       },
     );
   }

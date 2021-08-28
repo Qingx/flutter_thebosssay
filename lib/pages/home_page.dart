@@ -10,8 +10,10 @@ import 'package:flutter_boss_says/data/server/scheme_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/version_update_dialog.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
+import 'package:flutter_boss_says/event/page_scroll_event.dart';
 import 'package:flutter_boss_says/pages/home_boss_content_page.dart';
 import 'package:flutter_boss_says/pages/home_mine_page.dart';
 import 'package:flutter_boss_says/pages/home_speech_page.dart';
@@ -52,10 +54,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     mCurrentIndex = 0;
-    mTitles = ["言论", "老板", "我的"];
+    mTitles = ["言论", "老板", "我的", "回顶部"];
     mIcons = [
-      [R.assetsImgTalkNormal, R.assetsImgTalkSelect],
-      [R.assetsImgBossNormal, R.assetsImgBossSelect],
+      [R.assetsImgTalkNormal, R.assetsImgScrollTop],
+      [R.assetsImgBossNormal, R.assetsImgScrollTop],
       [R.assetsImgMineNormal, R.assetsImgMineSelect]
     ];
     mPages = [HomeSpeechPage(), HomeBossContentPage(), HomeMinePage()];
@@ -162,6 +164,13 @@ class _HomePageState extends State<HomePage> {
     return PageView.builder(
         physics: NeverScrollableScrollPhysics(),
         onPageChanged: (int) {
+          if (int == 0) {
+            GlobalScrollEvent.homePage = "talk";
+          }
+          if (int == 1) {
+            GlobalScrollEvent.homePage = "boss";
+          }
+
           mCurrentIndex = int;
           setState(() {});
         },
@@ -192,7 +201,8 @@ class _HomePageState extends State<HomePage> {
     Color mCurrentColor =
         mCurrentIndex == index ? BaseColor.accent : BaseColor.textGray;
     String mCurrentIcon = mIcons[index][mCurrentIndex == index ? 1 : 0];
-
+    String mCurrentName =
+        mCurrentIndex == index && index != 2 ? mTitles[3] : mTitles[index];
     return Container(
       height: 50,
       color: Colors.white,
@@ -204,16 +214,22 @@ class _HomePageState extends State<HomePage> {
           itemLabelWidget(index),
           itemIconWidget(mCurrentIcon),
           Text(
-            mTitles[index],
+            mCurrentName,
             style: TextStyle(fontSize: 12, color: mCurrentColor),
             textAlign: TextAlign.center,
           )
         ],
       ),
     ).onClick(() {
-      mCurrentIndex = index;
-      mPageController.jumpToPage(mCurrentIndex);
-      setState(() {});
+      if (mCurrentIndex != index) {
+        mCurrentIndex = index;
+        mPageController.jumpToPage(mCurrentIndex);
+        setState(() {});
+      } else {
+        if (index != 2) {
+          Global.eventBus.fire(PageScrollEvent());
+        }
+      }
     });
   }
 

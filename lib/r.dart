@@ -53,6 +53,8 @@ class R {
   static final String assetsImgGuideCard = 'assets/img/guideCard.png';
   /// ![](http://127.0.0.1:11111111/assets/img/search.png)
   static final String assetsImgSearch = 'assets/img/search.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/scrollTop.png)
+  static final String assetsImgScrollTop = 'assets/img/scrollTop.png';
   /// ![](http://127.0.0.1:11111111/assets/img/changeInfo.png)
   static final String assetsImgChangeInfo = 'assets/img/changeInfo.png';
   /// ![](http://127.0.0.1:11111111/assets/img/favoriteAccent.png)

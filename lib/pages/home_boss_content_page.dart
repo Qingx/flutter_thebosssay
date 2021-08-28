@@ -16,8 +16,9 @@ import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/event/boss_batch_tack_event.dart';
 import 'package:flutter_boss_says/event/boss_tack_event.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
 import 'package:flutter_boss_says/event/on_top_event.dart';
-import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/event/page_scroll_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
 import 'package:flutter_boss_says/pages/search_boss_page.dart';
@@ -127,8 +128,9 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
       }
     });
 
-    eventScrollDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
-      if (event.pageName == "boss" && event.labelId == mCurrentLabel) {
+    eventScrollDispose = Global.eventBus.on<PageScrollEvent>().listen((event) {
+      if (GlobalScrollEvent.homePage == "boss" &&
+          GlobalScrollEvent.bossLabel == mCurrentLabel) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
           duration: Duration(milliseconds: 480),
@@ -206,6 +208,7 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
   void onClickTab(BossLabelEntity entity) {
     if (entity.id != mCurrentLabel) {
       mCurrentLabel = entity.id;
+      GlobalScrollEvent.bossLabel = mCurrentLabel;
 
       BossDbProvider.ins()
           .getByLabel(mCurrentLabel)
@@ -214,10 +217,6 @@ class _HomeBossContentPageState extends State<HomeBossContentPage>
 
         setState(() {});
       });
-    } else {
-      Global.eventBus.fire(
-        ScrollToTopEvent(pageName: "boss", labelId: entity.id),
-      );
     }
   }
 

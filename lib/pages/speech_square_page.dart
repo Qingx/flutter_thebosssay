@@ -4,7 +4,8 @@ import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/data/db/label_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_label_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
-import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
+import 'package:flutter_boss_says/event/page_scroll_event.dart';
 import 'package:flutter_boss_says/pages/speech_square_content_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
@@ -163,9 +164,7 @@ class _SpeechSquarePageState extends State<SpeechSquarePage>
       if (index != mCurrentIndex) {
         mCurrentIndex = index;
         mPageController.jumpToPage(mCurrentIndex);
-      } else {
-        Global.eventBus
-            .fire(ScrollToTopEvent(pageName: "square", labelId: entity.id));
+        GlobalScrollEvent.squareLabel = mLabels[index].id;
       }
     });
   }

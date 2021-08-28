@@ -11,8 +11,9 @@ import 'package:flutter_boss_says/data/model/boss_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/boss_batch_tack_event.dart';
 import 'package:flutter_boss_says/event/boss_tack_event.dart';
+import 'package:flutter_boss_says/event/global_scroll_event.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
-import 'package:flutter_boss_says/event/scroll_top_event.dart';
+import 'package:flutter_boss_says/event/page_scroll_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
 import 'package:flutter_boss_says/pages/home_boss_all_page.dart';
@@ -134,8 +135,10 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
       });
     });
 
-    onTopDispose = Global.eventBus.on<ScrollToTopEvent>().listen((event) {
-      if (event.pageName == "tack" && event.labelId == widget.mLabel) {
+    onTopDispose = Global.eventBus.on<PageScrollEvent>().listen((event) {
+      if (GlobalScrollEvent.homePage == "talk" &&
+          GlobalScrollEvent.talkPage == "tack" &&
+          GlobalScrollEvent.tackLabel == widget.mLabel) {
         scrollController.animateTo(
           scrollController.position.minScrollExtent,
           duration: Duration(milliseconds: 480),

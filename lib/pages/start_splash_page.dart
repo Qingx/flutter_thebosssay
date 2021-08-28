@@ -132,7 +132,6 @@ class _StartSplashPageState extends State<StartSplashPage> {
           children: [
             Container(
               width: 24,
-              height: MediaQuery.of(context).size.height * 0.4,
               margin: EdgeInsets.only(
                 top: MediaQuery.of(context).size.height * 0.2,
               ),
