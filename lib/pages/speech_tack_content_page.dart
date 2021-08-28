@@ -180,7 +180,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
       mBossList = value;
 
       return ArticleDbProvider.ins().getAll();
-    }).onErrorReturn([]).doOnData((event) {
+    }).doOnData((event) {
       pageParam.next(1);
       totalArticleNumber = DataConfig.getIns().tackTotalNum;
       hasData = DataConfig.getIns().tackHasData;

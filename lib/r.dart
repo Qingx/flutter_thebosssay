@@ -95,14 +95,20 @@ class R {
   static final String assetsImgShareWhite = 'assets/img/shareWhite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/contact1.png)
   static final String assetsImgContact1 = 'assets/img/contact1.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/splash_image2.png)
+  static final String assetsImgSplashImage2 = 'assets/img/splash_image2.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossHandRight.png)
   static final String assetsImgBossHandRight = 'assets/img/bossHandRight.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemHistory.png)
   static final String assetsImgItemHistory = 'assets/img/itemHistory.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/splash_image3.png)
+  static final String assetsImgSplashImage3 = 'assets/img/splash_image3.png';
   /// ![](http://127.0.0.1:11111111/assets/img/contact2.png)
   static final String assetsImgContact2 = 'assets/img/contact2.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingDark.png)
   static final String assetsImgSettingDark = 'assets/img/settingDark.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/splash_image1.png)
+  static final String assetsImgSplashImage1 = 'assets/img/splash_image1.png';
   /// ![](http://127.0.0.1:11111111/assets/img/launchImage.png)
   static final String assetsImgLaunchImage = 'assets/img/launchImage.png';
   /// ![](http://127.0.0.1:11111111/assets/img/contact3.png)

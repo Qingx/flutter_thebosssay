@@ -21,7 +21,6 @@ class ArticleDbProvider extends BaseDbProvider {
   final String columnBossName = "bossName";
   final String columnBossHead = "bossHead";
   final String columnBossRole = "bossRole";
-  final String columnReturnType = "returnType";
 
   ArticleDbProvider._();
 
@@ -47,12 +46,11 @@ class ArticleDbProvider extends BaseDbProvider {
     $columnCollect integer,
     $columnReleaseTime integer,
     $columnArticleTime integer,
-    $columnFiles text,
     $columnBossId text,
     $columnBossName text,
     $columnBossHead text,
     $columnBossRole text,
-    $columnReturnType text
+    $columnFiles text
     )
     ''';
   }

@@ -4,6 +4,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/dialog/ask_bind_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
@@ -196,7 +197,11 @@ class _HomeMinePageState extends State<HomeMinePage>
   }
 
   void doTest() {
-    Get.to(() => TestPage());
+    ArticleDbProvider.ins().getAll().listen((event) {
+      print(event);
+    },onError: (res){
+      print(res);
+    });
   }
 
   @override

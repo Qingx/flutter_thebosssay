@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
-import 'package:flutter_boss_says/pages/splash_page.dart';
+import 'package:flutter_boss_says/pages/start_splash_page.dart';
 import 'package:flutter_boss_says/util/base_sp.dart';
 import 'package:fluwx/fluwx.dart' as fluwx;
 import 'package:get/get.dart';
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(backgroundColor: Colors.white),
-      home: SplashPage(),
+      home: StartSplashPage(),
     );
   }
 }

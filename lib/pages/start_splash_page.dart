@@ -16,18 +16,20 @@ import 'package:flutter_boss_says/dialog/service_privacy_dialog.dart';
 import 'package:flutter_boss_says/pages/start_guide_page.dart';
 import 'package:flutter_boss_says/pages/home_page.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
+import 'package:flutter_boss_says/util/base_extension.dart';
 
-class SplashPage extends StatefulWidget {
-  const SplashPage({Key key}) : super(key: key);
+class StartSplashPage extends StatefulWidget {
+  const StartSplashPage({Key key}) : super(key: key);
 
   @override
-  _SplashPageState createState() => _SplashPageState();
+  _StartSplashPageState createState() => _StartSplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _StartSplashPageState extends State<StartSplashPage> {
   @override
   void dispose() {
     super.dispose();
@@ -123,10 +125,54 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
-      body: Image.asset(
-        R.assetsImgSplash,
-        width: double.infinity,
-        height: double.infinity,
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Container(
+              width: 24,
+              height: MediaQuery.of(context).size.height * 0.4,
+              margin: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * 0.2,
+              ),
+              child: Image.asset(
+                R.assetsImgSplashImage1,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 48,
+              margin: EdgeInsets.only(top: 32),
+              child: Image.asset(
+                R.assetsImgSplashImage2,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Expanded(child: SizedBox()),
+            Container(
+              width: 32,
+              height: 32,
+              margin: EdgeInsets.only(bottom: 12),
+              child: Image.asset(
+                R.assetsImgSplashImage3,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 32),
+              child: Text(
+                "BOSS说-追踪大佬的言论",
+                style: TextStyle(
+                  color: BaseColor.textGray,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

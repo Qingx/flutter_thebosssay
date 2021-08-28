@@ -17,6 +17,7 @@ import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
+import 'package:flutter_boss_says/pages/boss_article_page.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
@@ -585,12 +586,14 @@ class _BossHomePageState extends State<BossHomePage> {
             ),
           ),
           Text(
-            "共${bossEntity.totalCount}篇",
+            "查看全部共${bossEntity.totalCount}篇",
             style: TextStyle(color: BaseColor.textDark, fontSize: 12),
           ).marginOn(left: 8),
         ],
       ),
-    );
+    ).onClick(() {
+      Get.to(() => BossArticlePage(), arguments: widget.bossId);
+    });
   }
 
   Widget articleWidget(ArticleSimpleEntity entity) {
@@ -608,7 +611,7 @@ class _BossHomePageState extends State<BossHomePage> {
     String content = "最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        320;
+        232;
     return Container(
       height: height,
       child: Center(

@@ -156,10 +156,13 @@ flutter:
     - assets/img/shareWechat.png
     - assets/img/shareWhite.png
     - assets/img/contact1.png
+    - assets/img/splash_image2.png
     - assets/img/bossHandRight.png
     - assets/img/itemHistory.png
+    - assets/img/splash_image3.png
     - assets/img/contact2.png
     - assets/img/settingDark.png
+    - assets/img/splash_image1.png
     - assets/img/launchImage.png
     - assets/img/contact3.png
     - assets/img/shareTimeline.png
