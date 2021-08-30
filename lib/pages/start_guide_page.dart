@@ -30,11 +30,6 @@ class StartGuidePage extends StatefulWidget {
 }
 
 class _StartGuidePageState extends State<StartGuidePage> {
-  int currentTime = 5;
-  String countText = "5s";
-
-  StreamSubscription<int> mDispose;
-
   double indicatorWidth = 0;
   ScrollController controller;
   List<GuidBossEntity> mData = [];
@@ -44,7 +39,6 @@ class _StartGuidePageState extends State<StartGuidePage> {
   void dispose() {
     super.dispose();
 
-    mDispose?.cancel();
     controller?.dispose();
   }
 
@@ -65,26 +59,6 @@ class _StartGuidePageState extends State<StartGuidePage> {
         indicatorWidth = 100 * (current / max);
         setState(() {});
       }
-    });
-    countTime();
-  }
-
-  ///倒计时
-  void countTime() {
-    if (mDispose != null) {
-      mDispose.cancel();
-    }
-
-    mDispose = Observable.periodic(Duration(seconds: 1), (i) => i)
-        .take(6)
-        .listen((event) {
-      currentTime--;
-      countText = "${currentTime}s";
-      if (currentTime < 0) {
-        countText = "跳过";
-        mDispose?.cancel();
-      }
-      setState(() {});
     });
   }
 
@@ -198,16 +172,14 @@ class _StartGuidePageState extends State<StartGuidePage> {
             ),
             child: Center(
               child: Text(
-                countText,
+                "跳过",
                 style: TextStyle(color: BaseColor.accent, fontSize: 14),
                 textAlign: TextAlign.center,
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ).onClick(() {
-                if (countText == "跳过") {
-                  Get.offAll(() => HomePage(), transition: Transition.fadeIn);
-                }
+                Get.offAll(() => HomePage(), transition: Transition.fadeIn);
               }),
             ),
           ),
