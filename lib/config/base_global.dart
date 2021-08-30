@@ -3,7 +3,7 @@ import 'package:flutter_boss_says/config/hint_controller.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 
 class Global {
-  static String versionName = "1.0.14";
+  static String versionName = "1.0.13";
   static String build = "+1";
   static UserController user = UserController()..user;
   static HintController hint = HintController();
