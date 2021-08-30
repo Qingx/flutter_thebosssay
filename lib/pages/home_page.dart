@@ -139,8 +139,6 @@ class _HomePageState extends State<HomePage> {
         print("onOpenNotification:$message");
 
         if (message["extras"]["articleId"] != null) {
-          BaseTool.doAddRead();
-
           Get.to(() => WebArticlePage(fromBoss: false),
               arguments: message["extras"]["articleId"]);
         }

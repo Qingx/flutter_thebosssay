@@ -27,7 +27,6 @@ class SchemeApi {
           Map<String, String> map = url.getPathValue();
           print('url scheme=>$map}');
           if (map.containsKey("id")) {
-            BaseTool.doAddRead();
             Get.to(() => WebArticlePage(fromBoss: false), arguments: map["id"]);
           }
         }

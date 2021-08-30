@@ -402,7 +402,9 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
 
   ///阅读文章
   void doReadArticle() {
-    UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {});
+    UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {
+      BaseTool.doAddRead();
+    });
   }
 
   void onFavoriteChange() {

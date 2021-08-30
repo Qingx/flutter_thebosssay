@@ -21,6 +21,7 @@ class ArticleDbProvider extends BaseDbProvider {
   final String columnBossName = "bossName";
   final String columnBossHead = "bossHead";
   final String columnBossRole = "bossRole";
+  final String columnRecommendType = "recommendType";
 
   ArticleDbProvider._();
 
@@ -50,7 +51,8 @@ class ArticleDbProvider extends BaseDbProvider {
     $columnBossName text,
     $columnBossHead text,
     $columnBossRole text,
-    $columnFiles text
+    $columnFiles text,
+    $columnRecommendType text
     )
     ''';
   }

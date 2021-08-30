@@ -46,6 +46,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
   bool hasData;
   int totalArticleNumber;
   List<BossSimpleEntity> mBossList;
+  String titleText;
 
   ScrollController scrollController;
   EasyRefreshController controller;
@@ -80,6 +81,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     hasData = false;
     totalArticleNumber = 0;
     mBossList = [];
+    titleText = "最近更新";
 
     builderFuture = futureData();
     scrollController = ScrollController();
@@ -102,6 +104,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
           hasData = value.hasData;
           totalArticleNumber = value.total;
           concat(value.records, false);
+          titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
 
           DataConfig.getIns().tackHasData = hasData;
           DataConfig.getIns().tackTotalNum = totalArticleNumber;
@@ -125,6 +128,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         hasData = value.hasData;
         totalArticleNumber = value.total;
         concat(value.records, false);
+        titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
 
         DataConfig.getIns().tackHasData = hasData;
         DataConfig.getIns().tackTotalNum = totalArticleNumber;
@@ -188,6 +192,9 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
       totalArticleNumber = DataConfig.getIns().tackTotalNum;
       hasData = DataConfig.getIns().tackHasData;
       concat(event, false);
+      titleText = event[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
+    }).doOnError((res) {
+      print(res);
     }).last;
   }
 
@@ -205,6 +212,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
       hasData = true;
       totalArticleNumber = event.total;
       concat(event.records, false);
+      titleText = event?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
     }).last;
   }
 
@@ -232,6 +240,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
       hasData = value.hasData;
       totalArticleNumber = value.total;
       concat(value.records, false);
+      titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
 
       DataConfig.getIns().tackHasData = hasData;
       DataConfig.getIns().tackTotalNum = totalArticleNumber;
@@ -266,6 +275,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         hasData = value.hasData;
         totalArticleNumber = value.total;
         concat(value.records, false);
+        titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
 
         DataConfig.getIns().tackTotalNum = totalArticleNumber;
         DataConfig.getIns().tackHasData = hasData;
@@ -490,7 +500,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "最近更新",
+            titleText,
             style: TextStyle(
                 color: BaseColor.textDark,
                 fontSize: 24,

@@ -199,7 +199,7 @@ class _HomeMinePageState extends State<HomeMinePage>
   void doTest() {
     ArticleDbProvider.ins().getAll().listen((event) {
       print(event);
-    },onError: (res){
+    }, onError: (res) {
       print(res);
     });
   }

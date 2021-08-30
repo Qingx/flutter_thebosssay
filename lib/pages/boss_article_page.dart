@@ -106,10 +106,6 @@ class _BossArticlePageState extends State<BossArticlePage>
 
     setState(() {});
 
-    if (!entity.isRead) {
-      BaseTool.doAddRead();
-    }
-
     Get.to(() => WebArticlePage(fromBoss: true), arguments: entity.id);
   }
 
