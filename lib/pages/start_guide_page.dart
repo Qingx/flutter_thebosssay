@@ -244,23 +244,29 @@ class _StartGuidePageState extends State<StartGuidePage> {
 
     Color nameColor = hasSelect ? Colors.white : BaseColor.textDark;
     Color infoColor = hasSelect ? Color(0x80ffffff) : BaseColor.textGray;
-    Color bgColor = hasSelect ? BaseColor.accent : Colors.white;
     Color topBg = hasSelect ? Colors.white : Color(0x1a2343C2);
     Color iconColor = hasSelect ? BaseColor.accent : Colors.white;
 
     return Container(
       margin: EdgeInsets.only(left: 8, right: 8),
-      decoration: ShapeDecoration(
-        image: DecorationImage(
-          image: AssetImage(R.assetsImgGuideCard),
-          fit: BoxFit.cover,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusDirectional.all(
-            Radius.circular(4),
-          ),
-        ),
-      ),
+      decoration: hasSelect
+          ? ShapeDecoration(
+              image: DecorationImage(
+                image: AssetImage(R.assetsImgGuideCard),
+                fit: BoxFit.cover,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusDirectional.all(
+                  Radius.circular(4),
+                ),
+              ),
+            )
+          : BoxDecoration(
+              borderRadius: BorderRadius.all(
+                Radius.circular(4),
+              ),
+              color: Colors.white,
+            ),
       child: Stack(
         children: [
           Container(
