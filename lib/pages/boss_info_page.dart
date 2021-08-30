@@ -111,13 +111,13 @@ class BossInfoPage extends StatelessWidget {
             width: 24,
             height: 24,
           ).positionOn(
-              bottom: 92, left: MediaQuery.of(context).size.width / 2 - 64),
+              bottom: 100, left: MediaQuery.of(context).size.width / 2 - 60),
           Image.asset(
             R.assetsImgBossHandRight,
             width: 24,
             height: 24,
           ).positionOn(
-              bottom: 92, right: MediaQuery.of(context).size.width / 2 - 64),
+              bottom: 100, right: MediaQuery.of(context).size.width / 2 - 60),
         ],
       ),
     );
