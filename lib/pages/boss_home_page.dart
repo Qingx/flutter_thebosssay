@@ -15,6 +15,7 @@ import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
+import 'package:flutter_boss_says/event/article_read_event.dart';
 import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_article_page.dart';
@@ -48,11 +49,14 @@ class _BossHomePageState extends State<BossHomePage> {
 
   var tackDispose;
 
+  var readDispose;
+
   @override
   void dispose() {
     super.dispose();
 
     tackDispose?.cancel();
+    readDispose?.cancel();
 
     DataConfig.getIns().setBossTime(widget.bossId);
     Global.eventBus.fire(SetBossTimeEvent(widget.bossId));
@@ -83,6 +87,16 @@ class _BossHomePageState extends State<BossHomePage> {
         bossEntity.isCollect = event.isFollow;
         setState(() {});
       }
+    });
+
+    readDispose = Global.eventBus.on<ArticleReadEvent>().listen((event) {
+      map.forEach((key, value) {
+        int index = value.indexWhere((element) => element.id == event.id);
+        if (index != -1) {
+          value[index].isRead = true;
+        }
+      });
+      setState(() {});
     });
   }
 

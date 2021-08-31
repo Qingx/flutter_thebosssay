@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
+import 'package:flutter_boss_says/event/article_read_event.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
@@ -98,6 +100,8 @@ class _BossArticlePageState extends State<BossArticlePage>
   void onArticleClick(ArticleEntity entity) {
     if (!entity.isRead) {
       entity.isRead = true;
+
+      Global.eventBus.fire(ArticleReadEvent(entity.id));
     }
 
     if (BaseTool.showRedDots(entity.bossId, entity.getShowTime())) {

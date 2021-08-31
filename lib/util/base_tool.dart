@@ -170,15 +170,16 @@ class BaseTool {
   }
 
   static void doAddRead() {
-    int lastTime = UserConfig.getIns().lastReadTime;
-    int nowTime = DateTime.now().millisecondsSinceEpoch;
-    UserConfig.getIns().setLastReadTime = nowTime;
-
     UserEntity user = Global.user.user.value;
 
-    if (!isSameDay(lastTime)) {
-      user.readNum = 0;
-    }
+    // int lastTime = UserConfig.getIns().lastReadTime;
+    // int nowTime = DateTime.now().millisecondsSinceEpoch;
+    // UserConfig.getIns().setLastReadTime = nowTime;
+    //
+    //
+    // if (!isSameDay(lastTime)) {
+    //   user.readNum = 0;
+    // }
 
     user.readNum++;
     Global.user.setUser(user);
