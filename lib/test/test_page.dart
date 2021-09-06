@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
-import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,120 +12,48 @@ class TestPage extends StatefulWidget {
   _TestPageState createState() => _TestPageState();
 }
 
-class _TestPageState extends State<TestPage> {
+class _TestPageState extends State<TestPage>
+    with SingleTickerProviderStateMixin {
   List<String> data = [];
   ScrollController scrollController;
-  EasyRefreshController controller;
+  TabController tabController;
+  bool isFinish = true;
 
   @override
   void initState() {
     super.initState();
 
-    data = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"];
+    data = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q"
+    ];
     scrollController = ScrollController();
-    controller = EasyRefreshController();
-  }
+    tabController = TabController(length: 3, vsync: this);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            toolbarHeight: 40,
-            backgroundColor: Colors.white,
-            leading: Container(
-              child: GestureDetector(
-                child: Icon(Icons.arrow_back, size: 26, color: Colors.white),
-                onTap: () => Get.back(),
-              ),
-            ),
-            actions: [
-              Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
-                  .marginOn(right: 20)
-                  .onClick(() {
-                BaseTool.toast(msg: "onShare");
-              }),
-              Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
-                  .marginOn(right: 16)
-                  .onClick(() {
-                BaseTool.toast(msg: "onSetting");
-              }),
-            ],
-            floating: false,
-            pinned: true,
-            snap: false,
-            expandedHeight: MediaQuery.of(context).padding.top + 40 + 24+ 64 + 104,
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(48),
-              child: Container(
-                height: 48,
-                color: Colors.white,
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      "Tab0",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    )),
-                    Expanded(
-                        child: Text(
-                      "Tab1",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    )),
-                    Expanded(
-                        child: Text(
-                      "Tab2",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-            ),
-            flexibleSpace: MediaQuery.removePadding(
-              context: context,
-              removeTop: true,
-              removeBottom: true,
-              child: Container(
-                height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 40 + 24,
-                ),
-                decoration: ShapeDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(R.assetsImgBossTopBg),
-                    fit: BoxFit.cover,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      bottomStart: Radius.circular(24),
-                    ),
-                  ),
-                ),
-                child: ListView(
-                  children: [
-                    bossInfoWidget(),
-                    bossInfoBottomWidget(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          listWidget(),
-        ],
-      ),
-    );
+    scrollController.addListener(() {
+      double min = scrollController.position.minScrollExtent;
+      double max = scrollController.position.maxScrollExtent;
+      double current = scrollController.position.pixels;
+      print('min=>$min');
+      print('max=>$max');
+      print('current=>$current');
+      print('----------------------');
+    });
   }
 
   Widget bossInfoWidget() {
@@ -255,9 +181,13 @@ class _TestPageState extends State<TestPage> {
   }
 
   Widget listWidget() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
+    return MediaQuery.removePadding(
+      removeTop: true,
+      removeBottom: true,
+      context: context,
+      child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
           return Container(
             height: 40,
             color: Colors.primaries[index % Colors.primaries.length],
@@ -266,44 +196,7 @@ class _TestPageState extends State<TestPage> {
             child: Text(index.toString()),
           );
         },
-        childCount: 80,
-      ),
-    );
-  }
-
-  Widget pageWidget() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return Container(
-            height: MediaQuery.of(context).size.height - 250,
-            child: BaseWidget.refreshWidgetPage(
-              slivers: [bodyWidget()],
-              controller: controller,
-              scrollController: scrollController,
-              hasData: true,
-              loadData: loadData,
-            ),
-          );
-        },
-        childCount: 1,
-      ),
-    );
-  }
-
-  Widget bodyWidget() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return Container(
-            height: 40,
-            color: Colors.primaries[index % Colors.primaries.length],
-            padding: EdgeInsets.only(left: 16, right: 16),
-            alignment: Alignment.centerLeft,
-            child: Text(data[index]),
-          );
-        },
-        childCount: data.length,
+        itemCount: 80,
       ),
     );
   }
@@ -311,16 +204,125 @@ class _TestPageState extends State<TestPage> {
   void loadData(bool loadMore) {
     var list = ["a", "b", "c", "d", "e", "f", "g"];
 
-    Observable.just(list).delay(Duration(milliseconds: 500)).listen((event) {
-      if (loadMore) {
-        data.addAll(event);
-        controller.finishLoad();
-      } else {
-        data = event;
-        controller.finishRefresh();
-      }
+    if (isFinish) {
+      isFinish = false;
+      Observable.just(list).delay(Duration(milliseconds: 500)).listen((event) {
+        if (loadMore) {
+          data.addAll(event);
+        } else {
+          data = event;
+        }
+        setState(() {
+          isFinish = true;
+        });
+      });
+    }
+  }
 
-      setState(() {});
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+                forceElevated: innerBoxIsScrolled,
+                toolbarHeight: 40,
+                backgroundColor: Colors.white,
+                leading: Container(
+                  child: GestureDetector(
+                    child:
+                        Icon(Icons.arrow_back, size: 26, color: Colors.white),
+                    onTap: () => Get.back(),
+                  ),
+                ),
+                actions: [
+                  Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
+                      .marginOn(right: 20)
+                      .onClick(() {
+                    BaseTool.toast(msg: "onShare");
+                  }),
+                  Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
+                      .marginOn(right: 16)
+                      .onClick(() {
+                    BaseTool.toast(msg: "onSetting");
+                  }),
+                ],
+                floating: false,
+                pinned: true,
+                snap: false,
+                expandedHeight:
+                    MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+                flexibleSpace: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  removeBottom: true,
+                  child: Container(
+                    height:
+                        MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top + 40 + 24,
+                    ),
+                    decoration: ShapeDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(R.assetsImgBossTopBg),
+                        fit: BoxFit.cover,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusDirectional.only(
+                          bottomStart: Radius.circular(24),
+                        ),
+                      ),
+                    ),
+                    child: ListView(
+                      children: [
+                        bossInfoWidget(),
+                        bossInfoBottomWidget(),
+                      ],
+                    ),
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(48),
+                  child: Container(
+                    color: Colors.white,
+                    child: TabBar(
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.blue,
+                      controller: tabController,
+                      tabs: [
+                        Tab(
+                          text: "111",
+                        ),
+                        Tab(
+                          text: "222",
+                        ),
+                        Tab(
+                          text: "333",
+                        ),
+                      ],
+                    ),
+                  ),
+                )),
+          ];
+        },
+        body: TabBarView(
+          controller: tabController,
+          children: [
+            Container(
+              child: listWidget(),
+            ),
+            Container(
+              child: listWidget(),
+            ),
+            Container(
+              child: listWidget(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

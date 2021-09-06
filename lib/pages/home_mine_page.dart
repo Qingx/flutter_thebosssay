@@ -184,8 +184,8 @@ class _HomeMinePageState extends State<HomeMinePage>
         Get.to(() => ContactAuthorPage());
         break;
       case 6:
-        showStore();
-        // doTest();
+        // showStore();
+        doTest();
         break;
       case 7:
         onClickClear();
@@ -197,11 +197,12 @@ class _HomeMinePageState extends State<HomeMinePage>
   }
 
   void doTest() {
-    ArticleDbProvider.ins().getAll().listen((event) {
-      print(event);
-    }, onError: (res) {
-      print(res);
-    });
+    Get.to(() => TestPage());
+    // ArticleDbProvider.ins().getAll().listen((event) {
+    //   print(event);
+    // }, onError: (res) {
+    //   print(res);
+    // });
   }
 
   @override
