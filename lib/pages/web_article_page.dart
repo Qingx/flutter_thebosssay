@@ -16,7 +16,9 @@ import 'package:flutter_boss_says/dialog/select_folder_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/refresh_collect_event.dart';
+import 'package:flutter_boss_says/event/refresh_point_event.dart';
 import 'package:flutter_boss_says/pages/boss_home_page.dart';
+import 'package:flutter_boss_says/pages/login_input_code_page.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
@@ -29,7 +31,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebArticlePage extends StatefulWidget {
   String articleId = Get.arguments as String;
+
   var articleUrl = HttpConfig.globalEnv.baseUrl;
+
+  // var articleUrl = "http://192.168.1.85:9529";
 
   bool fromBoss = false;
 
@@ -69,6 +74,7 @@ class _WebArticlePageState extends State<WebArticlePage> {
       topKey.currentState.bossEntity = event.bossVO;
 
       bottomKey.currentState.hasCollect = event.isCollect;
+      bottomKey.currentState.hasPoint = event.isPoint;
       bottomKey.currentState.articleTitle = event.title;
       bottomKey.currentState.articleDes = event.descContent ?? "";
 
@@ -110,13 +116,30 @@ class _WebArticlePageState extends State<WebArticlePage> {
 
   Widget webWidget() {
     String url = "${widget.articleUrl}#/article?id=${widget.articleId}";
-    print(url);
     return WebView(
       initialUrl: url,
       javascriptMode: JavascriptMode.unrestricted,
       onPageFinished: (s) {
         print('onPageFinished:$s');
       },
+      javascriptChannels: [
+        JavascriptChannel(
+            name: "RecommendArticle",
+            onMessageReceived: (JavascriptMessage message) {
+              String articleId = message.message;
+              print("JavascriptMessage:$articleId");
+
+              if (!articleId.isNullOrEmpty()) {
+                Get.off(
+                  () => WebArticlePage(
+                    fromBoss: widget.fromBoss,
+                  ),
+                  preventDuplicates: false,
+                  arguments: articleId,
+                );
+              }
+            }),
+      ].toSet(),
     );
   }
 }
@@ -356,6 +379,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
   String articleDes;
   String articleCover;
   bool hasCollect = false; //文章收藏
+  bool hasPoint = false; //文章点赞
 
   @override
   void dispose() {
@@ -404,6 +428,46 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
   void doReadArticle() {
     UserApi.ins().obtainReadArticle(widget.articleId).listen((event) {
       BaseTool.doAddRead();
+    });
+  }
+
+  void onPointChange() {
+    if (UserConfig.getIns().loginStatus) {
+      if (hasPoint) {
+        cancelPoint();
+      } else {
+        doPoint();
+      }
+    } else {
+      BaseTool.toast(msg: "请先登录！");
+      Get.to(() => LoginPhoneWechatPage());
+    }
+  }
+
+  void doPoint() {
+    hasPoint = true;
+    setState(() {});
+
+    UserApi.ins().obtainDoPoint(widget.articleId).listen((event) {
+      var user = Global.user.user.value;
+      user.pointNum++;
+      Global.user.setUser(user);
+
+      Global.eventBus
+          .fire(BaseEvent(RefreshPointEvent(widget.articleId, true)));
+    });
+  }
+
+  void cancelPoint() {
+    hasPoint = false;
+    setState(() {});
+    UserApi.ins().obtainCancelPoint(widget.articleId).listen((event) {
+      var user = Global.user.user.value;
+      user.pointNum--;
+      Global.user.setUser(user);
+
+      Global.eventBus
+          .fire(BaseEvent(RefreshPointEvent(widget.articleId, false)));
     });
   }
 
@@ -538,6 +602,29 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Container(
+            width: 32,
+            margin: EdgeInsets.only(right: 24),
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  hasPoint ? R.assetsImgPointAccent : R.assetsImgPointDark,
+                  width: 22,
+                  height: 22,
+                ),
+                Text(
+                  hasPoint ? "已点赞" : "点赞",
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: hasCollect ? BaseColor.accent : BaseColor.textDark,
+                  ),
+                ),
+              ],
+            ),
+          ).onClick(onPointChange),
           Container(
             width: 32,
             margin: EdgeInsets.only(right: 24),

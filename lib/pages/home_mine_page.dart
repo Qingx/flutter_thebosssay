@@ -5,8 +5,6 @@ import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
 import 'package:flutter_boss_says/data/db/article_db_provider.dart';
-import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
-import 'package:flutter_boss_says/dialog/ask_bind_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
 import 'package:flutter_boss_says/pages/login_phone_wechat.dart';
@@ -16,8 +14,8 @@ import 'package:flutter_boss_says/pages/mine_collect_article_page.dart';
 import 'package:flutter_boss_says/pages/mine_contact_author_page.dart';
 import 'package:flutter_boss_says/pages/mine_history_all_page.dart';
 import 'package:flutter_boss_says/pages/mine_history_today_page.dart';
+import 'package:flutter_boss_says/pages/mine_point_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/test/test_page.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_event.dart';
@@ -50,7 +48,7 @@ class _HomeMinePageState extends State<HomeMinePage>
 
     controller = Global.user;
 
-    infoNames = ["追踪数", "收藏数", "今日阅读量"];
+    infoNames = ["追踪", "收藏", "点赞", "今日阅读"];
     itemNames = [
       "我的收藏",
       "阅读记录",
@@ -129,7 +127,17 @@ class _HomeMinePageState extends State<HomeMinePage>
     }
   }
 
-  ///点击今日阅读量
+  ///点击阅读记录
+  void onClickPoint() {
+    if (UserConfig.getIns().loginStatus) {
+      Get.to(() => MinePointArticlePage());
+    } else {
+      BaseTool.toast(msg: "请先登录！");
+      Get.to(() => LoginPhoneWechatPage());
+    }
+  }
+
+  ///点击点赞记录
   void onClickTodayHistory() {
     Get.to(() => MineHistoryTodayPage());
   }
@@ -142,7 +150,10 @@ class _HomeMinePageState extends State<HomeMinePage>
       case 1:
         onClickFavorite();
         break;
-      default:
+      case 2:
+        onClickPoint();
+        break;
+      case 3:
         onClickTodayHistory();
         break;
     }
@@ -348,6 +359,12 @@ class _HomeMinePageState extends State<HomeMinePage>
             color: BaseColor.line,
           ),
           Expanded(child: infoItemWidget(2)),
+          Container(
+            width: 1,
+            margin: EdgeInsets.only(top: 20, bottom: 20),
+            color: BaseColor.line,
+          ),
+          Expanded(child: infoItemWidget(3)),
         ],
       ),
     );
@@ -365,7 +382,9 @@ class _HomeMinePageState extends State<HomeMinePage>
                   ? Global.user.user.value.traceNum.toString()
                   : index == 1
                       ? Global.user.user.value.collectNum.toString()
-                      : Global.user.user.value.readNum.toString(),
+                      : index == 2
+                          ? Global.user.user.value.pointNum.toString()
+                          : Global.user.user.value.readNum.toString(),
               style: TextStyle(
                   fontSize: 24,
                   color: BaseColor.textDark,

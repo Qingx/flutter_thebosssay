@@ -1,18 +1,23 @@
 import 'dart:async';
 
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/event/refresh_point_event.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
+import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -21,14 +26,14 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 
-class MineHistoryTodayPage extends StatefulWidget {
-  const MineHistoryTodayPage({Key key}) : super(key: key);
+class MinePointArticlePage extends StatefulWidget {
+  const MinePointArticlePage({Key key}) : super(key: key);
 
   @override
-  _MineHistoryTodayPageState createState() => _MineHistoryTodayPageState();
+  _MinePointArticlePageState createState() => _MinePointArticlePageState();
 }
 
-class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
+class _MinePointArticlePageState extends State<MinePointArticlePage>
     with BasePageController<HistoryEntity> {
   var builderFuture;
 
@@ -37,7 +42,9 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
 
   bool hasData;
 
-  int numbers = Global.user.user.value.readNum;
+  int numbers = Global.user.user.value.pointNum;
+
+  var pointDis;
 
   @override
   void dispose() {
@@ -46,7 +53,9 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
     controller?.dispose();
     scrollController?.dispose();
 
-    TalkingApi.ins().obtainPageEnd(TalkingApi.HistoryToday);
+    pointDis?.cancel();
+
+    TalkingApi.ins().obtainPageEnd(TalkingApi.ArticlePoint);
   }
 
   @override
@@ -58,30 +67,43 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
 
     builderFuture = loadInitData();
 
-    TalkingApi.ins().obtainPageStart(TalkingApi.HistoryToday);
+    eventBus();
+
+    TalkingApi.ins().obtainPageStart(TalkingApi.ArticlePoint);
   }
 
-  Future<WlPage.Page<HistoryEntity>> loadInitData() {
-    return UserApi.ins().obtainHistory(pageParam, true).doOnData((event) {
+  void eventBus() {
+    pointDis = Global.eventBus.on<RefreshPointEvent>().listen((event) {
+      if (event.doPoint) {
+        controller.callRefresh();
+      } else {
+        int index = mData.indexWhere((element) => element.id == event.id);
+        if (index != -1) {
+          mData.removeAt(index);
+          numbers--;
+
+          setState(() {});
+        }
+      }
+    });
+  }
+
+  Future<dynamic> loadInitData() {
+    return UserApi.ins().obtainPointList(pageParam).doOnData((event) {
       hasData = event.hasData;
       concat(event.records, false);
-      numbers = event.total;
-
-      setState(() {});
     }).last;
   }
 
   @override
   void loadData(bool loadMore) {
     if (!loadMore) {
-      pageParam.reset();
+      pageParam?.reset();
     }
 
-    UserApi.ins().obtainHistory(pageParam, true).listen((event) {
+    UserApi.ins().obtainPointList(pageParam).listen((event) {
       hasData = event.hasData;
-      numbers = event.total;
       concat(event.records, loadMore);
-
       setState(() {});
 
       if (loadMore) {
@@ -99,24 +121,24 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
   }
 
   ///删除历史记录
-  void removeHistory(HistoryEntity entity, int index) {
-    BaseWidget.showLoadingAlert("尝试删除...", context);
+  void removePoint(HistoryEntity entity, int index) {
+    BaseWidget.showLoadingAlert("尝试取消...", context);
 
-    UserApi.ins().obtainDeleteHistory(entity.id).listen((event) {
+    UserApi.ins().obtainCancelPoint(entity.articleId).listen((event) {
       Get.back();
 
       mData.removeAt(index);
       numbers--;
 
       UserEntity entity = UserConfig.getIns().user;
-      entity.readNum = numbers;
+      entity.pointNum = numbers;
       Global.user.setUser(entity);
 
       setState(() {});
     }, onError: (res) {
       Get.back();
       print(res.msg);
-      BaseTool.toast(msg: "删除失败，${res.msg}");
+      BaseTool.toast(msg: "取消失败，${res.msg}");
     });
   }
 
@@ -150,7 +172,7 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
                       margin: EdgeInsets.only(right: 28),
                       alignment: Alignment.center,
                       child: Text(
-                        "今日阅读（$numbers）",
+                        "点赞（$numbers）",
                         style: TextStyle(
                             fontSize: 16,
                             color: BaseColor.textDark,
@@ -173,14 +195,13 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
   }
 
   Widget bodyWidget() {
-    return FutureBuilder<WlPage.Page<HistoryEntity>>(
+    return FutureBuilder(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context,
-      AsyncSnapshot<WlPage.Page<HistoryEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
@@ -299,12 +320,12 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
             key: Key(entity.id),
             secondaryActions: <Widget>[
               IconSlideAction(
-                caption: '删除',
+                caption: '取消',
                 color: Colors.red,
                 icon: Icons.delete,
                 closeOnTap: false,
                 onTap: () {
-                  removeHistory(entity, index);
+                  removePoint(entity, index);
                 },
               ),
             ],
@@ -319,8 +340,7 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(fromBoss: false),
-          arguments: entity.articleId);
+      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
   }
 

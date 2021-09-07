@@ -83,12 +83,16 @@ class R {
   static final String assetsImgBossSuccess = 'assets/img/bossSuccess.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemClear.png)
   static final String assetsImgItemClear = 'assets/img/itemClear.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/pointAccent.png)
+  static final String assetsImgPointAccent = 'assets/img/pointAccent.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemFavorite.png)
   static final String assetsImgItemFavorite = 'assets/img/itemFavorite.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossHandLeft.png)
   static final String assetsImgBossHandLeft = 'assets/img/bossHandLeft.png';
   /// ![](http://127.0.0.1:11111111/assets/img/aboutUsBg.png)
   static final String assetsImgAboutUsBg = 'assets/img/aboutUsBg.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/pointDark.png)
+  static final String assetsImgPointDark = 'assets/img/pointDark.png';
   /// ![](http://127.0.0.1:11111111/assets/img/bossLabel.png)
   static final String assetsImgBossLabel = 'assets/img/bossLabel.png';
   /// ![](http://127.0.0.1:11111111/assets/img/shareWechat.png)

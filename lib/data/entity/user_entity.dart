@@ -9,6 +9,7 @@ class UserEntity with JsonConvert<UserEntity> {
   int collectNum = 0; //收藏数
   int readNum = 0; //今日阅读数
   int traceNum = 0; //追踪数量
+  int pointNum = 0; //点赞数量
   String type; //0->游客 1->正式
   String wxHead;
   String wxName; //微信昵称
@@ -26,6 +27,6 @@ class UserEntity with JsonConvert<UserEntity> {
 
   @override
   String toString() {
-    return 'UserEntity{avatar: $avatar, deviceId: $deviceId, id: $id, nickName: $nickName, phone: $phone, collectNum: $collectNum, readNum: $readNum, traceNum: $traceNum, type: $type, wxHead: $wxHead, wxName: $wxName, tags: $tags}';
+    return 'UserEntity{avatar: $avatar, deviceId: $deviceId, id: $id, nickName: $nickName, phone: $phone, collectNum: $collectNum, readNum: $readNum, traceNum: $traceNum, pointNum: $pointNum, type: $type, wxHead: $wxHead, wxName: $wxName, tags: $tags}';
   }
 }

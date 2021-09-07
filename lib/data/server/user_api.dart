@@ -7,6 +7,7 @@ import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/operation_entity.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserApi extends BaseApi {
@@ -210,5 +211,32 @@ class UserApi extends BaseApi {
   Observable<dynamic> obtainCheckUpdate() {
     return autoToken(() =>
         get<dynamic>("/api/version/check/iOS/${Global.versionName}").rebase());
+  }
+
+  ///点赞文章
+  Observable<bool> obtainDoPoint(String articleId) {
+    var data = {"sourceId": articleId, "target": true, "type": 0};
+    return autoToken(() =>
+        post<FavoriteEntity>("/api/article/options", requestBody: data)
+            .success());
+  }
+
+  ///取消点赞文章
+  Observable<bool> obtainCancelPoint(String articleId) {
+    var data = {"sourceId": articleId, "target": false, "type": 0};
+    return autoToken(() =>
+        post<FavoriteEntity>("/api/article/options", requestBody: data)
+            .success());
+  }
+
+  ///点赞记录
+  Observable<Page<HistoryEntity>> obtainPointList(PageParam pageParam) {
+    final param = pageParam.toParam();
+    return autoToken(
+      () => postPage<HistoryEntity>(
+        "/api/article/point-history",
+        requestBody: param,
+      ).rebase(pageParam: pageParam),
+    );
   }
 }

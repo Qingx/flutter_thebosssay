@@ -16,6 +16,7 @@ class TalkingApi {
   static const String HistoryAll = "全部历史记录";
   static const String HistoryToday = "今天历史记录";
   static const String ArticleCollect = "文章收藏";
+  static const String ArticlePoint = "文章点赞";
 
   ///获取设备id
   Observable<String> obtainDeviceId() {

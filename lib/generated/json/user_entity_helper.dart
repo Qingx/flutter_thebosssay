@@ -31,6 +31,11 @@ userEntityFromJson(UserEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['traceNum'])
 				: json['traceNum'].toInt();
 	}
+	if (json['pointNum'] != null) {
+		data.pointNum = json['pointNum'] is String
+				? int.tryParse(json['pointNum'])
+				: json['pointNum'].toInt();
+	}
 	if (json['type'] != null) {
 		data.type = json['type'].toString();
 	}
@@ -56,6 +61,7 @@ Map<String, dynamic> userEntityToJson(UserEntity entity) {
 	data['collectNum'] = entity.collectNum;
 	data['readNum'] = entity.readNum;
 	data['traceNum'] = entity.traceNum;
+	data['pointNum'] = entity.pointNum;
 	data['type'] = entity.type;
 	data['wxHead'] = entity.wxHead;
 	data['wxName'] = entity.wxName;

@@ -150,9 +150,11 @@ flutter:
     - assets/img/logo.png
     - assets/img/bossSuccess.png
     - assets/img/itemClear.png
+    - assets/img/pointAccent.png
     - assets/img/itemFavorite.png
     - assets/img/bossHandLeft.png
     - assets/img/aboutUsBg.png
+    - assets/img/pointDark.png
     - assets/img/bossLabel.png
     - assets/img/shareWechat.png
     - assets/img/shareWhite.png
