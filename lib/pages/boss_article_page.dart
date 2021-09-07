@@ -2,71 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/base_page_controller.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
-import 'package:flutter_boss_says/data/entity/article_entity.dart';
+import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/event/article_read_event.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
-import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/article_widget.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:get/get.dart';
-import 'package:flutter_boss_says/config/page_data.dart' as WlPage;
+import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:get/get.dart';
 
 class BossArticlePage extends StatefulWidget {
-  String bossId = Get.arguments as String;
+  String type;
+  String bossId;
+  int total;
 
-  BossArticlePage({Key key}) : super(key: key);
+  BossArticlePage({this.type, this.bossId, this.total, Key key})
+      : super(key: key);
 
   @override
   _BossArticlePageState createState() => _BossArticlePageState();
 }
 
 class _BossArticlePageState extends State<BossArticlePage>
-    with BasePageController<ArticleEntity> {
-  int totalArticle;
-  bool hasInit;
+    with
+        BasePageController<ArticleSimpleEntity>,
+        AutomaticKeepAliveClientMixin {
+  int totalNum;
   bool hasData;
 
-  var builderFuture;
-
-  ScrollController scrollController;
   EasyRefreshController controller;
+
+  var builderFuture;
+  var readDispose;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void dispose() {
     super.dispose();
 
-    controller?.dispose();
-    scrollController?.dispose();
+    readDispose?.cancel();
   }
 
   @override
   void initState() {
     super.initState();
-    totalArticle = 0;
-    hasInit = false;
-    hasData = false;
+    controller = EasyRefreshController();
+    eventBus();
 
     builderFuture = initData();
-
-    scrollController = ScrollController();
-    controller = EasyRefreshController();
   }
 
-  Future<WlPage.Page<ArticleEntity>> initData() {
-    return BossApi.ins()
-        .obtainBossArticleList(pageParam, widget.bossId)
-        .doOnData((event) {
-      hasInit = true;
-      hasData = event.hasData;
-      totalArticle = event.total;
-      concat(event.records, false);
+  void eventBus() {
+    readDispose = Global.eventBus.on<ArticleReadEvent>().listen((event) {
+      int index = mData.indexWhere((element) => element.id == event.id);
+      if (index != -1) {
+        mData[index].isRead = true;
+        setState(() {});
+      }
+    });
+  }
 
-      setState(() {});
+  Future<dynamic> initData() {
+    pageParam?.reset();
+
+    return BossApi.ins()
+        .obtainBossArticle(pageParam, widget.bossId, widget.type)
+        .doOnData((event) {
+      hasData = event.hasData;
+      totalNum = event.total;
+      concat(event.records, false);
     }).last;
   }
 
@@ -76,18 +86,20 @@ class _BossArticlePageState extends State<BossArticlePage>
       pageParam?.reset();
     }
 
-    BossApi.ins().obtainBossArticleList(pageParam, widget.bossId).listen(
-        (event) {
-      totalArticle = event.total;
+    BossApi.ins()
+        .obtainBossArticle(pageParam, widget.bossId, widget.type)
+        .listen((event) {
       hasData = event.hasData;
+      totalNum = event.total;
       concat(event.records, loadMore);
-      setState(() {});
 
       if (loadMore) {
         controller.finishLoad(success: true);
       } else {
         controller.finishRefresh(success: true);
       }
+
+      setState(() {});
     }, onError: (res) {
       if (loadMore) {
         controller.finishLoad(success: false);
@@ -97,11 +109,9 @@ class _BossArticlePageState extends State<BossArticlePage>
     });
   }
 
-  void onArticleClick(ArticleEntity entity) {
+  void onArticleClick(ArticleSimpleEntity entity) {
     if (!entity.isRead) {
       entity.isRead = true;
-
-      Global.eventBus.fire(ArticleReadEvent(entity.id));
     }
 
     if (BaseTool.showRedDots(entity.bossId, entity.getShowTime())) {
@@ -115,75 +125,22 @@ class _BossArticlePageState extends State<BossArticlePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: BaseColor.pageBg,
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              color: Colors.white,
-              child: BaseWidget.statusBar(context, true),
-            ),
-            Container(
-              color: Colors.white,
-              height: 44,
-              padding: EdgeInsets.only(left: 12, right: 16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.arrow_back,
-                    color: BaseColor.textDark,
-                    size: 28,
-                  ).onClick(() {
-                    Get.back();
-                  }),
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(right: 28),
-                      alignment: Alignment.center,
-                      child: Text(
-                        hasInit ? "全部文章($totalArticle篇)" : "全部文章",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: BaseColor.textDark,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: bodyWidget(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget bodyWidget() {
-    return FutureBuilder<WlPage.Page<ArticleEntity>>(
+    return FutureBuilder<dynamic>(
       builder: builderWidget,
       future: builderFuture,
     );
   }
 
-  Widget builderWidget(BuildContext context,
-      AsyncSnapshot<WlPage.Page<ArticleEntity>> snapshot) {
+  Widget builderWidget(BuildContext context, AsyncSnapshot<dynamic> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
         return contentWidget();
-      } else
+      } else {
         return BaseWidget.errorWidget(() {
           builderFuture = initData();
           setState(() {});
         });
+      }
     } else {
       return BaseWidget.loadingWidget();
     }
@@ -191,13 +148,53 @@ class _BossArticlePageState extends State<BossArticlePage>
 
   Widget contentWidget() {
     return BaseWidget.refreshWidgetPage(
-      slivers: [
-        listWidget(),
-      ],
       controller: controller,
-      scrollController: scrollController,
       hasData: hasData,
       loadData: loadData,
+      slivers: [
+        noticeWidget(),
+        listWidget(),
+      ],
+    );
+  }
+
+  Widget noticeWidget() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          return Container(
+            height: 56,
+            padding: EdgeInsets.only(bottom: 12, top: 12),
+            child: Container(
+              margin: EdgeInsets.only(left: 16, right: 16),
+              padding: EdgeInsets.only(left: 8, right: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                color: BaseColor.loadBg,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "收录Boss自己的言论、演说稿件、采访答录等",
+                      style: TextStyle(color: BaseColor.textDark, fontSize: 12),
+                      softWrap: false,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    "共${widget.total}篇",
+                    style: TextStyle(color: BaseColor.textDark, fontSize: 12),
+                  ).marginOn(left: 8),
+                ],
+              ),
+            ),
+          );
+        },
+        childCount: 1,
+      ),
     );
   }
 
@@ -214,29 +211,33 @@ class _BossArticlePageState extends State<BossArticlePage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                ArticleEntity entity = mData[index];
+                ArticleSimpleEntity entity = mData[index];
 
-                return entity.files.isNullOrEmpty()
-                    ? ArticleWidget.onlyTextWithContentBoss(entity, context,
-                        () {
-                        onArticleClick(entity);
-                      })
-                    : ArticleWidget.singleImgWithContentBoss(entity, context,
-                        () {
-                        onArticleClick(entity);
-                      });
+                return articleWidget(entity);
               },
               childCount: mData.length,
             ),
           );
   }
 
+  Widget articleWidget(ArticleSimpleEntity entity) {
+    return entity.files.isNullOrEmpty()
+        ? ArticleWidget.onlyTextWithContentBossPage(entity, context, () {
+            onArticleClick(entity);
+          })
+        : ArticleWidget.singleImgWithContentBossPage(entity, context, () {
+            onArticleClick(entity);
+          });
+  }
+
   Widget emptyBodyWidget() {
     String path = R.assetsImgEmptyBoss;
-    String content = " 最近还没有更新哦～";
+    String content = "最近还没有更新哦～";
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        44;
+        232 -
+        40 -
+        56;
     return Container(
       height: height,
       child: Center(
@@ -245,13 +246,11 @@ class _BossArticlePageState extends State<BossArticlePage>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(path, width: 160, height: 160),
-            Flexible(
-              child: Text(
-                content,
-                style: TextStyle(fontSize: 18, color: BaseColor.textGray),
-                textAlign: TextAlign.center,
-              ).marginOn(top: 16),
-            )
+            Text(
+              content,
+              style: TextStyle(fontSize: 18, color: BaseColor.textGray),
+              textAlign: TextAlign.center,
+            ).marginOn(top: 16),
           ],
         ),
       ),

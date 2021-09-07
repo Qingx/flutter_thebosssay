@@ -7,10 +7,12 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
   String id; //id
   String title; //标题
   String descContent = ""; //摘要
-  bool isCollect; //是否收藏
+  bool isCollect = false; //是否收藏
   bool isRead = false; //是否已读
+  bool isPoint = false; //是否点赞
   int readCount = 0; //阅读数
   int collect = 0; //收藏数
+  int point = 0; //点赞数
   int releaseTime = 0; //发布时间
   int articleTime = 0; //文章时间
   List<String> files = []; //图片列表
@@ -26,7 +28,7 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
 
   @override
   String toString() {
-    return 'ArticleSimpleEntity{id: $id, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, readCount: $readCount, collect: $collect, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossId: $bossId, bossName: $bossName, bossHead: $bossHead, bossRole: $bossRole, recommendType: $recommendType}';
+    return 'ArticleSimpleEntity{id: $id, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, isPoint: $isPoint, readCount: $readCount, collect: $collect, point: $point, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossId: $bossId, bossName: $bossName, bossHead: $bossHead, bossRole: $bossRole, recommendType: $recommendType}';
   }
 
   Map<String, dynamic> toMap() {
@@ -36,8 +38,10 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
       'descContent': descContent ?? "",
       'isCollect': isCollect ? "1" : "0",
       'isRead': isRead ? "1" : "0",
+      'isPoint': isPoint ? "1" : "0",
       'readCount': readCount ?? 0,
       'collect': collect ?? 0,
+      'point': point ?? 0,
       'releaseTime': releaseTime ?? 0,
       'articleTime': articleTime ?? 0,
       'bossId': bossId ?? "",
@@ -56,8 +60,10 @@ class ArticleSimpleEntity with JsonConvert<ArticleSimpleEntity> {
       ..descContent = json["descContent"]
       ..isCollect = json["isCollect"] == "1"
       ..isRead = json["isRead"] == "1"
+      ..isPoint = json["isPoint"] == "1"
       ..readCount = json["readCount"]
       ..collect = json["collect"]
+      ..point = json["point"]
       ..releaseTime = json["releaseTime"]
       ..articleTime = json["articleTime"]
       ..bossId = json["bossId"]

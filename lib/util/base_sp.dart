@@ -48,10 +48,10 @@ class BaseSP {
 
   /// 添加object缓存
   void putObject<T>(String key, T value) {
-    if(value!= null) {
+    if (value != null) {
       final valueStr = json.encode(value);
       putString(key, valueStr);
-    }  else{
+    } else {
       putString(key, "");
     }
   }
@@ -94,8 +94,6 @@ class BaseSP {
   T getObject<T>(String key, {T defaultVal}) {
     String valueStr = getString(key);
     if (!valueStr.isNullOrEmpty() && valueStr != "null") {
-      print('valueStradadada=>${valueStr.runtimeType}');
-
       return JsonConvert.fromJsonAsT<T>(json.decode(valueStr));
     }
     return defaultVal;

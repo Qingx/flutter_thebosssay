@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/r.dart';
+import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:flutter_boss_says/util/sliver_persistent_header.dart';
+import 'package:flutter_boss_says/util/tab_size_indicator.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,14 +20,18 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage>
     with SingleTickerProviderStateMixin {
   List<String> data = [];
-  ScrollController scrollController;
   TabController tabController;
+  EasyRefreshController controller;
   bool isFinish = true;
+  bool hasData = true;
+  String mCurrentType;
+  List<String> typeList;
 
   @override
   void initState() {
     super.initState();
-
+    mCurrentType = "1";
+    typeList = ["言论演说", "新闻资讯", "传记其他"];
     data = [
       "a",
       "b",
@@ -42,18 +51,9 @@ class _TestPageState extends State<TestPage>
       "p",
       "q"
     ];
-    scrollController = ScrollController();
-    tabController = TabController(length: 3, vsync: this);
 
-    scrollController.addListener(() {
-      double min = scrollController.position.minScrollExtent;
-      double max = scrollController.position.maxScrollExtent;
-      double current = scrollController.position.pixels;
-      print('min=>$min');
-      print('max=>$max');
-      print('current=>$current');
-      print('----------------------');
-    });
+    tabController = TabController(length: 3, vsync: this);
+    controller = EasyRefreshController();
   }
 
   Widget bossInfoWidget() {
@@ -180,43 +180,68 @@ class _TestPageState extends State<TestPage>
     );
   }
 
-  Widget listWidget() {
-    return MediaQuery.removePadding(
-      removeTop: true,
-      removeBottom: true,
-      context: context,
-      child: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return Container(
-            height: 40,
-            color: Colors.primaries[index % Colors.primaries.length],
-            padding: EdgeInsets.only(left: 16, right: 16),
-            alignment: Alignment.centerLeft,
-            child: Text(index.toString()),
-          );
-        },
-        itemCount: 80,
-      ),
+  Widget loadWidget() {
+    return Container(
+      height: 80,
+      color: Colors.black,
+    );
+  }
+
+  Widget bodyWidget() {
+    return BaseWidget.refreshWidgetPage(
+      controller: controller,
+      hasData: hasData,
+      loadData: loadData,
+      slivers: [
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return Container(
+                height: 64,
+                color: Colors.primaries[index % Colors.primaries.length],
+                padding: EdgeInsets.only(left: 16, right: 16),
+                alignment: Alignment.centerLeft,
+                child: Text(data[index]),
+              );
+            },
+            childCount: data.length,
+          ),
+        )
+      ],
     );
   }
 
   void loadData(bool loadMore) {
-    var list = ["a", "b", "c", "d", "e", "f", "g"];
+    var list = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+    ];
 
-    if (isFinish) {
-      isFinish = false;
-      Observable.just(list).delay(Duration(milliseconds: 500)).listen((event) {
-        if (loadMore) {
-          data.addAll(event);
-        } else {
-          data = event;
-        }
-        setState(() {
-          isFinish = true;
-        });
-      });
-    }
+    Observable.just(list).delay(Duration(milliseconds: 500)).listen((event) {
+      if (loadMore) {
+        data.addAll(event);
+        controller.finishLoad();
+      } else {
+        data = event;
+        controller.finishRefresh();
+      }
+      setState(() {});
+    });
   }
 
   @override
@@ -228,98 +253,93 @@ class _TestPageState extends State<TestPage>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
-                forceElevated: innerBoxIsScrolled,
-                toolbarHeight: 40,
-                backgroundColor: Colors.white,
-                leading: Container(
-                  child: GestureDetector(
-                    child:
-                        Icon(Icons.arrow_back, size: 26, color: Colors.white),
-                    onTap: () => Get.back(),
+              pinned: true,
+              forceElevated: innerBoxIsScrolled,
+              toolbarHeight: 40,
+              backgroundColor: Colors.white,
+              leading: Container(
+                child: GestureDetector(
+                  child: Icon(Icons.arrow_back, size: 26, color: Colors.white),
+                  onTap: () => Get.back(),
+                ),
+              ),
+              actions: [
+                Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
+                    .marginOn(right: 20)
+                    .onClick(() {
+                  BaseTool.toast(msg: "onShare");
+                }),
+                Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
+                    .marginOn(right: 16)
+                    .onClick(() {
+                  BaseTool.toast(msg: "onSetting");
+                }),
+              ],
+              expandedHeight: 232,
+              flexibleSpace: Container(
+                height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 40 + 24,
+                ),
+                decoration: ShapeDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(R.assetsImgBossTopBg),
+                    fit: BoxFit.cover,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.only(
+                      bottomStart: Radius.circular(24),
+                    ),
                   ),
                 ),
-                actions: [
-                  Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
-                      .marginOn(right: 20)
-                      .onClick(() {
-                    BaseTool.toast(msg: "onShare");
-                  }),
-                  Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
-                      .marginOn(right: 16)
-                      .onClick(() {
-                    BaseTool.toast(msg: "onSetting");
-                  }),
-                ],
-                floating: false,
-                pinned: true,
-                snap: false,
-                expandedHeight:
-                    MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
-                flexibleSpace: MediaQuery.removePadding(
-                  context: context,
+                child: MediaQuery.removePadding(
                   removeTop: true,
                   removeBottom: true,
-                  child: Container(
-                    height:
-                        MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
-                    padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).padding.top + 40 + 24,
-                    ),
-                    decoration: ShapeDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(R.assetsImgBossTopBg),
-                        fit: BoxFit.cover,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusDirectional.only(
-                          bottomStart: Radius.circular(24),
-                        ),
-                      ),
-                    ),
-                    child: ListView(
-                      children: [
-                        bossInfoWidget(),
-                        bossInfoBottomWidget(),
-                      ],
-                    ),
+                  context: context,
+                  child: ListView(
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      bossInfoWidget(),
+                      bossInfoBottomWidget(),
+                    ],
                   ),
                 ),
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(48),
-                  child: Container(
-                    color: Colors.white,
-                    child: TabBar(
-                      labelColor: Colors.black,
-                      unselectedLabelColor: Colors.blue,
-                      controller: tabController,
-                      tabs: [
-                        Tab(
-                          text: "111",
-                        ),
-                        Tab(
-                          text: "222",
-                        ),
-                        Tab(
-                          text: "333",
-                        ),
-                      ],
-                    ),
+              ),
+            ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: MySliverPersistentHeader(
+                widget: TabBar(
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
-                )),
+                  indicator: TabSizeIndicator(),
+                  labelColor: Colors.black,
+                  controller: tabController,
+                  tabs: [
+                    Tab(
+                      text: typeList[0],
+                    ),
+                    Tab(
+                      text: typeList[1],
+                    ),
+                    Tab(
+                      text: typeList[2],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ];
         },
         body: TabBarView(
           controller: tabController,
           children: [
-            Container(
-              child: listWidget(),
-            ),
-            Container(
-              child: listWidget(),
-            ),
-            Container(
-              child: listWidget(),
-            ),
+            bodyWidget(),
+            bodyWidget(),
+            bodyWidget(),
           ],
         ),
       ),

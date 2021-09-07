@@ -163,12 +163,16 @@ class BossApi extends BaseApi {
   }
 
   ///Boss文章
-  Observable<List<ArticleSimpleEntity>> obtainBossArticle(
-      String bossId, String type) {
-    var data = {"bossId": bossId, "filterType": type};
-    return autoToken(() => post<List<ArticleSimpleEntity>>(
-            "/api/article/list/type",
-            requestBody: data)
-        .rebase());
+  Observable<Page<ArticleSimpleEntity>> obtainBossArticle(
+      PageParam pageParam, String bossId, String type) {
+    final param = pageParam.toParam(doCreate: (map) {
+      var data = {"bossId": bossId, "filterType": type};
+      map.addAll(data);
+    });
+    return autoToken(
+      () => postPage<ArticleSimpleEntity>("/api/article/list/page",
+              requestBody: param)
+          .rebase(pageParam: pageParam),
+    );
   }
 }

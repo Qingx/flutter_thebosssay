@@ -20,6 +20,9 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 	if (json['isRead'] != null) {
 		data.isRead = json['isRead'];
 	}
+	if (json['isPoint'] != null) {
+		data.isPoint = json['isPoint'];
+	}
 	if (json['readCount'] != null) {
 		data.readCount = json['readCount'] is String
 				? int.tryParse(json['readCount'])
@@ -29,6 +32,11 @@ articleEntityFromJson(ArticleEntity data, Map<String, dynamic> json) {
 		data.collect = json['collect'] is String
 				? int.tryParse(json['collect'])
 				: json['collect'].toInt();
+	}
+	if (json['point'] != null) {
+		data.point = json['point'] is String
+				? int.tryParse(json['point'])
+				: json['point'].toInt();
 	}
 	if (json['releaseTime'] != null) {
 		data.releaseTime = json['releaseTime'] is String
@@ -57,8 +65,10 @@ Map<String, dynamic> articleEntityToJson(ArticleEntity entity) {
 	data['descContent'] = entity.descContent;
 	data['isCollect'] = entity.isCollect;
 	data['isRead'] = entity.isRead;
+	data['isPoint'] = entity.isPoint;
 	data['readCount'] = entity.readCount;
 	data['collect'] = entity.collect;
+	data['point'] = entity.point;
 	data['releaseTime'] = entity.releaseTime;
 	data['articleTime'] = entity.articleTime;
 	data['files'] = entity.files;

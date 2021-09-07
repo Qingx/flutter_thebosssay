@@ -12,8 +12,10 @@ class ArticleDbProvider extends BaseDbProvider {
   final String columnDescContent = "descContent";
   final String columnIsCollect = "isCollect";
   final String columnIsRead = "isRead";
+  final String columnIsPoint = "isPoint";
   final String columnReadCount = "readCount";
   final String columnCollect = "collect";
+  final String columnPoint = "point";
   final String columnReleaseTime = "releaseTime";
   final String columnArticleTime = "articleTime";
   final String columnFiles = "files";
@@ -43,8 +45,10 @@ class ArticleDbProvider extends BaseDbProvider {
     $columnDescContent text,
     $columnIsCollect text,
     $columnIsRead text,
+    $columnIsPoint text,
     $columnReadCount integer,
     $columnCollect integer,
+    $columnPoint integer,
     $columnReleaseTime integer,
     $columnArticleTime integer,
     $columnBossId text,

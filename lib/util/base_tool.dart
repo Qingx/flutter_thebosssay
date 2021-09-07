@@ -176,7 +176,6 @@ class BaseTool {
     // int nowTime = DateTime.now().millisecondsSinceEpoch;
     // UserConfig.getIns().setLastReadTime = nowTime;
     //
-    //
     // if (!isSameDay(lastTime)) {
     //   user.readNum = 0;
     // }

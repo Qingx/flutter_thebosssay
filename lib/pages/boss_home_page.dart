@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
@@ -7,7 +5,6 @@ import 'package:flutter_boss_says/config/http_config.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
 import 'package:flutter_boss_says/data/entity/boss_info_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
-import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
@@ -15,19 +12,18 @@ import 'package:flutter_boss_says/dialog/boss_setting_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_cancel_dialog.dart';
 import 'package:flutter_boss_says/dialog/follow_ask_push_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
-import 'package:flutter_boss_says/event/article_read_event.dart';
 import 'package:flutter_boss_says/event/boss_tack_event.dart';
 import 'package:flutter_boss_says/event/set_boss_time_event.dart';
 import 'package:flutter_boss_says/pages/boss_article_page.dart';
 import 'package:flutter_boss_says/pages/boss_info_page.dart';
-import 'package:flutter_boss_says/pages/web_article_page.dart';
-import 'package:flutter_boss_says/util/article_widget.dart';
-import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_widget.dart';
-import 'package:get/get.dart';
 import 'package:flutter_boss_says/r.dart';
-import 'package:flutter_boss_says/util/base_tool.dart';
+import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
+import 'package:flutter_boss_says/util/base_tool.dart';
+import 'package:flutter_boss_says/util/base_widget.dart';
+import 'package:flutter_boss_says/util/sliver_persistent_header.dart';
+import 'package:flutter_boss_says/util/tab_size_indicator.dart';
+import 'package:get/get.dart';
 
 class BossHomePage extends StatefulWidget {
   String bossId = Get.arguments as String;
@@ -38,25 +34,24 @@ class BossHomePage extends StatefulWidget {
   _BossHomePageState createState() => _BossHomePageState();
 }
 
-class _BossHomePageState extends State<BossHomePage> {
+class _BossHomePageState extends State<BossHomePage>
+    with SingleTickerProviderStateMixin {
   BossInfoEntity bossEntity;
-  String mCurrentType;
-  HashMap<String, List<ArticleSimpleEntity>> map;
 
   List<String> typeList;
+  List<Widget> pages;
+
+  TabController tabController;
 
   var builderFuture;
 
   var tackDispose;
-
-  var readDispose;
 
   @override
   void dispose() {
     super.dispose();
 
     tackDispose?.cancel();
-    readDispose?.cancel();
 
     DataConfig.getIns().setBossTime(widget.bossId);
     Global.eventBus.fire(SetBossTimeEvent(widget.bossId));
@@ -69,10 +64,10 @@ class _BossHomePageState extends State<BossHomePage> {
     super.initState();
 
     bossEntity = BossInfoEntity();
-    mCurrentType = "1";
-    map = HashMap();
 
     typeList = ["言论演说", "新闻资讯", "传记其他"];
+
+    tabController = TabController(length: 3, vsync: this);
 
     builderFuture = initData();
 
@@ -88,66 +83,29 @@ class _BossHomePageState extends State<BossHomePage> {
         setState(() {});
       }
     });
-
-    readDispose = Global.eventBus.on<ArticleReadEvent>().listen((event) {
-      map.forEach((key, value) {
-        int index = value.indexWhere((element) => element.id == event.id);
-        if (index != -1) {
-          value[index].isRead = true;
-        }
-      });
-      setState(() {});
-    });
   }
 
   Future<dynamic> initData() {
-    return BossApi.ins().obtainBossDetail(widget.bossId).flatMap((value) {
-      bossEntity = value;
-
-      return BossApi.ins().obtainBossArticle(widget.bossId, mCurrentType);
-    }).doOnData((event) {
-      map["1"] = event;
+    return BossApi.ins().obtainBossDetail(widget.bossId).doOnData((event) {
+      bossEntity = event;
+      pages = [
+        BossArticlePage(
+          type: "1",
+          bossId: widget.bossId,
+          total: bossEntity.totalCount,
+        ),
+        BossArticlePage(
+          type: "2",
+          bossId: widget.bossId,
+          total: bossEntity.totalCount,
+        ),
+        BossArticlePage(
+          type: "3",
+          bossId: widget.bossId,
+          total: bossEntity.totalCount,
+        ),
+      ];
     }).last;
-  }
-
-  void onTabClick(int index) {
-    if (mCurrentType != (index + 1).toString()) {
-      mCurrentType = (index + 1).toString();
-
-      if (map[mCurrentType].isNullOrEmpty()) {
-        BossApi.ins()
-            .obtainBossArticle(widget.bossId, mCurrentType)
-            .onErrorReturn([]).listen((event) {
-          map[mCurrentType] = event;
-          setState(() {});
-        });
-      } else {
-        setState(() {});
-      }
-    }
-  }
-
-  void onArticleClick(ArticleSimpleEntity entity) {
-    if (!entity.isRead) {
-      entity.isRead = true;
-    }
-
-    if (BaseTool.showRedDots(entity.bossId, entity.getShowTime())) {
-      DataConfig.getIns().setBossTime(entity.bossId);
-    }
-
-    setState(() {});
-
-    Get.to(() => WebArticlePage(fromBoss: true), arguments: entity.id);
-  }
-
-  void errorLoad() {
-    BossApi.ins()
-        .obtainBossArticle(widget.bossId, mCurrentType)
-        .onErrorReturn([]).listen((event) {
-      map[mCurrentType] = event;
-      setState(() {});
-    });
   }
 
   void onBack() {
@@ -300,119 +258,94 @@ class _BossHomePageState extends State<BossHomePage> {
   }
 
   Widget contentWidget() {
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          toolbarHeight: 40,
-          backgroundColor: BaseColor.pageBg,
-          leading: Container(
-            child: GestureDetector(
-              child: Icon(Icons.arrow_back, size: 26, color: Colors.white),
-              onTap: onBack,
+    return NestedScrollView(
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        return [
+          SliverAppBar(
+            pinned: true,
+            forceElevated: innerBoxIsScrolled,
+            toolbarHeight: 40,
+            backgroundColor: Colors.white,
+            leading: Container(
+              child: GestureDetector(
+                child: Icon(Icons.arrow_back, size: 26, color: Colors.white),
+                onTap: () => Get.back(),
+              ),
+            ),
+            actions: [
+              Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
+                  .marginOn(right: 20)
+                  .onClick(onShare),
+              Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
+                  .marginOn(right: 16)
+                  .onClick(onSetting),
+            ],
+            expandedHeight: 232,
+            flexibleSpace: Container(
+              height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 40 + 24,
+              ),
+              decoration: ShapeDecoration(
+                image: DecorationImage(
+                  image: AssetImage(R.assetsImgBossTopBg),
+                  fit: BoxFit.cover,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusDirectional.only(
+                    bottomStart: Radius.circular(24),
+                  ),
+                ),
+              ),
+              child: MediaQuery.removePadding(
+                removeTop: true,
+                removeBottom: true,
+                context: context,
+                child: ListView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    bossInfoWidget(),
+                    bossInfoBottomWidget(),
+                  ],
+                ),
+              ),
             ),
           ),
-          actions: [
-            Image.asset(R.assetsImgShareWhite, width: 24, height: 24)
-                .marginOn(right: 20)
-                .onClick(onShare),
-            Image.asset(R.assetsImgSettingWhite, width: 24, height: 24)
-                .marginOn(right: 16)
-                .onClick(onSetting),
-          ],
-          floating: false,
-          pinned: true,
-          snap: false,
-          expandedHeight:
-              MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(48),
-            child: Container(
-              height: 48,
-              color: BaseColor.pageBg,
-              padding: EdgeInsets.only(left: 16, right: 16),
-              child: Row(
-                children: [
-                  Expanded(child: tabWidget(0)),
-                  Expanded(child: tabWidget(1)),
-                  Expanded(child: tabWidget(2)),
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: MySliverPersistentHeader(
+              widget: TabBar(
+                labelStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                indicator: TabSizeIndicator(),
+                labelColor: Colors.black,
+                controller: tabController,
+                tabs: [
+                  Tab(
+                    text: typeList[0],
+                  ),
+                  Tab(
+                    text: typeList[1],
+                  ),
+                  Tab(
+                    text: typeList[2],
+                  ),
                 ],
               ),
             ),
           ),
-          flexibleSpace: bossWidget(),
-        ),
-        listWidget(),
-      ],
-    );
-  }
-
-  Widget tabWidget(int index) {
-    return Container(
-      height: 48,
-      child: Stack(
+        ];
+      },
+      body: TabBarView(
+        controller: tabController,
         children: [
-          mCurrentType == (index + 1).toString()
-              ? Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xfff28564),
-                        Color(0xffee3b20),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  height: 8,
-                ).positionOn(right: 22, left: 22, bottom: 12)
-              : SizedBox(),
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              typeList[index],
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ).positionOn(right: 0, left: 0, top: 12),
+          pages[0],
+          pages[1],
+          pages[2],
         ],
-      ),
-    ).onClick(() {
-      onTabClick(index);
-    });
-  }
-
-  Widget bossWidget() {
-    return MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      removeBottom: true,
-      child: Container(
-        height: MediaQuery.of(context).padding.top + 40 + 24 + 64 + 104,
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + 40 + 24,
-        ),
-        decoration: ShapeDecoration(
-          image: DecorationImage(
-            image: AssetImage(R.assetsImgBossTopBg),
-            fit: BoxFit.cover,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusDirectional.only(
-              bottomStart: Radius.circular(24),
-            ),
-          ),
-        ),
-        child: ListView(
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            bossInfoWidget(),
-            bossInfoBottomWidget(),
-          ],
-        ),
       ),
     );
   }
@@ -548,97 +481,6 @@ class _BossHomePageState extends State<BossHomePage> {
         ],
       ),
     );
-  }
-
-  Widget listWidget() {
-    var data = map[mCurrentType];
-
-    return data.isNullOrEmpty()
-        ? SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return emptyBodyWidget();
-              },
-              childCount: 1,
-            ),
-          )
-        : SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                ArticleSimpleEntity entity =
-                    data[index == 0 ? index : index - 1];
-
-                return index == 0 ? noticeWidget() : articleWidget(entity);
-              },
-              childCount: data.length + 1,
-            ),
-          );
-  }
-
-  Widget noticeWidget() {
-    return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, bottom: 12),
-      padding: EdgeInsets.only(left: 8, right: 8, top: 6, bottom: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4)),
-        color: BaseColor.loadBg,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Text(
-              "收录Boss自己的言论、演说稿件、采访答录等",
-              style: TextStyle(color: BaseColor.textDark, fontSize: 12),
-              softWrap: false,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Text(
-            "查看全部共${bossEntity.totalCount}篇",
-            style: TextStyle(color: BaseColor.textDark, fontSize: 12),
-          ).marginOn(left: 8),
-        ],
-      ),
-    ).onClick(() {
-      Get.to(() => BossArticlePage(), arguments: widget.bossId);
-    });
-  }
-
-  Widget articleWidget(ArticleSimpleEntity entity) {
-    return entity.files.isNullOrEmpty()
-        ? ArticleWidget.onlyTextWithContentBossPage(entity, context, () {
-            onArticleClick(entity);
-          })
-        : ArticleWidget.singleImgWithContentBossPage(entity, context, () {
-            onArticleClick(entity);
-          });
-  }
-
-  Widget emptyBodyWidget() {
-    String path = R.assetsImgEmptyBoss;
-    String content = "最近还没有更新哦～";
-    double height = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
-        232;
-    return Container(
-      height: height,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(path, width: 160, height: 160),
-            Text(
-              content,
-              style: TextStyle(fontSize: 18, color: BaseColor.textGray),
-              textAlign: TextAlign.center,
-            ).marginOn(top: 16),
-          ],
-        ),
-      ),
-    ).onClick(errorLoad);
   }
 
   Widget loadingWidget() {
@@ -897,7 +739,7 @@ class _BossHomePageState extends State<BossHomePage> {
                     softWrap: false,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
-                  )
+                  ),
                 ],
               ),
             ),

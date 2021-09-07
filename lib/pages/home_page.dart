@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/scheme_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
@@ -75,6 +76,19 @@ class _HomePageState extends State<HomePage> {
     FlutterAppBadger.removeBadge();
 
     checkUpdate();
+
+    checkRead();
+  }
+
+  ///校验今日阅读
+  void checkRead() {
+    UserEntity user = Global.user.user.value;
+
+    int lastTime = UserConfig.getIns().lastReadTime;
+
+    if (!BaseTool.isSameDay(lastTime)) {
+      user.readNum = 0;
+    }
   }
 
   void doDeviceID() async {
@@ -148,8 +162,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("loginStatus ===>> ${UserConfig.getIns().loginStatus}");
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,

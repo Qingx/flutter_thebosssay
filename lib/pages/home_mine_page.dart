@@ -197,12 +197,12 @@ class _HomeMinePageState extends State<HomeMinePage>
   }
 
   void doTest() {
-    Get.to(() => TestPage());
-    // ArticleDbProvider.ins().getAll().listen((event) {
-    //   print(event);
-    // }, onError: (res) {
-    //   print(res);
-    // });
+    // Get.to(() => TestPage());
+    ArticleDbProvider.ins().getAll().listen((event) {
+      print(event);
+    }, onError: (res) {
+      print(res);
+    });
   }
 
   @override
