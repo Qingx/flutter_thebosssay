@@ -9,4 +9,5 @@ class Global {
   static HintController hint = HintController();
   static EventBus eventBus = EventBus();
   static String shareUrl = "http://index.tianjiemedia.com/";
+  static bool fromSplash = true;
 }

@@ -188,6 +188,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
       return ArticleDbProvider.ins().getAll();
     }).doOnData((event) {
+      DataConfig.getIns().fromSplash = true;
+
       pageParam.next(1);
       totalArticleNumber = DataConfig.getIns().tackTotalNum;
       hasData = DataConfig.getIns().tackHasData;
@@ -209,6 +211,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
 
       return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
     }).doOnData((event) {
+      DataConfig.getIns().fromSplash = true;
+
       hasData = true;
       totalArticleNumber = event.total;
       concat(event.records, false);
@@ -237,6 +241,8 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     }).flatMap((value) {
       return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
     }).flatMap((value) {
+      DataConfig.getIns().fromSplash = true;
+
       hasData = value.hasData;
       totalArticleNumber = value.total;
       concat(value.records, false);

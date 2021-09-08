@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
@@ -53,6 +54,7 @@ class _MineChangeUserPageState extends State<MineChangeUserPage> {
       Global.user.setUser(BaseEmpty.emptyUser);
 
       JpushApi.ins().clearTags();
+      DataConfig.getIns().fromSplash = false;
 
       BaseTool.toast(msg: "退出成功");
       Get.offAll(() => HomePage());
