@@ -7,4 +7,5 @@ class HistoryEntity with JsonConvert<HistoryEntity> {
   String bossName;
   String id;
   int updateTime;
+  int createTime;
 }

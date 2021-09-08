@@ -458,8 +458,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       user.pointNum++;
       Global.user.setUser(user);
 
-      Global.eventBus
-          .fire(BaseEvent(RefreshPointEvent(widget.articleId, true)));
+      Global.eventBus.fire(RefreshPointEvent(widget.articleId, true));
     });
   }
 
@@ -473,8 +472,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       user.pointNum--;
       Global.user.setUser(user);
 
-      Global.eventBus
-          .fire(BaseEvent(RefreshPointEvent(widget.articleId, false)));
+      Global.eventBus.fire(RefreshPointEvent(widget.articleId, false));
     });
   }
 

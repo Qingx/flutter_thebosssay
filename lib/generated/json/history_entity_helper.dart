@@ -21,6 +21,11 @@ historyEntityFromJson(HistoryEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['updateTime'])
 				: json['updateTime'].toInt();
 	}
+	if (json['createTime'] != null) {
+		data.createTime = json['createTime'] is String
+				? int.tryParse(json['createTime'])
+				: json['createTime'].toInt();
+	}
 	return data;
 }
 
@@ -32,5 +37,6 @@ Map<String, dynamic> historyEntityToJson(HistoryEntity entity) {
 	data['bossName'] = entity.bossName;
 	data['id'] = entity.id;
 	data['updateTime'] = entity.updateTime;
+	data['createTime'] = entity.createTime;
 	return data;
 }

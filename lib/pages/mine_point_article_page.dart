@@ -10,14 +10,12 @@ import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/article_entity.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
-import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
 import 'package:flutter_boss_says/event/refresh_point_event.dart';
 import 'package:flutter_boss_says/pages/web_article_page.dart';
 import 'package:flutter_boss_says/r.dart';
 import 'package:flutter_boss_says/util/base_color.dart';
-import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
@@ -36,13 +34,10 @@ class MinePointArticlePage extends StatefulWidget {
 class _MinePointArticlePageState extends State<MinePointArticlePage>
     with BasePageController<HistoryEntity> {
   var builderFuture;
+  bool hasData;
 
   ScrollController scrollController;
   EasyRefreshController controller;
-
-  bool hasData;
-
-  int numbers = Global.user.user.value.pointNum;
 
   var pointDis;
 
@@ -77,10 +72,10 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
       if (event.doPoint) {
         controller.callRefresh();
       } else {
-        int index = mData.indexWhere((element) => element.id == event.id);
+        int index =
+            mData.indexWhere((element) => element.articleId == event.id);
         if (index != -1) {
           mData.removeAt(index);
-          numbers--;
 
           setState(() {});
         }
@@ -128,10 +123,9 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
       Get.back();
 
       mData.removeAt(index);
-      numbers--;
 
       UserEntity entity = UserConfig.getIns().user;
-      entity.pointNum = numbers;
+      entity.pointNum--;
       Global.user.setUser(entity);
 
       setState(() {});
@@ -171,16 +165,18 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
                     child: Container(
                       margin: EdgeInsets.only(right: 28),
                       alignment: Alignment.center,
-                      child: Text(
-                        "点赞（$numbers）",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: BaseColor.textDark,
-                            fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
+                      child: Obx(
+                        () => Text(
+                          "点赞（${Global.user.user.value.pointNum}）",
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: BaseColor.textDark,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ),
@@ -219,13 +215,14 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
     return Container(
       color: BaseColor.pageBg,
       child: BaseWidget.refreshWidgetPage(
-          slivers: [
-            listWidget(),
-          ],
-          controller: controller,
-          scrollController: scrollController,
-          hasData: hasData,
-          loadData: loadData),
+        slivers: [
+          listWidget(),
+        ],
+        controller: controller,
+        scrollController: scrollController,
+        hasData: hasData,
+        loadData: loadData,
+      ),
     );
   }
 
@@ -301,7 +298,7 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
                       ).marginOn(left: 8),
                       Expanded(child: SizedBox()),
                       Text(
-                        DateFormat.getHHNN(entity.updateTime),
+                        DateFormat.getHHNN(entity.createTime),
                         style: TextStyle(
                           fontSize: 13,
                           color: BaseColor.textGray,
@@ -340,7 +337,8 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
         ],
       ),
     ).onClick(() {
-      Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
+      Get.to(() => WebArticlePage(fromBoss: false),
+          arguments: entity.articleId);
     });
   }
 
