@@ -113,6 +113,12 @@ class DataConfig extends BaseConfig {
   ///进入首页来源 splash/登录
   bool get fromSplash =>
       spInstance.getBool(DataKeys.K_FROM_SPLASH, defaultVal: true);
+
+  set notifiTime(int time) =>
+      spInstance.putInt(DataKeys.K_SHOW_NOTIFI_TIME, time);
+
+  int get notifiTime =>
+      spInstance.getInt(DataKeys.K_SHOW_NOTIFI_TIME, defaultVal: -1);
 }
 
 class DataKeys {
@@ -123,6 +129,7 @@ class DataKeys {
   static const K_TACK_TOTAL_NUM = "K_TACK_TOTAL_NUM";
   static const K_TACK_HAS_DATA = "K_TACK_HAS_DATA";
   static const K_FROM_SPLASH = "K_FROM_SPLASH";
+  static const K_SHOW_NOTIFI_TIME = "K_SHOW_NOTIFI_TIME";
 }
 
 class BaseConfig {

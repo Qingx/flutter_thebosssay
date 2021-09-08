@@ -75,6 +75,8 @@ class _WebArticlePageState extends State<WebArticlePage> {
 
       bottomKey.currentState.hasCollect = event.isCollect;
       bottomKey.currentState.hasPoint = event.isPoint;
+      bottomKey.currentState.collectNum = event.collect;
+      bottomKey.currentState.pointNum = event.point;
       bottomKey.currentState.articleTitle = event.title;
       bottomKey.currentState.articleDes = event.descContent ?? "";
 
@@ -380,6 +382,8 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
   String articleCover;
   bool hasCollect = false; //文章收藏
   bool hasPoint = false; //文章点赞
+  int collectNum = 0; //收藏数
+  int pointNum = 0; //点赞数
 
   @override
   void dispose() {
@@ -446,6 +450,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
 
   void doPoint() {
     hasPoint = true;
+    pointNum++;
     setState(() {});
 
     UserApi.ins().obtainDoPoint(widget.articleId).listen((event) {
@@ -460,7 +465,9 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
 
   void cancelPoint() {
     hasPoint = false;
+    pointNum--;
     setState(() {});
+
     UserApi.ins().obtainCancelPoint(widget.articleId).listen((event) {
       var user = Global.user.user.value;
       user.pointNum--;
@@ -521,6 +528,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       Get.back();
 
       hasCollect = true;
+      collectNum++;
 
       var user = Global.user.user.value;
       user.collectNum++;
@@ -546,6 +554,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       Get.back();
 
       hasCollect = true;
+      collectNum++;
 
       UserEntity user = Global.user.user.value;
       user.collectNum++;
@@ -571,6 +580,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
       Get.back();
 
       hasCollect = false;
+      collectNum--;
 
       UserEntity user = Global.user.user.value;
       user.collectNum--;
@@ -616,7 +626,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
                   height: 22,
                 ),
                 Text(
-                  hasPoint ? "已点赞" : "点赞",
+                  pointNum.toString(),
                   style: TextStyle(
                     fontSize: 10,
                     color: hasCollect ? BaseColor.accent : BaseColor.textDark,
@@ -641,7 +651,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
                   height: 22,
                 ),
                 Text(
-                  hasCollect ? "已收藏" : "收藏",
+                  collectNum.toString(),
                   style: TextStyle(
                     fontSize: 10,
                     color: hasCollect ? BaseColor.accent : BaseColor.textDark,

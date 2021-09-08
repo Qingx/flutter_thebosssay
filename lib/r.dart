@@ -23,6 +23,8 @@ class R {
   static final String assetsImgItemAbout = 'assets/img/itemAbout.png';
   /// ![](http://127.0.0.1:11111111/assets/img/itemContact.png)
   static final String assetsImgItemContact = 'assets/img/itemContact.png';
+  /// ![](http://127.0.0.1:11111111/assets/img/notificon.png)
+  static final String assetsImgNotificon = 'assets/img/notificon.png';
   /// ![](http://127.0.0.1:11111111/assets/img/testBanner.png)
   static final String assetsImgTestBanner = 'assets/img/testBanner.png';
   /// ![](http://127.0.0.1:11111111/assets/img/settingWhite.png)

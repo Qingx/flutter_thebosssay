@@ -1,4 +1,6 @@
 PODS:
+  - "app_settings (3.0.0+1)":
+    - Flutter
   - connectivity (0.0.1):
     - Flutter
     - Reachability
@@ -20,6 +22,8 @@ PODS:
     - Flutter
     - JCore (= 2.6.2)
     - JPush (= 3.6.1)
+  - "permission_handler (5.1.0+2)":
+    - Flutter
   - Reachability (3.2)
   - share (0.0.1):
     - Flutter
@@ -41,12 +45,14 @@ PODS:
   - WechatOpenSDK (1.8.7.1)
 
 DEPENDENCIES:
+  - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - Flutter (from `Flutter`)
   - flutter_app_badger (from `.symlinks/plugins/flutter_app_badger/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - fluwx (from `.symlinks/plugins/fluwx/ios`)
   - jpush_flutter (from `.symlinks/plugins/jpush_flutter/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
@@ -65,6 +71,8 @@ SPEC REPOS:
     - WechatOpenSDK
 
 EXTERNAL SOURCES:
+  app_settings:
+    :path: ".symlinks/plugins/app_settings/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
   Flutter:
@@ -77,6 +85,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/fluwx/ios"
   jpush_flutter:
     :path: ".symlinks/plugins/jpush_flutter/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   share:
     :path: ".symlinks/plugins/share/ios"
   shared_preferences:
@@ -95,6 +105,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter/ios"
 
 SPEC CHECKSUMS:
+  app_settings: d103828c9f5d515c4df9ee754dabd443f7cedcf3
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_app_badger: 65de4d6f0c34a891df49e6cfb8a1c0496426fa68
@@ -104,6 +115,7 @@ SPEC CHECKSUMS:
   JCore: 0cb4fc5892bc97af4f27283875369ead3eaa3067
   JPush: 507d66d7ea307faba1330666d48e4e92af611659
   jpush_flutter: e75658a5342e3bfe22d9f3de5dfacd3ef44230c5
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d

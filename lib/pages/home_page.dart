@@ -1,15 +1,18 @@
 import 'dart:async';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
+import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/data/entity/user_entity.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/scheme_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
+import 'package:flutter_boss_says/dialog/ask_notifi_dialog.dart';
 import 'package:flutter_boss_says/dialog/version_update_dialog.dart';
 import 'package:flutter_boss_says/event/global_scroll_event.dart';
 import 'package:flutter_boss_says/event/jpush_article_event.dart';
@@ -25,6 +28,7 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -78,6 +82,28 @@ class _HomePageState extends State<HomePage> {
     checkUpdate();
 
     checkRead();
+
+    checkNotifi();
+  }
+
+  ///检测通知权限
+  void checkNotifi() {
+    Permission.notification.status.then((value) {
+      if (!value.isGranted) {
+        int lastTime = DataConfig.getIns().notifiTime;
+        if (lastTime == -1 || !BaseTool.isSameDay(lastTime)) {
+          DataConfig.getIns().notifiTime =
+              DateTime.now().millisecondsSinceEpoch;
+
+          showAskNotifiDialog(context, onDismiss: () {
+            Get.back();
+          }, onConfirm: () {
+            AppSettings.openAppSettings();
+            Get.back();
+          });
+        }
+      }
+    });
   }
 
   ///校验今日阅读
