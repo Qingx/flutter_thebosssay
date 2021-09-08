@@ -450,6 +450,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
+  notification_permissions:
+    dependency: "direct main"
+    description:
+      name: notification_permissions
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.8"
   package_config:
     dependency: transitive
     description:
@@ -506,20 +513,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.9.2"
-  permission_handler:
-    dependency: "direct main"
-    description:
-      name: permission_handler
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.1.0+2"
-  permission_handler_platform_interface:
-    dependency: transitive
-    description:
-      name: permission_handler_platform_interface
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.2"
   petitparser:
     dependency: transitive
     description:

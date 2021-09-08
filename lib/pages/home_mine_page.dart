@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
-import 'package:flutter_boss_says/config/data_config.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
 import 'package:flutter_boss_says/config/user_controller.dart';
-import 'package:flutter_boss_says/data/db/article_db_provider.dart';
 import 'package:flutter_boss_says/dialog/ask_notifi_dialog.dart';
 import 'package:flutter_boss_says/dialog/share_dialog.dart';
 import 'package:flutter_boss_says/event/jump_boss_event.dart';
@@ -26,7 +24,7 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomeMinePage extends StatefulWidget {
@@ -212,8 +210,8 @@ class _HomeMinePageState extends State<HomeMinePage>
   }
 
   void doTest() {
-    Permission.notification.status.then((value) {
-      if (!value.isGranted) {
+    NotificationPermissions.getNotificationPermissionStatus().then((value) {
+      if (value != PermissionStatus.granted) {
         showAskNotifiDialog(context, onDismiss: () {
           Get.back();
         }, onConfirm: () {
@@ -221,7 +219,6 @@ class _HomeMinePageState extends State<HomeMinePage>
           Get.back();
         });
       }
-      DataConfig.getIns().notifiTime = DateTime.now().millisecondsSinceEpoch;
     });
   }
 

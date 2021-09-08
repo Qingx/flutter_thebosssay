@@ -28,7 +28,7 @@ import 'package:flutter_boss_says/util/base_event.dart';
 import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -88,8 +88,8 @@ class _HomePageState extends State<HomePage> {
 
   ///检测通知权限
   void checkNotifi() {
-    Permission.notification.status.then((value) {
-      if (!value.isGranted) {
+    NotificationPermissions.getNotificationPermissionStatus().then((value) {
+      if (value != PermissionStatus.granted) {
         int lastTime = DataConfig.getIns().notifiTime;
         if (lastTime == -1 || !BaseTool.isSameDay(lastTime)) {
           DataConfig.getIns().notifiTime =
