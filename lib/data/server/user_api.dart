@@ -7,7 +7,6 @@ import 'package:flutter_boss_says/data/entity/favorite_entity.dart';
 import 'package:flutter_boss_says/data/entity/history_entity.dart';
 import 'package:flutter_boss_says/data/entity/operation_entity.dart';
 import 'package:flutter_boss_says/data/entity/token_entity.dart';
-import 'package:flutter_boss_says/data/model/article_simple_entity.dart';
 import 'package:rxdart/rxdart.dart';
 
 class UserApi extends BaseApi {
