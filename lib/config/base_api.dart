@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
@@ -51,6 +52,7 @@ class BaseApi {
     options.sendTimeout = isFileDio ? 48000 : 16000;
 
     Dio dio = Dio(options);
+
     dio.interceptors.add(HttpInterceptor());
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
     return dio;
@@ -59,7 +61,6 @@ class BaseApi {
   Observable<T> autoToken<T>(Observable<T> call()) {
     var count = 0;
     return Observable.retryWhen(() => call(), (e, s) {
-      print(e.toString());
       if (e.runtimeType == TempUserMiss && count++ < 2) {
         return BaseApi.getGlobalToken().doOnData((event) {
           UserConfig.getIns().token = event;
@@ -101,7 +102,9 @@ class BaseApi {
             queryParameters: queryParameters ?? {}, data: requestBody ?? {});
       }
 
-      BaseData<T> data = json2WLData<T>(response.data);
+      final temp = response.data;
+
+      BaseData<T> data = json2WLData<T>(temp);
       return data;
     } on DioError catch (error) {
       print(error);
@@ -140,7 +143,9 @@ class BaseApi {
             queryParameters: queryParameters ?? {}, data: requestBody ?? {});
       }
 
-      BasePage<T> data = json2WLPage(response.data);
+      final temp = response.data;
+
+      BasePage<T> data = json2WLPage(temp);
       return data;
     } on DioError catch (error) {
       print(error);
@@ -195,7 +200,9 @@ class BaseApi {
         },
       );
 
-      return json2WLData(response.data);
+      final temp = response.data;
+
+      return json2WLData(temp);
     } on Exception catch (error) {
       return Future.error(error);
     }

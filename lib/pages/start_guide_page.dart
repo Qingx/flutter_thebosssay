@@ -103,7 +103,6 @@ class _StartGuidePageState extends State<StartGuidePage> {
       return ArticleDbProvider.ins().insertList(value.records);
     }).listen(
       (event) {
-        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onError: (res) {

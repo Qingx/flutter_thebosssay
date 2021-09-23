@@ -79,7 +79,6 @@ class _StartSplashPageState extends State<StartSplashPage> {
         Get.offAll(() => StartGuidePage(), arguments: event);
       },
       onError: (res) {
-        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onDone: () {
@@ -89,15 +88,21 @@ class _StartSplashPageState extends State<StartSplashPage> {
   }
 
   void doSecondUse() {
-    BossApi.ins().obtainBossLabels().onErrorReturn([]).flatMap((value) {
+    LabelDbProvider.ins().deleteAll().flatMap((value) {
+      return BossApi.ins().obtainBossLabels();
+    }).onErrorReturn([]).flatMap((value) {
       value = [BaseEmpty.emptyLabel, ...value];
 
       return LabelDbProvider.ins().insertList(value);
     }).onErrorReturn([]).flatMap((value) {
+      return BossDbProvider.ins().deleteAll();
+    }).flatMap((value) {
       return BossApi.ins().obtainFollowBossList("-1", false);
     }).flatMap((value) {
       return BossDbProvider.ins().insertList(value);
     }).onErrorReturn([]).flatMap((value) {
+      return ArticleDbProvider.ins().deleteAll();
+    }).flatMap((value) {
       return BossApi.ins().obtainTackArticle(PageParam(), "-1");
     }).flatMap((value) {
       DataConfig.getIns().tackTotalNum = value.total;
@@ -106,12 +111,10 @@ class _StartSplashPageState extends State<StartSplashPage> {
       return ArticleDbProvider.ins().insertList(value.records);
     }).listen(
       (event) {
-        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onError: (res) {
         print(res);
-        DataConfig.getIns().fromSplash = true;
         Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
       onDone: () {

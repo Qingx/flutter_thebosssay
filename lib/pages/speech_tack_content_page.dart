@@ -174,7 +174,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         ? widget.mLabel == "-1"
             ? initAllData()
             : initLabelData()
-        : initLoginData();
+        : initLogoutData();
   }
 
   ///当前页为全部时
@@ -220,41 +220,83 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
     }).last;
   }
 
-  Future<dynamic> initLoginData() {
+  Future<dynamic> initLogoutData() {
     pageParam?.reset();
 
-    return BossApi.ins()
-        .obtainFollowBossList("-1", false)
-        .onErrorReturn([]).flatMap((value) {
-      value = value.where((element) {
-        return widget.mLabel == "-1"
-            ? BaseTool.isLatest(element.updateTime)
-            : element.labels.contains(widget.mLabel) &&
-                BaseTool.isLatest(element.updateTime);
-      }).toList();
+    if (widget.mLabel == "-1") {
+      return ArticleDbProvider.ins().deleteAll().flatMap((value) {
+        return BossApi.ins().obtainTackArticle(pageParam, "-1");
+      }).flatMap((value) {
+        DataConfig.getIns().fromSplash = true;
 
-      value.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+        titleText = "为你推荐";
 
-      mBossList = value;
+        DataConfig.getIns().tackHasData = hasData;
+        DataConfig.getIns().tackTotalNum = totalArticleNumber;
 
-      return BossDbProvider.ins().insertList(value);
-    }).flatMap((value) {
-      return BossApi.ins().obtainTackArticle(pageParam, widget.mLabel);
-    }).flatMap((value) {
-      DataConfig.getIns().fromSplash = true;
+        return ArticleDbProvider.ins().insertList(value.records);
+      }).last;
+    } else {
+      return BossApi.ins()
+          .obtainTackArticle(pageParam, widget.mLabel)
+          .doOnData((value) {
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+        titleText = "为你推荐";
+      }).last;
+    }
+  }
 
-      hasData = value.hasData;
-      totalArticleNumber = value.total;
-      concat(value.records, false);
-      titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
+  Future<dynamic> initErrorLoad() {
+    pageParam?.reset();
 
-      DataConfig.getIns().tackHasData = hasData;
-      DataConfig.getIns().tackTotalNum = totalArticleNumber;
+    if (widget.mLabel == "-1") {
+      return BossDbProvider.ins().deleteAll().flatMap((value) {
+        return BossApi.ins().obtainFollowBossList("-1", false);
+      }).flatMap((value) {
+        value = value.where((element) {
+          return widget.mLabel == "-1"
+              ? BaseTool.isLatest(element.updateTime)
+              : element.labels.contains(widget.mLabel) &&
+                  BaseTool.isLatest(element.updateTime);
+        }).toList();
 
-      return widget.mLabel == "-1"
-          ? ArticleDbProvider.ins().insertList(value.records)
-          : Observable.just(1);
-    }).last;
+        value.sort((a, b) => (b.getSort()).compareTo(a.getSort()));
+
+        mBossList = value;
+
+        return BossDbProvider.ins().insertList(value);
+      }).flatMap((value) {
+        return ArticleDbProvider.ins().deleteAll();
+      }).flatMap((value) {
+        return BossApi.ins().obtainTackArticle(pageParam, "-1");
+      }).flatMap((value) {
+        DataConfig.getIns().fromSplash = true;
+
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+        titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
+
+        DataConfig.getIns().tackHasData = hasData;
+        DataConfig.getIns().tackTotalNum = totalArticleNumber;
+
+        return ArticleDbProvider.ins().insertList(value.records);
+      }).last;
+    } else {
+      return BossApi.ins()
+          .obtainTackArticle(pageParam, widget.mLabel)
+          .doOnData((value) {
+        hasData = value.hasData;
+        totalArticleNumber = value.total;
+        concat(value.records, false);
+        titleText = value?.records[0]?.recommendType == "0" ? "最近更新" : "为你推荐";
+      }).last;
+    }
   }
 
   @override
@@ -322,7 +364,7 @@ class _SpeechTackContentPageState extends State<SpeechTackContentPage>
         return contentWidget();
       } else {
         return BaseWidget.errorWidget(() {
-          builderFuture = futureData();
+          builderFuture = initErrorLoad();
           setState(() {});
         });
       }

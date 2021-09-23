@@ -27,14 +27,14 @@ import 'package:flutter_boss_says/util/base_extension.dart';
 import 'package:flutter_boss_says/util/base_tool.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebArticlePage extends StatefulWidget {
   String articleId = Get.arguments as String;
 
   var articleUrl = HttpConfig.globalEnv.baseUrl;
-
-  // var articleUrl = "http://192.168.1.85:9529";
+  // var articleUrl = "http://192.168.1.85:9531";
 
   bool fromBoss = false;
 
@@ -133,13 +133,22 @@ class _WebArticlePageState extends State<WebArticlePage> {
 
               if (!articleId.isNullOrEmpty()) {
                 Get.off(
-                  () => WebArticlePage(
-                    fromBoss: widget.fromBoss,
-                  ),
+                      () =>
+                      WebArticlePage(
+                        fromBoss: widget.fromBoss,
+                      ),
                   preventDuplicates: false,
                   arguments: articleId,
                 );
               }
+            }),
+        JavascriptChannel(
+            name: "JumpArticle",
+            onMessageReceived: (JavascriptMessage message) {
+              String url = message.message;
+              print("JavascriptMessage:$url");
+
+              launch(url);
             }),
       ].toSet(),
     );
@@ -286,79 +295,79 @@ class _TopBarWidgetState extends State<TopBarWidget> {
             child: bossName.isNullOrEmpty()
                 ? SizedBox()
                 : Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  margin: EdgeInsets.only(left: 16, right: 8),
+                  child: ClipOval(
+                    child: Image.network(
+                      HttpConfig.fullUrl(bossHead),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          R.assetsImgDefaultHead,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 28,
-                        height: 28,
-                        margin: EdgeInsets.only(left: 16, right: 8),
-                        child: ClipOval(
-                          child: Image.network(
-                            HttpConfig.fullUrl(bossHead),
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                R.assetsImgDefaultHead,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
+                      Text(
+                        bossName,
+                        style: TextStyle(
+                          color: BaseColor.textDark,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              bossName,
-                              style: TextStyle(
-                                color: BaseColor.textDark,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              bossRole,
-                              style: TextStyle(
-                                color: BaseColor.textGray,
-                                fontSize: 10,
-                              ),
-                              maxLines: 1,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                      Text(
+                        bossRole,
+                        style: TextStyle(
+                          color: BaseColor.textGray,
+                          fontSize: 10,
                         ),
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Container(
-                        width: 64,
-                        height: 28,
-                        margin: EdgeInsets.only(left: 16),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: hasTack ? BaseColor.loadBg : BaseColor.accent,
-                        ),
-                        child: Text(
-                          hasTack ? "已追踪" : "追踪",
-                          style: TextStyle(color: Colors.white, fontSize: 13),
-                          softWrap: false,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ).onClick(onFollowChange),
                     ],
-                  ).onClick(() {
-                    if (widget.fromBoss) {
-                      Get.back();
-                    } else {
-                      Get.to(() => BossHomePage(), arguments: bossEntity.id);
-                    }
-                  }),
+                  ),
+                ),
+                Container(
+                  width: 64,
+                  height: 28,
+                  margin: EdgeInsets.only(left: 16),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    color: hasTack ? BaseColor.loadBg : BaseColor.accent,
+                  ),
+                  child: Text(
+                    hasTack ? "已追踪" : "追踪",
+                    style: TextStyle(color: Colors.white, fontSize: 13),
+                    softWrap: false,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ).onClick(onFollowChange),
+              ],
+            ).onClick(() {
+              if (widget.fromBoss) {
+                Get.back();
+              } else {
+                Get.to(() => BossHomePage(), arguments: bossEntity.id);
+              }
+            }),
           ),
         ],
       ),
@@ -395,7 +404,7 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
     super.initState();
 
     articleUrl =
-        "${HttpConfig.globalEnv.baseUrl}#/article?id=${widget.articleId}";
+    "${HttpConfig.globalEnv.baseUrl}#/article?id=${widget.articleId}";
 
     doReadArticle();
   }
@@ -436,7 +445,9 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
   }
 
   void onPointChange() {
-    if (UserConfig.getIns().loginStatus) {
+    if (UserConfig
+        .getIns()
+        .loginStatus) {
       if (hasPoint) {
         cancelPoint();
       } else {
@@ -477,7 +488,9 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
   }
 
   void onFavoriteChange() {
-    if (UserConfig.getIns().loginStatus) {
+    if (UserConfig
+        .getIns()
+        .loginStatus) {
       if (hasCollect) {
         tryCancelFavoriteArticle();
       } else {
@@ -599,12 +612,18 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48 + MediaQuery.of(context).padding.bottom,
+      height: 48 + MediaQuery
+          .of(context)
+          .padding
+          .bottom,
       color: BaseColor.loadBg,
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        bottom: MediaQuery.of(context).padding.bottom,
+        bottom: MediaQuery
+            .of(context)
+            .padding
+            .bottom,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,

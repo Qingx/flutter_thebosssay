@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_boss_says/config/base_global.dart';
 import 'package:flutter_boss_says/config/data_config.dart';
+import 'package:flutter_boss_says/config/page_param.dart';
 import 'package:flutter_boss_says/config/user_config.dart';
+import 'package:flutter_boss_says/data/db/article_db_provider.dart';
+import 'package:flutter_boss_says/data/db/boss_db_provider.dart';
+import 'package:flutter_boss_says/data/server/boss_api.dart';
 import 'package:flutter_boss_says/data/server/jpush_api.dart';
 import 'package:flutter_boss_says/data/server/talking_api.dart';
 import 'package:flutter_boss_says/data/server/user_api.dart';
@@ -42,10 +46,9 @@ class _LoginInputCodePageState extends State<LoginInputCodePage> {
     if (isInputAvailable(true)) {
       BaseWidget.showLoadingAlert("正在尝试登录...", context);
 
-      UserApi.ins().obtainSignPhone(phoneNumber, codeNumber, rnd).listen(
-          (event) {
-        DataConfig.getIns().fromSplash = false;
-
+      UserApi.ins()
+          .obtainSignPhone(phoneNumber, codeNumber, rnd)
+          .flatMap((event) {
         UserConfig.getIns().token = event.token;
         Global.user.setUser(event.userInfo);
 
@@ -57,6 +60,21 @@ class _LoginInputCodePageState extends State<LoginInputCodePage> {
           JpushApi.ins().addTags(event.userInfo.tags);
         }
 
+        return BossDbProvider.ins().deleteAll();
+      }).flatMap((value) {
+        return BossApi.ins().obtainFollowBossList("-1", false);
+      }).flatMap((value) {
+        return BossDbProvider.ins().insertList(value);
+      }).flatMap((value) {
+        return ArticleDbProvider.ins().deleteAll();
+      }).flatMap((value) {
+        return BossApi.ins().obtainTackArticle(PageParam(), "-1");
+      }).flatMap((value) {
+        DataConfig.getIns().tackHasData = value.hasData;
+        DataConfig.getIns().tackTotalNum = value.total;
+
+        return ArticleDbProvider.ins().insertList(value.records);
+      }).listen((event) {
         Get.offAll(() => HomePage());
       }, onError: (res) {
         Get.back();
