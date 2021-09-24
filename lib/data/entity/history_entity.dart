@@ -8,4 +8,5 @@ class HistoryEntity with JsonConvert<HistoryEntity> {
   String id;
   int updateTime;
   int createTime;
+  bool hidden = false;
 }

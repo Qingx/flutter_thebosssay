@@ -221,7 +221,10 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
         : SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return articleItemWidget(mData[index], index);
+                var entity = mData[index];
+                return entity.hidden
+                    ? articleHiddenItem(entity, index)
+                    : articleItemWidget(entity, index);
               },
               childCount: mData.length,
             ),
@@ -322,6 +325,101 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
       Get.to(() => WebArticlePage(fromBoss: false),
           arguments: entity.articleId);
     });
+  }
+
+  Widget articleHiddenItem(HistoryEntity entity, index) {
+    String head = index % 2 == 0 ? R.assetsImgTestPhoto : R.assetsImgTestHead;
+
+    return Container(
+      child: Column(
+        children: [
+          Slidable(
+            child: Container(
+              color: BaseColor.line,
+              padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+              alignment: Alignment.centerLeft,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Boss已下架，内容不予显示",
+                    style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                    softWrap: true,
+                    maxLines: 2,
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ClipOval(
+                        child: Image.network(
+                          HttpConfig.fullUrl(entity.bossHead),
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              head,
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
+                      ),
+                      Text(
+                        entity.bossName ?? "莉莉娅",
+                        style:
+                            TextStyle(fontSize: 14, color: BaseColor.textGray),
+                        softWrap: false,
+                        textAlign: TextAlign.start,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ).marginOn(left: 8),
+                      Expanded(child: SizedBox()),
+                      Text(
+                        DateFormat.getMMDDHHMM(entity.updateTime),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: BaseColor.textGray,
+                        ),
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ).marginOn(top: 8),
+                ],
+              ),
+            ),
+            actionPane: SlidableScrollActionPane(),
+            key: Key(entity.id),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: '删除',
+                color: Colors.red,
+                icon: Icons.delete,
+                closeOnTap: false,
+                onTap: () {
+                  removeHistory(entity, index);
+                },
+              ),
+            ],
+          ),
+          Visibility(
+            child: Container(
+              height: 1,
+              color: BaseColor.line,
+            ),
+            visible: index != mData.length - 1,
+          )
+        ],
+      ),
+    );
   }
 
   Widget emptyBodyWidget() {

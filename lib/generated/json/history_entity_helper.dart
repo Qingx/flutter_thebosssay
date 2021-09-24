@@ -26,6 +26,9 @@ historyEntityFromJson(HistoryEntity data, Map<String, dynamic> json) {
 				? int.tryParse(json['createTime'])
 				: json['createTime'].toInt();
 	}
+	if (json['hidden'] != null) {
+		data.hidden = json['hidden'];
+	}
 	return data;
 }
 
@@ -38,5 +41,6 @@ Map<String, dynamic> historyEntityToJson(HistoryEntity entity) {
 	data['id'] = entity.id;
 	data['updateTime'] = entity.updateTime;
 	data['createTime'] = entity.createTime;
+	data['hidden'] = entity.hidden;
 	return data;
 }

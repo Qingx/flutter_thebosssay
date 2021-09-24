@@ -361,7 +361,10 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return articleItemWidget(entity.id, entity.list[index], index);
+          var article = entity.list[index];
+          return article.hidden
+              ? articleHiddenWidget(entity.id, article, index)
+              : articleItemWidget(entity.id, article, index);
         },
         itemCount: entity.list?.length ?? 0,
       ),
@@ -459,6 +462,99 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
     ).onClick(() {
       Get.to(() => WebArticlePage(fromBoss: false), arguments: entity.id);
     });
+  }
+
+  Widget articleHiddenWidget(
+      String favoriteId, ArticleEntity entity, int index) {
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            height: 1,
+            color: BaseColor.line,
+            margin: EdgeInsets.only(left: 16, right: 16),
+          ),
+          Slidable(
+            child: Container(
+                color: Color(0xfff8f8f8),
+                padding:
+                    EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Boss已下架，内容不予显示",
+                      style: TextStyle(fontSize: 14, color: BaseColor.textGray),
+                      softWrap: true,
+                      maxLines: 2,
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ClipOval(
+                          child: Image.network(
+                            HttpConfig.fullUrl(entity.bossVO.head),
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                R.assetsImgDefaultHead,
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                        ),
+                        Text(
+                          entity.bossVO.name,
+                          style: TextStyle(
+                              fontSize: 14, color: BaseColor.textGray),
+                          softWrap: false,
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ).marginOn(left: 8),
+                        Expanded(child: SizedBox()),
+                        Text(
+                          BaseTool.getArticleItemTime(entity.getShowTime()),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: BaseColor.textGray,
+                          ),
+                          textAlign: TextAlign.end,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ).marginOn(top: 8),
+                  ],
+                )),
+            actionPane: SlidableScrollActionPane(),
+            actionExtentRatio: 0.25,
+            key: Key(entity.id),
+            secondaryActions: <Widget>[
+              IconSlideAction(
+                caption: '取消收藏',
+                color: Colors.red,
+                icon: Icons.delete,
+                closeOnTap: false,
+                onTap: () {
+                  onRemoveArticle(favoriteId, entity);
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget floatWidget() {

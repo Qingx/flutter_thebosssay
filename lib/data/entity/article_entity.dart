@@ -16,6 +16,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
   int articleTime; //文章时间
   List<String> files = []; //图片列表
   BossInfoEntity bossVO;
+  bool hidden = false;
 
   int getShowTime() {
     return articleTime ?? releaseTime;
@@ -23,7 +24,7 @@ class ArticleEntity with JsonConvert<ArticleEntity> {
 
   @override
   String toString() {
-    return 'ArticleEntity{id: $id, bossId: $bossId, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, isPoint: $isPoint, readCount: $readCount, collect: $collect, point: $point, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossVO: $bossVO}';
+    return 'ArticleEntity{id: $id, bossId: $bossId, title: $title, descContent: $descContent, isCollect: $isCollect, isRead: $isRead, isPoint: $isPoint, readCount: $readCount, collect: $collect, point: $point, releaseTime: $releaseTime, articleTime: $articleTime, files: $files, bossVO: $bossVO, hidden: $hidden}';
   }
 
   @override
