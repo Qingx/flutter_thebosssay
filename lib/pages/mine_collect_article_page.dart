@@ -522,17 +522,6 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
                           overflow: TextOverflow.ellipsis,
                         ).marginOn(left: 8),
                         Expanded(child: SizedBox()),
-                        Text(
-                          BaseTool.getArticleItemTime(entity.getShowTime()),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: BaseColor.textGray,
-                          ),
-                          textAlign: TextAlign.end,
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.ellipsis,
-                        ),
                       ],
                     ).marginOn(top: 8),
                   ],

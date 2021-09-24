@@ -397,17 +397,6 @@ class _MinePointArticlePageState extends State<MinePointArticlePage>
                         overflow: TextOverflow.ellipsis,
                       ).marginOn(left: 8),
                       Expanded(child: SizedBox()),
-                      Text(
-                        DateFormat.getMMDDHHMM(entity.updateTime),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: BaseColor.textGray,
-                        ),
-                        textAlign: TextAlign.end,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                     ],
                   ).marginOn(top: 8),
                 ],
