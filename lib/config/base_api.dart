@@ -103,11 +103,17 @@ class BaseApi {
       }
 
       final temp = response.data;
+      BaseData<T> data;
 
-      BaseData<T> data = json2WLData<T>(temp);
+      if (temp.runtimeType.toString() == "String") {
+        final res = json.decode(temp);
+        data = json2WLData<T>(res);
+      } else {
+        data = json2WLData<T>(temp);
+      }
+
       return data;
     } on DioError catch (error) {
-      print(error);
       if (error.message.startsWith("SocketException")) {
         return Future.error(SocketMiss());
       } else {
@@ -311,7 +317,7 @@ class TempUserMiss extends BaseMiss {
 }
 
 class UserMiss extends BaseMiss {
-  UserMiss() : super(code: -6, msg: "用户登录失效, 请重新登录");
+  UserMiss() : super(code: -6, msg: "用户未登录或身份异常");
 }
 
 class SignMiss extends BaseMiss {

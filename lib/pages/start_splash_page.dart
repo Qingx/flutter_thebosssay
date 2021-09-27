@@ -43,6 +43,7 @@ class _StartSplashPageState extends State<StartSplashPage> {
       UserConfig.getIns().doAfterCreated((sp) {
         Global.user = Get.find<UserController>(tag: "user");
         Global.hint = Get.find<HintController>(tag: "hint");
+        Global.user.setUser(UserConfig.getIns().user);
 
         if (DataConfig.getIns().firstUserApp) {
           doFirstUse();
@@ -117,9 +118,7 @@ class _StartSplashPageState extends State<StartSplashPage> {
         print(res);
         Get.offAll(() => HomePage(), transition: Transition.fadeIn);
       },
-      onDone: () {
-        Global.user.setUser(UserConfig.getIns().user);
-      },
+      onDone: () {},
     );
   }
 
