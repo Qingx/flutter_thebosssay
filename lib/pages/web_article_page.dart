@@ -616,7 +616,6 @@ class _BottomBarWidgetState extends State<BottomBarWidget> {
           .of(context)
           .padding
           .bottom,
-      color: BaseColor.loadBg,
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
