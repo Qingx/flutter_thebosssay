@@ -21,6 +21,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
   List<String> photoUrl = []; //标签图片
   String bossType =
       "without"; //boss类型:新boss:newBoss,热门boss:hotBoss,没有标签:without
+  String background = "";
 
   int getSort() {
     return updateTime + (top ? BaseTool.TwentyYears : 0);
@@ -40,7 +41,7 @@ class BossInfoEntity with JsonConvert<BossInfoEntity> {
 
   @override
   String toString() {
-    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels, photoUrl: $photoUrl, bossType: $bossType}';
+    return 'BossInfoEntity{id: $id, name: $name, head: $head, role: $role, info: $info, top: $top, isCollect: $isCollect, deleted: $deleted, guide: $guide, readCount: $readCount, collect: $collect, updateCount: $updateCount, totalCount: $totalCount, updateTime: $updateTime, labels: $labels, photoUrl: $photoUrl, bossType: $bossType, background: $background}';
   }
 
   @override

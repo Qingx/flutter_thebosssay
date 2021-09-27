@@ -476,7 +476,7 @@ class _MineCollectArticlePageState extends State<MineCollectArticlePage> {
           ),
           Slidable(
             child: Container(
-                color: Color(0xfff8f8f8),
+                color: BaseColor.line,
                 padding:
                     EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
                 alignment: Alignment.centerLeft,

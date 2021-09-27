@@ -67,7 +67,7 @@ class _BossHomePageState extends State<BossHomePage>
 
     typeList = ["言论演说", "新闻资讯", "传记其他"];
 
-    tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 2, vsync: this);
 
     builderFuture = initData();
 
@@ -99,11 +99,11 @@ class _BossHomePageState extends State<BossHomePage>
           bossId: widget.bossId,
           total: bossEntity.totalCount,
         ),
-        BossArticlePage(
-          type: "3",
-          bossId: widget.bossId,
-          total: bossEntity.totalCount,
-        ),
+        // BossArticlePage(
+        //   type: "3",
+        //   bossId: widget.bossId,
+        //   total: bossEntity.totalCount,
+        // ),
       ];
     }).last;
   }
@@ -288,7 +288,9 @@ class _BossHomePageState extends State<BossHomePage>
               ),
               decoration: ShapeDecoration(
                 image: DecorationImage(
-                  image: AssetImage(R.assetsImgBossTopBg),
+                  image: bossEntity.background.isNullOrEmpty()
+                      ? AssetImage(R.assetsImgBossTopBg)
+                      : NetworkImage(HttpConfig.fullUrl(bossEntity.background)),
                   fit: BoxFit.cover,
                 ),
                 shape: RoundedRectangleBorder(
@@ -330,9 +332,9 @@ class _BossHomePageState extends State<BossHomePage>
                   Tab(
                     text: typeList[1],
                   ),
-                  Tab(
-                    text: typeList[2],
-                  ),
+                  // Tab(
+                  //   text: typeList[2],
+                  // ),
                 ],
               ),
             ),
@@ -344,7 +346,7 @@ class _BossHomePageState extends State<BossHomePage>
         children: [
           pages[0],
           pages[1],
-          pages[2],
+          // pages[2],
         ],
       ),
     );
