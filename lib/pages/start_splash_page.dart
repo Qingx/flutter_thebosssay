@@ -20,7 +20,6 @@ import 'package:flutter_boss_says/util/base_color.dart';
 import 'package:flutter_boss_says/util/base_empty.dart';
 import 'package:flutter_boss_says/util/base_widget.dart';
 import 'package:get/get.dart';
-import 'package:flutter_boss_says/util/base_extension.dart';
 
 class StartSplashPage extends StatefulWidget {
   const StartSplashPage({Key key}) : super(key: key);

@@ -79,6 +79,27 @@ class _StartGuidePageState extends State<StartGuidePage> {
     }
   }
 
+  void jump() {
+    BaseWidget.showLoadingAlert("尝试跳过...", context);
+
+    BossDbProvider.ins().insertList([]).flatMap((value) {
+      return BossApi.ins().obtainTackArticle(PageParam(), "-1");
+    }).flatMap((value) {
+      DataConfig.getIns().tackTotalNum = value.total;
+      DataConfig.getIns().tackHasData = value.hasData;
+
+      return ArticleDbProvider.ins().insertList(value.records);
+    }).listen(
+      (event) {
+        Get.offAll(() => HomePage(), transition: Transition.fadeIn);
+      },
+      onError: (res) {
+        Get.back();
+        BaseTool.toast(msg: "系统异常");
+      },
+    );
+  }
+
   ///追踪boss
   void followBoss() {
     BaseWidget.showLoadingAlert("搜寻并追踪...", context);
@@ -177,9 +198,7 @@ class _StartGuidePageState extends State<StartGuidePage> {
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-              ).onClick(() {
-                Get.offAll(() => HomePage(), transition: Transition.fadeIn);
-              }),
+              ).onClick(jump),
             ),
           ),
         ],
