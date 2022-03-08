@@ -183,7 +183,7 @@ class _MineHistoryTodayPageState extends State<MineHistoryTodayPage>
       AsyncSnapshot<WlPage.Page<HistoryEntity>> snapshot) {
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasData) {
-        return contentWidget();
+        return  contentWidget();
       } else
         return BaseWidget.errorWidget(() {
           builderFuture = loadInitData();
